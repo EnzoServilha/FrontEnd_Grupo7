@@ -1,0 +1,26 @@
+.textInput {
+  display: flex;
+  font-family: 'Arial', sans-serif;
+  margin-bottom: 16px;
+}
+
+
+.cima {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px; 
+}
+
+
+.lado {
+  flex-direction: row;
+  align-items: center; 
+  gap: 12px; 
+}
+
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424141;
+}

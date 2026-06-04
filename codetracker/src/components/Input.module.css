@@ -1,0 +1,57 @@
+.textInput {
+  display: flex;
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+.cima {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.lado {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424141;
+}
+
+.inputField {
+  width: 100%;
+  max-width: 400px; /* Ajuste conforme necessário para o seu layout */
+  padding: 14px 20px;
+
+  /* Cores e Fundo */
+  background-color: #f8fafc; /* Um tom off-white/cinza bem claro */
+  color: #64748b; /* Cor do texto em cinza médio */
+
+  /* Tipografia */
+  font-family: sans-serif; /* Altere para a fonte do seu projeto */
+  font-size: 16px;
+
+  /* Bordas e Cantos Arredondados */
+  border: 1px solid #e2e8f0; /* Borda fina e clara */
+  border-radius: 12px; /* Cantos bem arredondados */
+
+  /* Reset de estilos padrão do navegador */
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.inputField::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.inputField:focus {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(226, 232, 240, 0.5);
+}
