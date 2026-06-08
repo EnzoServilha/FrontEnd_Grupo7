@@ -1,0 +1,172 @@
+/* Header.module.css */
+
+/* Configurações Gerais do Header */
+.mainHeader {
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 2px solid #3b82f6;
+  box-sizing: border-box;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  flex-shrink: 0;
+}
+
+.headerContainer {
+  width: 100%;
+  max-width: 100%; /* Garante que ela se estique até o final das bordas da tela */
+  padding: 16px 32px; /* Aumentei levemente o recuo para alinhar com o padding do seu dashboard */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* Estilização do Logo (Code Tracker) */
+.headerLogo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.headerLogo span {
+  color: #1d4ed8;
+}
+
+/* Menu de Navegação */
+.headerNav {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.navItem {
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #475569;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  color: #1d4ed8;
+}
+
+/* Estilo específico do item ativo (Contatos) */
+.navItem.active {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+
+/* Seção do Usuário (Direita) */
+.headerUser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.userIcon {
+  width: 28px;
+  height: 28px;
+  color: #1e293b;
+  border: 1.5px solid #1e293b;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Responsividade para Tablets (até 1024px) */
+@media (max-width: 1024px) {
+  .headerContainer {
+    padding: 12px 20px;
+  }
+
+  .headerLogo {
+    font-size: 16px;
+  }
+
+  .headerNav {
+    gap: 24px;
+  }
+
+  .navItem {
+    font-size: 14px;
+  }
+
+  .userName {
+    font-size: 14px;
+  }
+}
+
+/* Responsividade para Celulares (até 768px) */
+@media (max-width: 768px) {
+  .headerContainer {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .headerLogo {
+    font-size: 14px;
+    min-width: fit-content;
+  }
+
+  .headerNav {
+    flex: 1;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .navItem {
+    font-size: 12px;
+  }
+
+  .userName {
+    font-size: 13px;
+    display: none;
+  }
+
+  .userIcon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Responsividade para Celulares Pequenos (até 480px) */
+@media (max-width: 480px) {
+  .headerContainer {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .headerLogo {
+    font-size: 12px;
+    min-width: fit-content;
+  }
+
+  .headerNav {
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .navItem {
+    font-size: 11px;
+    min-width: fit-content;
+  }
+
+  .userIcon {
+    width: 22px;
+    height: 22px;
+  }
+}

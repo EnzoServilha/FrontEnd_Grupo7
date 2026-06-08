@@ -1,0 +1,136 @@
+/* Dashboard.module.css */
+
+.dashboardWrapper {
+  padding: 24px;
+  background-color: #ffffff;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+
+  /* Modificado: Ocupa 100vh MENOS os pixels aproximados da sua Header */
+  height: calc(100vh - 70px);
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+/* Layout dos Três Cards */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  flex-shrink: 0; /* Impede os cards de esmagarem se a tela for muito baixa */
+}
+
+/* Base Comum dos Cards */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Bordas Laterais Coloridas */
+.blueBorder {
+  border-left: 6px solid #0052cc;
+}
+.greenBorder {
+  border-left: 6px solid #10b981;
+}
+.orangeBorder {
+  border-left: 6px solid #ff9f1c;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 12px;
+}
+
+.cardValue {
+  font-size: 28px; /* Leve redução para previnir quebras */
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.cardBadge {
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* Bloco do Gráfico */
+.chartSection {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+
+  /* Faz a seção ocupar todo o espaço vertical restante na tela */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Correção crucial para o flexbox permitir encolhimento de filhos */
+}
+
+.chartSectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* Container do Canvas ChartJS */
+.chartContainer {
+  position: relative;
+  width: 100%;
+  /* Ocupa dinamicamente 100% da área útil interna da section */
+  flex: 1;
+  min-height: 0;
+}
+
+/* Responsividade Adaptada para manter proporção da tela */
+@media (max-width: 1024px) {
+  .dashboardWrapper {
+    padding: 16px;
+    gap: 16px;
+  }
+  .cardsGrid {
+    gap: 16px;
+  }
+  .cardValue {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Se a tela for muito pequena (mobile), a rolagem passa a ser necessária. 
+     Caso queira travar mesmo no mobile, remova este bloco de media query vertical */
+  .dashboardWrapper {
+    height: auto;
+    overflow-y: auto;
+  }
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

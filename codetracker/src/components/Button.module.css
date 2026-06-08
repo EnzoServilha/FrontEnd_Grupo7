@@ -1,0 +1,78 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; 
+  
+  padding: 0 24px;
+  height: 44px; 
+  
+  font-family: 'Arial', sans-serif; 
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+
+  box-sizing: border-box; 
+  
+  border: 1px solid transparent; 
+  border-radius: 6px; 
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+
+  line-height: 1;         
+  vertical-align: middle;  
+}
+
+.azul {
+  background-color: #0056cb; 
+}
+
+.azul:hover {
+  background-color: #0045a5; 
+}
+
+.azul:active {
+  transform: scale(0.98); 
+}
+
+.editar {
+  background-color: #f0f4f8; 
+  color: #1a2b4c; 
+  border-color: #d1d9e6; 
+  box-shadow: none; 
+}
+
+.editar:hover {
+  background-color: #e2e8f0; 
+  border-color: #cbd5e1;
+}
+
+.editar:active {
+  transform: scale(0.98);
+}
+
+.deletar {
+  background-color: #fbebeb; 
+  color: #a63a3a; 
+  border-color: #f3c6c6; 
+  box-shadow: none;
+}
+
+.deletar:hover {
+  background-color: #f7d6d6;
+  border-color: #e4b1b1;
+  color: #8b2e2e;
+}
+
+.deletar:active {
+  transform: scale(0.98);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px; 
+}
