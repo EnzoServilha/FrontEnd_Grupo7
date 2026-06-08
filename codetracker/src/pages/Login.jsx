@@ -3,50 +3,54 @@ import Button from "../components/Button";
 import styles from "./Login.module.css";
 import Logo from "../components/Logo";
 import { useNavigate } from "react-router-dom";
-import { api } from "./provider/api";
-import { useState } from "react";
-import ServerResponse from "../components/ServerResponse";
+// import { api } from "./provider/api";
+// import { useState } from "react";
+// import ServerResponse from "../components/ServerResponse";
 
 function Login() {
   const navigate = useNavigate();
 
-  const [usuarioId, setUsuarioId] = useState("");
-
-  function login() {
-    api
-      .get("/pokemon")
-      .then((res) => {
-        setUsuarioId(res.data[0].userId);
-        if (usuarioId != "" && usuarioId != null) {
-          api
-            .get({ usuarioId })
-            .then((res) => {})
-            .catch((err) => {
-              <ServerResponse
-                type="error"
-                title="Falha no Login"
-                message="Não foi possível realizar o login. Por favor, tente novamente."
-              />;
-              console.log(err);
-            });
-        } else {
-          <ServerResponse
-            type="error"
-            title="Falha no Login"
-            message="Usuário não encontrado. Por favor, verifique suas credenciais."
-          />;
-        }
-      })
-      .catch((err) => {
-        <ServerResponse
-          type="error"
-          title="Falha no Login"
-          message="Não foi possível realizar o login. Por favor, tente novamente."
-        />;
-
-        console.log(err);
-      });
+  function irParaDash() {
+    navigate("/dashboard");
   }
+
+  // const [usuarioId, setUsuarioId] = useState("");
+
+  // function login() {
+  //   api
+  //     .get("/pokemon")
+  //     .then((res) => {
+  //       setUsuarioId(res.data[0].userId);
+  //       if (usuarioId != "" && usuarioId != null) {
+  //     api
+  //     .get({ usuarioId })
+  //   .then((res) => {})
+  // .catch((err) => {
+  // <ServerResponse
+  // type="error"
+  // title="Falha no Login"
+  //   message="Não foi possível realizar o login. Por favor, tente novamente."
+  //  />;
+  //  console.log(err);
+  //  });
+  // } else {
+  // <ServerResponse
+  //  type="error"
+  // title="Falha no Login"
+  // message="Usuário não encontrado. Por favor, verifique suas credenciais."
+  // />;
+  // }
+  // })
+  //  .catch((err) => {
+  // <ServerResponse
+  // type="error"
+  // title="Falha no Login"
+  // message="Não foi possível realizar o login. Por favor, tente novamente."
+  // />;
+
+  //  console.log(err);
+  // });
+  // }
 
   return (
     <div className={styles.container}>
@@ -91,7 +95,7 @@ function Login() {
           </div>
 
           <div className={styles.buttonContainer}>
-            <Button onClick={login}>Entrar</Button>
+            <Button onClick={irParaDash}>Entrar</Button>
           </div>
         </form>
       </div>
