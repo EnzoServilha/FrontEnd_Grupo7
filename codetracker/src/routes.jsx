@@ -9,6 +9,9 @@ import Contatos from "./pages/Contatos";
 import Periodo from "./pages/Periodo";
 import VerMaisCliente from "./pages/VerMaisCliente";
 import VerMaisFornecedor from "./pages/VerMaisFornecedor";
+import VerMaisPecas from "./pages/VerMaisPecas";
+import AssociarCodigo from "./pages/AssociarCodigo";
+import AssimilarPecas from "./pages/AssimilarPecas";
 
 export const routes = createBrowserRouter([
   {
@@ -54,6 +57,18 @@ export const routes = createBrowserRouter([
   {
     path: "/verMaisFornecedor",
     element: <VerMaisFornecedor />,
+  },
+  {
+    path: "/verMaisPeca",
+    element: <VerMaisPecas />,
+  },
+  {
+    path: "/associarCodigo",
+    element: <AssociarCodigo />,
+  },
+  {
+    path: "/assimilarPecas",
+    element: <AssimilarPecas />,
   },
   {
     path: "*",

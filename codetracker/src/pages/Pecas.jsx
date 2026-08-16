@@ -21,6 +21,9 @@ function Pecas() {
     <div>
       <Header />
 
+      <button onClick={() => (window.location.href = "/verMaisPeca")}>
+        Ver Mais
+      </button>
       <div className={styles.central}>
         <SearchBar placeholder="Pesquisar peças..." />
         <Table
