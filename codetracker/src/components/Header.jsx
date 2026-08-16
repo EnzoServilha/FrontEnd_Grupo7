@@ -20,12 +20,10 @@ function Header() {
   return (
     <header className={styles.mainHeader}>
       <div className={styles.headerContainer}>
-        {/* Logo / Nome do App */}
         <div className={styles.headerLogo}>
           Code <span>Tracker</span>
         </div>
 
-        {/* Menu de Navegação */}
         <nav className={styles.headerNav}>
           {navItems.map((item) => (
             <a
@@ -44,7 +42,6 @@ function Header() {
           ))}
         </nav>
 
-        {/* Perfil do Usuário */}
         <div className={styles.headerUser}>
           <svg
             className={styles.userIcon}

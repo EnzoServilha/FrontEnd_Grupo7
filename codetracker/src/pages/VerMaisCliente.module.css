@@ -1,0 +1,282 @@
+.pageContainer {
+  min-height: 100vh;
+  background-color: #e2e8f0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: #0f172a;
+
+  /* Impede qualquer barra de rolagem horizontal global */
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.content {
+  padding: 24px;
+  max-width: 100%; /* Garante que não passe de 100% da viewport */
+  box-sizing: border-box;
+}
+.gridContainer {
+  display: grid;
+  grid-template-columns: minmax(490px, 400px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+  width: 100%;
+}
+/* Header superior do cliente */
+.headerCliente {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleGroup h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.backIcon {
+  cursor: pointer;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Card da Esquerda - Dados do Cliente */
+.cardInfo {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.clientTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  word-break: break-word;
+}
+
+.infoList p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.sectionBlock {
+  margin-top: 20px;
+}
+
+.sectionBlock h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.observationText {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+/* Tags de Categorias e Fabricantes */
+.tagGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tag {
+  width: 70px;
+  height: 24px;
+  background-color: #cbd5e1;
+  border-radius: 12px;
+}
+
+/* Grid de Localização */
+.locationGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4px 12px;
+  font-size: 14px;
+}
+
+.locationGrid p {
+  margin: 2px 0;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  width: 100%;
+  /* removido: height: 100% */
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+
+  flex: 1;
+  min-height: 0; /* essencial para o scroll interno funcionar */
+}
+/* Caixa branca em volta das KPIs */
+.kpiContainer {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.kpiRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.kpiRow > div {
+  flex: 1;
+  width: auto; /* Permite expansão fluida do componente KPI */
+}
+
+.cardHistory {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+
+  height: calc(
+    100vh - 260px
+  ); /* ajuste esse valor conforme sua Header + KPIs + margens */
+  min-height: 300px; /* evita ficar pequeno demais em telas baixas */
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.historyHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.selectFilter {
+  width: 36px;
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 180px;
+}
+
+.salesTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.salesTable th {
+  background-color: #f8fafc;
+  padding: 10px 8px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.salesTable td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.copiarBtn {
+  border: 1px solid #64748b;
+  background: transparent;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (Media Queries)
+   ========================================================================== */
+
+/* Tablets e telas médias (abaixo de 1024px) */
+@media (max-width: 1024px) {
+  .gridContainer {
+    grid-template-columns: 1fr; /* Colunas empilham na vertical */
+  }
+
+  .kpiRow {
+    flex-wrap: wrap; /* KPIs se ajustam caso o espaço aperte */
+  }
+}
+
+/* Dispositivos móveis (abaixo de 640px) */
+@media (max-width: 640px) {
+  .content {
+    padding: 16px;
+  }
+
+  .titleGroup h1 {
+    font-size: 22px;
+  }
+
+  .locationGrid {
+    grid-template-columns: 1fr; /* Localização vira lista única */
+  }
+
+  .kpiRow {
+    flex-direction: column; /* KPIs empilham na vertical no celular */
+  }
+
+  .filterGroup {
+    width: 100%;
+  }
+
+  .searchInput {
+    flex: 1; /* Campo de busca expande para preencher o espaço */
+  }
+}

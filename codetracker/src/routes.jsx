@@ -7,6 +7,8 @@ import Pecas from "./pages/Pecas";
 import Pedidos from "./pages/Pedidos";
 import Contatos from "./pages/Contatos";
 import Periodo from "./pages/Periodo";
+import VerMaisCliente from "./pages/VerMaisCliente";
+import VerMaisFornecedor from "./pages/VerMaisFornecedor";
 
 export const routes = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ export const routes = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/verMaisCliente",
+    element: <VerMaisCliente />,
+  },
+  {
+    path: "/verMaisFornecedor",
+    element: <VerMaisFornecedor />,
   },
   {
     path: "*",
