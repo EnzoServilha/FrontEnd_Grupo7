@@ -6,6 +6,7 @@ import Kpi from "../components/Kpi";
 import ProgressoCadastro from "../components/ProgressoCadastro";
 import DeleteModal from "../components/DeleteModal";
 import { useState } from "react";
+import Filtro from "../components/Filtro";
 
 function Pecas() {
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -62,6 +63,11 @@ function Pecas() {
           onConfirm={handleDelete}
         />
       </div>
+
+      <Filtro
+        onClick={() => console.log("Filtro clicado")}
+        ariaLabel="Filtrar peças"
+      />
     </div>
   );
 }
