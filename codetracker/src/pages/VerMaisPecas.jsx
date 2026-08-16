@@ -4,6 +4,7 @@ import Filtro from "../components/Filtro";
 import Kpi from "../components/Kpi";
 import Table from "../components/Table";
 import styles from "./VerMaisPecas.module.css";
+import SearchBar from "../components/SearchBar";
 
 function VerMaisPecas() {
   // Configuração das Colunas e Linhas para a Tabela de Códigos Associados
@@ -191,7 +192,12 @@ function VerMaisPecas() {
             <section className={styles.cardCodigos}>
               <h3>Códigos Associados</h3>
               <div className={styles.btnRow}>
-                <Button estilo="adicionar">+ Adicionar</Button>
+                <Button
+                  estilo="adicionar"
+                  onClick={() => (window.location.href = "/associarCodigo")}
+                >
+                  + Adicionar
+                </Button>
                 <Button icone="editar" estilo="editar">
                   Editar
                 </Button>
@@ -209,11 +215,7 @@ function VerMaisPecas() {
               <select className={styles.selectFilter}>
                 <option value=""></option>
               </select>
-              <input
-                type="text"
-                placeholder="Digite para procurar..."
-                className={styles.searchInput}
-              />
+              <SearchBar />
               <Filtro />
             </div>
 
@@ -639,11 +641,7 @@ function VerMaisPecas() {
                 <select className={styles.selectFilter}>
                   <option value=""></option>
                 </select>
-                <input
-                  type="text"
-                  placeholder="Digite para procurar..."
-                  className={styles.searchInput}
-                />
+                <SearchBar />
                 <Filtro />
               </div>
             </div>
@@ -658,13 +656,14 @@ function VerMaisPecas() {
                 <select className={styles.selectFilter}>
                   <option value=""></option>
                 </select>
-                <input
-                  type="text"
-                  placeholder="Digite para procurar..."
-                  className={styles.searchInput}
-                />
+                <SearchBar />
                 <Filtro />
-                <Button estilo="adicionar">+ Adicionar</Button>
+                <Button
+                  estilo="adicionar"
+                  onClick={() => (window.location.href = "/assimilarPecas")}
+                >
+                  + Adicionar
+                </Button>
                 <Button icone="deletar" estilo="deletar">
                   Deletar
                 </Button>

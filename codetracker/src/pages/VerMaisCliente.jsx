@@ -4,6 +4,7 @@ import Kpi from "../components/Kpi";
 import FilterButton from "../components/Filtro";
 import styles from "./VerMaisCliente.module.css";
 import Table from "../components/Table";
+import SearchBar from "../components/SearchBar";
 
 function VerMaisCliente() {
   return (
@@ -137,11 +138,7 @@ function VerMaisCliente() {
                   <select className={styles.selectFilter}>
                     <option value=""></option>
                   </select>
-                  <input
-                    type="text"
-                    placeholder="Digite para procurar..."
-                    className={styles.searchInput}
-                  />
+                  <SearchBar />
                   <FilterButton />
                 </div>
               </div>
