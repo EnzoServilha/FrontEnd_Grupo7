@@ -3,6 +3,7 @@ import Table from "../components/Table";
 import styles from "./Pecas.module.css";
 import SearchBar from "../components/SearchBar";
 import Kpi from "../components/Kpi";
+import ProgressoCadastro from "../components/ProgressoCadastro";
 
 function Pecas() {
   return (
@@ -36,6 +37,14 @@ function Pecas() {
         />
 
         <Kpi title="Total de peças" value="100%" />
+
+        <ProgressoCadastro
+          passos={[
+            { label: "Passo 1", color: "#4CAF50", textColor: "#FFFFFF" },
+            { label: "Passo 2", color: "#2196F3", textColor: "#FFFFFF" },
+            { label: "Passo 3", color: "#FF9800", textColor: "#FFFFFF" },
+          ]}
+        />
       </div>
     </div>
   );

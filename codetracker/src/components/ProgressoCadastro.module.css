@@ -1,0 +1,55 @@
+.container {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.caixaProgresso {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Linha contínua que passa atrás das bolinhas */
+.linhaFundo {
+  position: absolute;
+  top: 16px; /* Alinha no centro da bolinha de 32px */
+  left: 16px;
+  right: 16px;
+  height: 4px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.stepItem {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.label {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  text-align: center;
+  white-space: nowrap;
+}
