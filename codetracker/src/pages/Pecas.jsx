@@ -4,8 +4,18 @@ import styles from "./Pecas.module.css";
 import SearchBar from "../components/SearchBar";
 import Kpi from "../components/Kpi";
 import ProgressoCadastro from "../components/ProgressoCadastro";
+import DeleteModal from "../components/DeleteModal";
+import { useState } from "react";
 
 function Pecas() {
+  const [isModalOpen, setIsModalOpen] = useState(true);
+
+  const handleDelete = () => {
+    // Sua lógica de deleção na API/Estado aqui
+    console.log("Item excluído!");
+    // O modal fechará automaticamente após executar este código!
+  };
+
   return (
     <div>
       <Header />
@@ -44,6 +54,12 @@ function Pecas() {
             { label: "Passo 2", color: "#2196F3", textColor: "#FFFFFF" },
             { label: "Passo 3", color: "#FF9800", textColor: "#FFFFFF" },
           ]}
+        />
+
+        <DeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDelete}
         />
       </div>
     </div>
