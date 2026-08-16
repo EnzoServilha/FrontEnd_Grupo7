@@ -1,12 +1,15 @@
 import Header from "../components/Header";
 import Table from "../components/Table";
 import styles from "./Pecas.module.css";
+import SearchBar from "../components/SearchBar";
 
 function Pecas() {
   return (
     <div>
       <Header />
+
       <div className={styles.central}>
+        <SearchBar placeholder="Pesquisar peças..." />
         <Table
           columns={[
             { name: "Nome", ordena: true, tipo: "string" },
