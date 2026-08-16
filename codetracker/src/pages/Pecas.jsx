@@ -2,6 +2,7 @@ import Header from "../components/Header";
 import Table from "../components/Table";
 import styles from "./Pecas.module.css";
 import SearchBar from "../components/SearchBar";
+import Kpi from "../components/Kpi";
 
 function Pecas() {
   return (
@@ -33,6 +34,8 @@ function Pecas() {
             ["Centro comercial Moctezuma", "10/10/2023", "0.9"],
           ]}
         />
+
+        <Kpi title="Total de peças" value="100%" />
       </div>
     </div>
   );
