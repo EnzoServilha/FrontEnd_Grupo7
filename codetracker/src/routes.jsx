@@ -9,6 +9,7 @@ import Contatos from "./pages/Contatos";
 import Periodo from "./pages/Periodo";
 import VerMaisCliente from "./pages/VerMaisCliente";
 import VerMaisFornecedor from "./pages/VerMaisFornecedor";
+import VerMaisPecas from "./pages/VerMaisPecas";
 
 export const routes = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ export const routes = createBrowserRouter([
   {
     path: "/verMaisFornecedor",
     element: <VerMaisFornecedor />,
+  },
+  {
+    path: "/verMaisPeca",
+    element: <VerMaisPecas />,
   },
   {
     path: "*",

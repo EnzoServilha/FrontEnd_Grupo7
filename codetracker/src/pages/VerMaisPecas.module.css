@@ -1,0 +1,333 @@
+.pageContainer {
+  min-height: 100vh;
+  background-color: #e2e8f0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: #0f172a;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.content {
+  padding: 24px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header */
+.headerPeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleGroup h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.topGrid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
+  align-items: stretch; /* Alinha o início e término vertical das colunas */
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Coluna Esquerda Superior */
+.leftTopColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardInfo {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  font-size: 13px;
+}
+
+.infoGrid p {
+  margin: 4px 0 0 0;
+}
+
+.descriptionBlock {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.descriptionBlock p {
+  margin-top: 4px;
+  word-break: break-all;
+  color: #334155;
+}
+
+/* Preços Médios */
+.kpiPricesRow {
+  display: flex;
+  gap: 16px;
+}
+
+.kpiPricesRow > div {
+  flex: 1;
+}
+
+/* Card Códigos Associados */
+.cardCodigos {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cardCodigos h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.btnRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.suppliersCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 12px; /* Reduzido de 20px para 12px */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.searchHeader {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.suppliersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px; /* Espaçamento menor entre os dois cards para aproveitamento máximo */
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 650px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+.suppliersGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suppliersGrid::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+.suppliersGrid::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.supplierBlock {
+  background-color: #cbd5e1;
+  border-radius: 12px;
+  padding: 20px; /* Aumentado para dar mais estrutura interna ao card */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Expande o conteúdo internamente */
+}
+
+.supplierHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.supplierHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.locationTag {
+  font-size: 12px;
+  color: #475569;
+}
+
+.miniKpis {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.miniKpis > div {
+  flex: 1;
+  padding: 8px;
+}
+
+/* Gráfico */
+.chartWrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.chartWrapper h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.legends {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.blue {
+  background-color: #0284c7;
+}
+.yellow {
+  background-color: #eab308;
+}
+.green {
+  background-color: #22c55e;
+}
+
+.mockChart {
+  position: relative;
+  height: 220px; /* Aumenta a altura do gráfico para expandir o card cinza */
+  width: calc(100% - 20px);
+  margin: 12px 0 12px 20px;
+}
+.chartSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.yAxis {
+  position: absolute;
+  left: -20px;
+  top: 45%;
+  font-size: 11px;
+}
+
+.xAxis {
+  position: absolute;
+  bottom: -18px;
+  left: 45%;
+  font-size: 11px;
+}
+
+/* Cards Inferiores */
+.cardBottom {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sectionHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selectFilter {
+  width: 36px;
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 160px;
+}
+
+/* Responsividade */
+@media (max-width: 1100px) {
+  .topGrid,
+  .bottomGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .suppliersGrid {
+    grid-template-columns: 1fr;
+  }
+}
