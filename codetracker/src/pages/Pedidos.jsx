@@ -4,6 +4,9 @@ function Pedidos() {
   return (
     <div>
       <Header />
+      <button onClick={() => (window.location.href = "/verMaisPedido")}>
+        Ver Mais
+      </button>
     </div>
   );
 }
