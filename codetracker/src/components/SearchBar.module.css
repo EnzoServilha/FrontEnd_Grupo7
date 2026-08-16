@@ -1,0 +1,55 @@
+/* Container principal que alinha os dois elementos */
+.search-container {
+  display: flex;
+  gap: 12px; /* Espaçamento entre o botão e o input */
+  width: 100%;
+  max-width: 600px; /* Limite de largura da barra */
+  padding: 10px;
+}
+
+/* Estilo do botão de dropdown (à esquerda) */
+.dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: #f1f5f9; /* Fundo suave azulado/cinza */
+  border: 1.5px solid #cbd5e1; /* Borda sutil */
+  border-radius: 8px;
+  color: #0f172a; /* Cor do ícone (flecha) */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-btn:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+/* Estilo do campo de busca */
+.search-input {
+  flex: 1; /* Faz o input ocupar todo o espaço restante */
+  height: 48px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #334155;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* Customização do Placeholder (Texto interno apagado) */
+.search-input::placeholder {
+  color: #64748b;
+  opacity: 0.8;
+}
+
+/* Efeito de Focus para quando o usuário clicar nos campos */
+.search-input:focus,
+.dropdown-btn:focus-visible {
+  border-color: #3b82f6; /* Azul destaque ao focar */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}

@@ -1,0 +1,32 @@
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  background-color: #f1f5f9; /* Fundo cinza/azul clarinho */
+  border: 2px solid #cbd5e1; /* Borda suave arredondada */
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.filterButton:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.filterButton:active {
+  transform: scale(0.95);
+  background-color: #cbd5e1;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  color: #0f172a; /* Cor do ícone (preto/azul bem escuro) */
+}

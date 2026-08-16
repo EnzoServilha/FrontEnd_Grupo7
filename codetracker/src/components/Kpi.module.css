@@ -1,0 +1,28 @@
+.kpi-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #cbd5e1; /* Tom cinza-azulado suave */
+  border-radius: 12px;
+  padding: 24px 16px;
+
+  width: 180px;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.kpi-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
