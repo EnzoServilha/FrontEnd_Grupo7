@@ -1,0 +1,106 @@
+.table-container {
+  overflow: auto;
+  position: relative;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  max-height: 300px;
+  max-width: 90%;
+}
+
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #8a8a8a;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+}
+
+.custom-checkbox:hover {
+  border-color: #555555;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-size: 14px;
+  color: #1e293b;
+  table-layout: auto;
+}
+
+.custom-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  text-align: left;
+  padding: 16px;
+  border-bottom: 2px solid #e2e8f0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.custom-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  background-color: #fff;
+  white-space: nowrap;
+}
+
+.selected-row td {
+  background-color: #e9f2fc !important;
+}
+
+.custom-table tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+.badge-stock {
+  background-color: #e6f7ed;
+  color: #1e7e34;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.text-link {
+  color: #0056b3;
+  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+  text-decoration: none;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.th-elements {
+  flex-direction: row;
+  display: flex;
+}
