@@ -19,12 +19,11 @@
   box-sizing: border-box;
 }
 
-/* Header */
 .headerPeca {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -48,7 +47,7 @@
 
 .topGrid {
   display: grid;
-  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.1fr);
   gap: 20px;
   align-items: stretch; /* Alinha o início e término vertical das colunas */
   width: 100%;
@@ -73,14 +72,14 @@
 .cardInfo {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 15px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 1px;
   font-size: 13px;
 }
 
@@ -89,7 +88,7 @@
 }
 
 .descriptionBlock {
-  margin-top: 16px;
+  margin-top: 6px;
   font-size: 13px;
 }
 
@@ -102,7 +101,7 @@
 /* Preços Médios */
 .kpiPricesRow {
   display: flex;
-  gap: 16px;
+  gap: 10px;
 }
 
 .kpiPricesRow > div {
@@ -115,6 +114,10 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  max-height: 230px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .cardCodigos h3 {
@@ -124,24 +127,36 @@
 
 .btnRow {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tableWrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 .suppliersCard {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 12px; /* Reduzido de 20px para 12px */
+  padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   min-width: 0;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 78vh;
 }
 .searchHeader {
   display: flex;
   justify-content: flex-start;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
+  margin-top: 4px;
 }
 .suppliersGrid {
   display: grid;
@@ -167,23 +182,36 @@
   background-color: transparent;
 }
 
-.supplierBlock {
-  background-color: #cbd5e1;
-  border-radius: 12px;
-  padding: 20px; /* Aumentado para dar mais estrutura interna ao card */
-  width: 100%;
-  min-width: 0;
+.chartContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-height: 68vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-content: start;
+  padding-right: 6px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Expande o conteúdo internamente */
+}
+
+.chartContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chartContainer::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+.chartContainer::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .supplierHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
 }
 
 .supplierHeader h2 {
@@ -198,8 +226,8 @@
 
 .miniKpis {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 5px;
+  margin-bottom: 10px;
 }
 
 .miniKpis > div {
@@ -209,9 +237,9 @@
 
 /* Gráfico */
 .chartWrapper {
-  background-color: #ffffff;
+  background-color: #cbd5e1;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -220,57 +248,6 @@
   margin: 0 0 8px 0;
   font-size: 14px;
   text-align: center;
-}
-
-.legends {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.badge {
-  padding: 2px 6px;
-  border-radius: 10px;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.blue {
-  background-color: #0284c7;
-}
-.yellow {
-  background-color: #eab308;
-}
-.green {
-  background-color: #22c55e;
-}
-
-.mockChart {
-  position: relative;
-  height: 220px; /* Aumenta a altura do gráfico para expandir o card cinza */
-  width: calc(100% - 20px);
-  margin: 12px 0 12px 20px;
-}
-.chartSvg {
-  width: 100%;
-  height: 100%;
-}
-
-.yAxis {
-  position: absolute;
-  left: -20px;
-  top: 45%;
-  font-size: 11px;
-}
-
-.xAxis {
-  position: absolute;
-  bottom: -18px;
-  left: 45%;
-  font-size: 11px;
 }
 
 /* Cards Inferiores */
