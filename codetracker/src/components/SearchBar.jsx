@@ -2,10 +2,10 @@ import styles from "./SearchBar.module.css";
 
 function SearchBar(props) {
   return (
-    <div class={styles["search-container"]}>
+    <div className={styles["search-container"]}>
       <input
         type="text"
-        class={styles["search-input"]}
+        className={styles["search-input"]}
         placeholder={props.placeholder || "Pesquisar..."}
       ></input>
     </div>

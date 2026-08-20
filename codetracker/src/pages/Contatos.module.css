@@ -1,0 +1,268 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.content {
+  padding: 24px 32px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  min-width: 112px;
+  padding: 10px 18px;
+  color: #475569;
+  background: #e7edf5;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tabs .activeTab {
+  color: #0f172a;
+  background: #ffffff;
+  border-color: #cbd5e1;
+  border-bottom-color: #ffffff;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px;
+  margin-bottom: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.searchActions,
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchActions {
+  min-width: 0;
+  flex: 1 1 500px;
+}
+
+.searchWrapper {
+  width: 420px;
+  max-width: 100%;
+}
+
+.searchWrapper > div {
+  padding: 0;
+}
+
+.optionsButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+}
+
+.optionsButton svg {
+  width: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.actionButtons {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+}
+
+.contactCard,
+.clientCard {
+  min-width: 0;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.clientCard {
+  position: relative;
+  display: flex;
+  min-height: 112px;
+  padding-right: 42px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardHeader input,
+.clientCheckbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #1d4ed8;
+}
+
+.companyLink {
+  min-width: 0;
+  padding: 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.companyLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contactCard h3 {
+  margin: 15px 0 7px;
+  font-size: 12px;
+}
+
+.infoLine,
+.clientDetails p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.infoLine {
+  min-width: 0;
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.infoLine svg,
+.clientDetails svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  fill: none;
+  stroke: #334155;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.clientSummary {
+  flex: 0 0 128px;
+}
+
+.clientSummary .companyLink {
+  width: 105px;
+  line-height: 1.15;
+}
+
+.clientSummary p {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 11px;
+}
+
+.clientDetails {
+  margin-left: auto;
+}
+
+.clientDetails p {
+  margin: 0 0 7px;
+  color: #334155;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.clientCheckbox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags span {
+  padding: 4px 8px;
+  color: #334155;
+  background: #e7edf5;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tags .moreTags {
+  padding-inline: 2px;
+  color: #64748b;
+  background: transparent;
+}
+
+@media (max-width: 620px) {
+  .content {
+    padding: 14px;
+  }
+
+  .tabs button {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .searchWrapper {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .searchWrapper input {
+    min-width: 0;
+  }
+
+  .actionButtons {
+    width: 100%;
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .actionButtons > button {
+    min-width: 0;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .actionButtons span {
+    display: none;
+  }
+}
