@@ -7,6 +7,7 @@ import Table from "../components/Table";
 import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
+import Select from "../components/Select";
 
 function VerMaisPecas() {
   // Configuração das Colunas e Linhas para a Tabela de Códigos Associados
@@ -98,6 +99,38 @@ function VerMaisPecas() {
   ];
 
   const rowsSimilares = [
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
     [
       "XXXXXXXXXXXXXXX",
       "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -216,9 +249,7 @@ function VerMaisPecas() {
           {/* Coluna Direita Superior: Cards dos Fornecedores A e B */}
           <section className={styles.suppliersCard}>
             <div className={styles.searchHeader}>
-              <select className={styles.selectFilter}>
-                <option value=""></option>
-              </select>
+              <Select options={[{ value: null, name: "Pesquisar Por" }]} />
               <SearchBar />
               <Filtro />
             </div>
@@ -316,10 +347,8 @@ function VerMaisPecas() {
             <div className={styles.sectionHeader}>
               <h2>Histórico de Vendas e Compras</h2>
               <div className={styles.filterGroup}>
-                <select className={styles.selectFilter}>
-                  <option value=""></option>
-                </select>
-                <SearchBar />
+                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <SearchBar size="500px" />
                 <Filtro />
               </div>
             </div>
@@ -330,20 +359,18 @@ function VerMaisPecas() {
             <div className={styles.sectionHeader}>
               <h2>Peças Similares</h2>
               <div className={styles.filterGroup}>
-                <select className={styles.selectFilter}>
-                  <option value=""></option>
-                </select>
-                <SearchBar />
+                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <SearchBar size="250px" />
                 <Filtro />
-                <Button
+                <ButtonMenor
                   estilo="adicionar"
                   onClick={() => (window.location.href = "/assimilarPecas")}
                 >
                   + Adicionar
-                </Button>
-                <Button icone="deletar" estilo="deletar">
+                </ButtonMenor>
+                <ButtonMenor icone="deletar" estilo="deletar">
                   Deletar
-                </Button>
+                </ButtonMenor>
               </div>
             </div>
             <Table columns={columnsSimilares} rows={rowsSimilares} />

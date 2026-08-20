@@ -262,7 +262,7 @@
 .sectionHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 12px;
@@ -278,6 +278,7 @@
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .selectFilter {
