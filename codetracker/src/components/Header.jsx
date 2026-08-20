@@ -17,6 +17,14 @@ function Header() {
     navigate(path);
   };
 
+  const isActiveItem = (path) => {
+    if (location.pathname === path) return true;
+    if (path === "/contatos") {
+      return location.pathname.toLowerCase() === "/clienteinicial";
+    }
+    return false;
+  };
+
   return (
     <header className={styles.mainHeader}>
       <div className={styles.headerContainer}>
@@ -34,7 +42,7 @@ function Header() {
                 handleNavClick(item.path);
               }}
               className={`${styles.navItem} ${
-                location.pathname === item.path ? styles.active : ""
+                isActiveItem(item.path) ? styles.active : ""
               }`}
             >
               {item.label}
@@ -55,7 +63,7 @@ function Header() {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          <span className={styles.userName}>Usuário</span>
+          <span className={styles.userName}>Usuário Conectado</span>
         </div>
       </div>
     </header>

@@ -1,15 +1,9 @@
 /* Layout Global */
 .pageContainer {
   min-height: 100vh;
-  background-color: #f1f5f9;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  color: #0f172a;
+  background: #deeaf2;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
   display: flex;
   flex-direction: column;
 }
@@ -30,14 +24,12 @@
 }
 
 .mainContent {
-  flex: 1;
-  max-width: 900px;
-  width: 100%;
+  width: min(100%, 1280px);
   margin: 0 auto;
-  padding: 0 24px 40px 24px;
+  padding: 18px 18px 32px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
 .pageTitle {
@@ -45,6 +37,42 @@
   font-weight: 700;
   text-align: center;
   margin: 10px 0 24px 0;
+}
+
+/* Tabs */
+.tabGroup {
+  display: flex;
+  background: #dfeaf3;
+  padding: 10px 0 0;
+  gap: 12px;
+  border-bottom: 1px solid #d0d8e2;
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  border: 1px solid #bcc9d6;
+  background: #edf3f7;
+  color: #2b3a4a;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px 6px 0 0;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.tab {
+  border-bottom-color: #d0d8e2;
+}
+
+.tabActive {
+  background: #edf3f7;
+  border-color: #c7d2dd;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 #edf3f7;
 }
 
 /* Card Principal Branco */
@@ -64,6 +92,44 @@
   font-weight: 700;
   color: #334155;
   margin: 0 0 16px 0;
+}
+
+/* Ações Inferiores (Abaixo do Card) */
+.bottomActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btnCancel {
+  background-color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnCancel:hover {
+  background-color: #cbd5e1;
+}
+
+.btnConfirm {
+  background-color: #0284c7;
+  border: none;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnConfirm:hover {
+  background-color: #026496;
 }
 
 /* Radios */
@@ -107,17 +173,18 @@
 }
 
 .searchInput {
-  width: 100%;
-  padding: 10px 12px 10px 38px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 13px;
+  flex: 1;
+  border: none;
   outline: none;
-  box-sizing: border-box;
+  background: transparent;
+  color: #1f2937;
+  font-size: 17px;
+  padding: 0 16px;
+  min-height: 46px;
 }
 
 .searchInput::placeholder {
-  color: #94a3b8;
+  color: #7e8ea1;
 }
 
 .searchInput:focus {
@@ -151,40 +218,83 @@
 }
 
 .btnAdd {
-  background-color: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+  appearance: none;
+  border-radius: 7px;
+  font-size: 17px;
   font-weight: 700;
-  font-size: 15px;
-  padding: 8px 24px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btnAdd:hover {
-  background-color: #cbd5e1;
-}
-
-/* Atalho para Cadastro */
-.unregisteredLink {
-  display: flex;
+  padding: 11px 18px;
+  min-height: 46px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-size: 12px;
-  color: #475569;
-  margin-bottom: 24px;
-  text-decoration: underline;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  background: #0a66d3;
+  border: 1px solid #0a66d3;
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
 }
 
-.btnCadastrar {
-  background-color: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  font-size: 11px;
+.plusIcon {
+  font-size: 26px;
+  line-height: 1;
+  margin-top: -2px;
+}
+
+.btnEdit {
+  appearance: none;
+  border-radius: 7px;
+  font-size: 17px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 11px 18px;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   cursor: pointer;
+  transition: filter 0.2s ease;
+  background: #edf3f7;
+  border: 1px solid #b9c6d4;
+  color: #1f2937;
+}
+
+.btnDelete {
+  appearance: none;
+  border-radius: 7px;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 11px 18px;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  background: #fdf1f1;
+  border: 1px solid #e7a5a5;
+  color: #d65a5a;
+}
+
+.btnAdd:hover,
+.btnEdit:hover,
+.btnDelete:hover,
+.filterButton:hover,
+.tab:hover {
+  filter: brightness(0.98);
+}
+
+.btnEdit svg,
+.btnDelete svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Lista Scrollável de Itens Associados */
@@ -237,40 +347,137 @@
   text-align: right;
 }
 
-/* Ações Inferiores (Abaixo do Card) */
-.bottomActions {
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(330px, 1fr));
+  gap: 18px 22px;
+  background: #dfeaf3;
+  padding-top: 18px;
+}
+
+.contactCard {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid #c0cedb;
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+  min-height: 210px;
+  box-sizing: border-box;
+}
+
+.cardHeader {
   display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-.btnCancel {
-  background-color: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
-  font-size: 15px;
+.contactInfo {
+  min-width: 0;
+}
+
+.empresaTitle {
+  margin: 0;
+  font-size: 26px;
   font-weight: 700;
-  padding: 10px 24px;
-  border-radius: 6px;
-  cursor: pointer;
+  line-height: 1.1;
+  color: #1f2937;
+  word-break: break-word;
 }
 
-.btnCancel:hover {
-  background-color: #cbd5e1;
+.contatoSubtitle {
+  margin: 8px 0 0;
+  font-size: 18px;
+  color: #374151;
+  line-height: 1.3;
 }
 
-.btnConfirm {
-  background-color: #0284c7;
-  border: none;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 10px 28px;
-  border-radius: 6px;
-  cursor: pointer;
+.checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 8px;
+  accent-color: #2d6cdf;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
-.btnConfirm:hover {
-  background-color: #026496;
+.cardBody {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 18px;
+  color: #1f2937;
+  line-height: 1.2;
+  min-height: 22px;
+}
+
+.infoLine svg {
+  width: 18px;
+  height: 18px;
+  stroke: #1f2937;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.loadingText {
+  margin: 24px 0 0;
+  font-size: 16px;
+  color: #475569;
+}
+
+@media (max-width: 1024px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+
+  .actionCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchShell {
+    width: 100%;
+  }
+
+  .actionButtons {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .mainContent {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .tabGroup {
+    gap: 8px;
+  }
+
+  .tab,
+  .tabActive {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .btnAdd,
+  .btnEdit,
+  .btnDelete {
+    width: 100%;
+  }
 }
