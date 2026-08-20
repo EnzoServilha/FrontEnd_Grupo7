@@ -60,7 +60,6 @@ export default function VerMaisPedidos() {
         </div>
       </header>
 
-      {/* Conteúdo Principal Expandido */}
       <main className={styles.mainContent}>
         {/* Card Superior de Informações da Venda */}
         <section className={styles.infoCard}>
