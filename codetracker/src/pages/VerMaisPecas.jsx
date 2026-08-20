@@ -1,10 +1,13 @@
 import Header from "../components/Header";
 import Button from "../components/Button";
+import ButtonMenor from "../components/ButtonMenor";
 import Filtro from "../components/Filtro";
 import Kpi from "../components/Kpi";
 import Table from "../components/Table";
 import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
+import CardGraficoPecas from "../components/CardGraficoPecas";
+import Select from "../components/Select";
 
 function VerMaisPecas() {
   // Configuração das Colunas e Linhas para a Tabela de Códigos Associados
@@ -108,6 +111,38 @@ function VerMaisPecas() {
       "XXXXXXXXXXXXXXX",
       "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
+    [
+      "XXXXXXXXXXXXXXX",
+      "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    ],
   ];
 
   return (
@@ -190,442 +225,116 @@ function VerMaisPecas() {
 
             {/* Códigos Associados com Tabela */}
             <section className={styles.cardCodigos}>
-              <h3>Códigos Associados</h3>
               <div className={styles.btnRow}>
-                <Button
+                <h3>Códigos Associados</h3>
+                <ButtonMenor
                   estilo="adicionar"
                   onClick={() => (window.location.href = "/associarCodigo")}
                 >
                   + Adicionar
-                </Button>
-                <Button icone="editar" estilo="editar">
+                </ButtonMenor>
+                <ButtonMenor icone="editar" estilo="editar">
                   Editar
-                </Button>
-                <Button icone="deletar" estilo="deletar">
+                </ButtonMenor>
+                <ButtonMenor icone="deletar" estilo="deletar">
                   Deletar
-                </Button>
+                </ButtonMenor>
               </div>
-              <Table columns={columnsCodigos} rows={rowsCodigos} />
+              <div className={styles.tableWrapper}>
+                <Table columns={columnsCodigos} rows={rowsCodigos} />
+              </div>
             </section>
           </div>
 
           {/* Coluna Direita Superior: Cards dos Fornecedores A e B */}
           <section className={styles.suppliersCard}>
             <div className={styles.searchHeader}>
-              <select className={styles.selectFilter}>
-                <option value=""></option>
-              </select>
+              <Select options={[{ value: null, name: "Pesquisar Por" }]} />
               <SearchBar />
               <Filtro />
             </div>
-
-            <div className={styles.suppliersGrid}>
-              {/* Fornecedor A */}
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+            <div className={styles.chartContainer}>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
 
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
 
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
 
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
 
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor A</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
 
-              {/* Fornecedor B */}
-              <div className={styles.supplierBlock}>
-                <div className={styles.supplierHeader}>
-                  <h2>Fornecedor B</h2>
-                  <span className={styles.locationTag}>📍 UF - Cidade</span>
-                </div>
-                <div className={styles.miniKpis}>
-                  <Kpi title="Entregas dentro do Prazo" value="XX%" />
-                  <Kpi title="Entregas com Frete Pago" value="XX%" />
-                  <Kpi title="Mediana de Tempo de Entrega" value="XXX dias" />
-                </div>
-                <div className={styles.chartWrapper}>
-                  <h4>Variação de Preços por Compra</h4>
-                  <div className={styles.legends}>
-                    <span>Legend visual</span>
-                    <span className={`${styles.badge} ${styles.blue}`}>
-                      Preço Unitário
-                    </span>
-                    <span className={`${styles.badge} ${styles.yellow}`}>
-                      Impostos
-                    </span>
-                    <span className={`${styles.badge} ${styles.green}`}>
-                      Frete
-                    </span>
-                  </div>
-                  <div className={styles.mockChart}>
-                    <span className={styles.yAxis}>R$</span>
-                    <svg viewBox="0 0 300 100" className={styles.chartSvg}>
-                      <path
-                        d="M10 80 Q 75 40, 150 60 T 290 70"
-                        stroke="#3b82f6"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 60 Q 75 50, 150 40 T 290 30"
-                        stroke="#eab308"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M10 40 Q 75 20, 150 30 T 290 50"
-                        stroke="#22c55e"
-                        fill="none"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <span className={styles.xAxis}>Data</span>
-                  </div>
-                </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
+              </div>
+              <div className={styles.chartWrapper}>
+                <CardGraficoPecas
+                  supplierName="Fornecedor A"
+                  location="UF - Cidade"
+                  kpis={{
+                    onTimeDelivery: "XX%",
+                    paidFreight: "XX%",
+                    medianDeliveryTime: "XX dias",
+                  }}
+                />
               </div>
             </div>
           </section>
@@ -638,35 +347,30 @@ function VerMaisPecas() {
             <div className={styles.sectionHeader}>
               <h2>Histórico de Vendas e Compras</h2>
               <div className={styles.filterGroup}>
-                <select className={styles.selectFilter}>
-                  <option value=""></option>
-                </select>
-                <SearchBar />
+                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <SearchBar size="500px" />
                 <Filtro />
               </div>
             </div>
             <Table columns={columnsHistorico} rows={rowsHistorico} />
           </section>
 
-          {/* Peças Similares */}
           <section className={styles.cardBottom}>
             <div className={styles.sectionHeader}>
               <h2>Peças Similares</h2>
               <div className={styles.filterGroup}>
-                <select className={styles.selectFilter}>
-                  <option value=""></option>
-                </select>
-                <SearchBar />
+                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <SearchBar size="250px" />
                 <Filtro />
-                <Button
+                <ButtonMenor
                   estilo="adicionar"
                   onClick={() => (window.location.href = "/assimilarPecas")}
                 >
                   + Adicionar
-                </Button>
-                <Button icone="deletar" estilo="deletar">
+                </ButtonMenor>
+                <ButtonMenor icone="deletar" estilo="deletar">
                   Deletar
-                </Button>
+                </ButtonMenor>
               </div>
             </div>
             <Table columns={columnsSimilares} rows={rowsSimilares} />

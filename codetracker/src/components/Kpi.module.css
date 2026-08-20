@@ -6,7 +6,7 @@
 
   background-color: #cbd5e1; /* Tom cinza-azulado suave */
   border-radius: 12px;
-  padding: 24px 16px;
+  padding: 10px 8px;
 
   width: 180px;
   box-sizing: border-box;
@@ -22,7 +22,7 @@
 }
 
 .kpi-value {
-  font-size: 1.75rem;
+  font-size: 1.55rem;
   font-weight: 700;
   color: #0f172a;
 }
