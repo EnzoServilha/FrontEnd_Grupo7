@@ -92,141 +92,19 @@
   flex-shrink: 0;
 }
 
-.contactGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px;
-}
-
-.contactCard,
-.clientCard {
+.tableSection {
   min-width: 0;
-  padding: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.clientCard {
-  position: relative;
-  display: flex;
-  min-height: 112px;
-  padding-right: 42px;
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.cardHeader input,
-.clientCheckbox {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: #1d4ed8;
-}
-
-.companyLink {
-  min-width: 0;
+.tableLink {
   padding: 0;
-  color: #0f172a;
-  font-size: 15px;
+  color: #0056b3;
   font-weight: 700;
   text-align: left;
 }
 
-.companyLink:hover {
-  color: #1d4ed8;
+.tableLink:hover {
   text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.contactCard h3 {
-  margin: 15px 0 7px;
-  font-size: 12px;
-}
-
-.infoLine,
-.clientDetails p {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.infoLine {
-  min-width: 0;
-  margin: 6px 0 0;
-  color: #64748b;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-
-.infoLine svg,
-.clientDetails svg {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-  fill: none;
-  stroke: #334155;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.clientSummary {
-  flex: 0 0 128px;
-}
-
-.clientSummary .companyLink {
-  width: 105px;
-  line-height: 1.15;
-}
-
-.clientSummary p {
-  margin: 8px 0 0;
-  color: #475569;
-  font-size: 11px;
-}
-
-.clientDetails {
-  margin-left: auto;
-}
-
-.clientDetails p {
-  margin: 0 0 7px;
-  color: #334155;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.clientCheckbox {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tags span {
-  padding: 4px 8px;
-  color: #334155;
-  background: #e7edf5;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.tags .moreTags {
-  padding-inline: 2px;
-  color: #64748b;
-  background: transparent;
 }
 
 @media (max-width: 620px) {
