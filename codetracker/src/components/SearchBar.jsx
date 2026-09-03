@@ -10,6 +10,9 @@ function SearchBar(props) {
         type="text"
         className={styles["search-input"]}
         placeholder={props.placeholder || "Pesquisar..."}
+        value={props.value}
+        onChange={props.onChange}
+        aria-label={props.ariaLabel || props.placeholder || "Pesquisar"}
       />
     </div>
   );

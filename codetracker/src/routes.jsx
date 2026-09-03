@@ -13,6 +13,9 @@ import VerMaisPecas from "./pages/VerMaisPecas";
 import AssociarCodigo from "./pages/AssociarCodigo";
 import AssimilarPecas from "./pages/AssimilarPecas";
 import VerMaisPedidos from "./pages/VerMaisPedidos";
+import CadastrarCliente from "./pages/CadastrarCliente";
+import CadastrarFornecedor from "./pages/CadastrarFornecedor";
+import CadastrarPeca from "./pages/CadastrarPeca";
 
 export const routes = createBrowserRouter([
   {
@@ -42,6 +45,18 @@ export const routes = createBrowserRouter([
   {
     path: "/contatos",
     element: <Contatos />,
+  },
+  {
+    path: "/cadastrarCliente",
+    element: <CadastrarCliente />,
+  },
+  {
+    path: "/cadastrarFornecedor",
+    element: <CadastrarFornecedor />,
+  },
+  {
+    path: "/cadastrarPeca",
+    element: <CadastrarPeca />,
   },
   {
     path: "/periodo",

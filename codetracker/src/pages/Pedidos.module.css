@@ -1,0 +1,420 @@
+.page {
+  min-height: 100vh;
+  color: #0f172a;
+  background: #f4f7fb;
+}
+
+.content {
+  width: 100%;
+  padding: 24px 32px 32px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  min-width: 88px;
+  padding: 10px 18px;
+  color: #475569;
+  background: #e7edf5;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tabs .activeTab {
+  color: #0f172a;
+  background: #ffffff;
+  border-color: #cbd5e1;
+  border-bottom-color: #ffffff;
+}
+
+.toolbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px;
+  margin-bottom: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.searchActions,
+.actionControls,
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchActions {
+  min-width: 0;
+  flex: 1 1 390px;
+}
+
+.searchWrapper {
+  width: 320px;
+  max-width: 100%;
+}
+
+.searchWrapper > div {
+  padding: 0;
+}
+
+.menuContainer {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.optionsButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.optionsButton:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.optionsButton svg {
+  width: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 180px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+}
+
+.popover button {
+  padding: 8px 10px;
+  color: #334155;
+  border-radius: 5px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.popover button:hover,
+.popover .selectedOption {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.filterPopover {
+  right: 0;
+  left: auto;
+}
+
+.actionControls {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.statusSelect {
+  height: 44px;
+  padding: 0 34px 0 14px;
+  color: #1e293b;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.statusSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.tableSection {
+  min-width: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.tableSection table {
+  font-size: 12px;
+}
+
+.tableSection th,
+.tableSection td {
+  padding: 12px 10px;
+}
+
+.tableSection th svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tableLink {
+  padding: 0;
+  color: #0f172a;
+  font-size: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tableLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.concluido {
+  color: #17733b;
+  background: #dcf7e7;
+}
+
+.atrasado {
+  color: #9a5b00;
+  background: #fff0c7;
+}
+
+.andamento {
+  color: #1262a3;
+  background: #dceeff;
+}
+
+.cancelado {
+  color: #b4232b;
+  background: #fee7e7;
+}
+
+.completo {
+  color: #475569;
+  background: #e7edf5;
+}
+
+@media (max-width: 1100px) {
+  .content {
+    padding: 7px 16px 24px;
+  }
+
+  .tabs {
+    margin-bottom: 10px;
+  }
+
+  .tabs button {
+    min-width: 0;
+    padding: 2px 7px;
+    font-size: 8px;
+  }
+
+  .toolbar {
+    gap: 6px;
+    padding: 7px;
+    margin-bottom: 5px;
+  }
+
+  .searchActions,
+  .actionControls,
+  .actionButtons {
+    gap: 4px;
+  }
+
+  .searchActions {
+    flex-basis: 170px;
+  }
+
+  .searchWrapper {
+    width: 116px;
+  }
+
+  .searchWrapper input {
+    height: 20px;
+    padding: 0 7px;
+    border-width: 1px;
+    border-radius: 5px;
+    font-size: 8px;
+  }
+
+  .optionsButton,
+  .searchActions > .menuContainer:last-child > button {
+    width: 20px;
+    height: 20px;
+    border-width: 1px;
+    border-radius: 5px;
+  }
+
+  .optionsButton svg,
+  .searchActions > .menuContainer:last-child svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .statusSelect {
+    width: 72px;
+    height: 20px;
+    max-width: 72px;
+    padding-right: 8px;
+    padding-left: 4px;
+    border-width: 1px;
+    font-size: 7px;
+  }
+
+  .actionButtons > button {
+    height: 20px;
+    gap: 3px;
+    padding: 0 5px;
+    border-radius: 4px;
+    font-size: 7px;
+  }
+
+  .actionButtons svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .actionButtons {
+    gap: 5px;
+  }
+
+  .tableSection table {
+    font-size: 7px;
+  }
+
+  .tableSection th {
+    padding: 5px;
+  }
+
+  .tableSection td {
+    padding: 3px 5px;
+  }
+
+  .tableSection th svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .tableSection input {
+    width: 10px;
+    height: 10px;
+  }
+
+  .statusBadge {
+    padding: 3px 5px;
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  .content {
+    padding: 14px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tabs button {
+    min-width: 76px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .searchActions {
+    flex-basis: 100%;
+  }
+
+  .searchWrapper {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .optionsButton,
+  .searchActions > .menuContainer:last-child > button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .actionControls {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .statusSelect {
+    width: auto;
+    max-width: none;
+    height: 40px;
+    flex: 1;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .actionButtons {
+    flex: 2;
+  }
+
+  .actionButtons > button {
+    min-width: 0;
+    height: 40px;
+    flex: 1;
+    padding: 0 6px;
+    font-size: 11px;
+  }
+
+  .actionButtons span {
+    display: none;
+  }
+
+  .tableSection table {
+    min-width: 980px;
+    font-size: 11px;
+  }
+
+  .tableSection th,
+  .tableSection td {
+    padding: 11px 9px;
+  }
+
+  .statusBadge {
+    font-size: 9px;
+  }
+}

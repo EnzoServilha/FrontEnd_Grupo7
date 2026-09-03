@@ -1,75 +1,367 @@
-import Header from "../components/Header";
-import Table from "../components/Table";
-import styles from "./Pecas.module.css";
-import SearchBar from "../components/SearchBar";
-import Kpi from "../components/Kpi";
-import ProgressoCadastro from "../components/ProgressoCadastro";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
-import { useState } from "react";
 import Filtro from "../components/Filtro";
+import Header from "../components/Header";
+import SearchBar from "../components/SearchBar";
+import styles from "./Pecas.module.css";
+
+const pecasIniciais = [
+  {
+    id: 1,
+    codigoInterno: "CT-9482X",
+    codigosAssociados: 1,
+    quantidade: 1250,
+    localizacao: "Galpão A - Prateleira 4",
+    precoCompra: "R$ 145,20",
+    precoVenda: "R$ 289,90",
+    marca: "Bosch Premium",
+    dataCadastro: "12/04/2026",
+    anoFabricacao: "2025",
+  },
+  {
+    id: 2,
+    codigoInterno: "CT-1053Y",
+    codigosAssociados: 3,
+    quantidade: 420,
+    localizacao: "Galpão B - Prateleira 2",
+    precoCompra: "R$ 18,90",
+    precoVenda: "R$ 45,00",
+    marca: "Magneti Marelli",
+    dataCadastro: "18/05/2026",
+    anoFabricacao: "2026",
+  },
+];
+
+const camposBusca = [
+  ["todos", "Todos os campos"],
+  ["codigoInterno", "Código interno"],
+  ["localizacao", "Localização"],
+  ["marca", "Marca"],
+  ["anoFabricacao", "Ano de fabricação"],
+];
 
 function Pecas() {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const navigate = useNavigate();
+  const [pecas, setPecas] = useState(pecasIniciais);
+  const [busca, setBusca] = useState("");
+  const [campoBusca, setCampoBusca] = useState("todos");
+  const [marcaFiltrada, setMarcaFiltrada] = useState("todas");
+  const [selecionadas, setSelecionadas] = useState([]);
+  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [filtroAberto, setFiltroAberto] = useState(false);
+  const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
-  const handleDelete = () => {
-    // Sua lógica de deleção na API/Estado aqui
-    console.log("Item excluído!");
-    // O modal fechará automaticamente após executar este código!
+  const marcasDisponiveis = useMemo(
+    () => ["todas", ...new Set(pecas.map((peca) => peca.marca))],
+    [pecas],
+  );
+
+  const pecasFiltradas = useMemo(() => {
+    const termo = busca.trim().toLocaleLowerCase("pt-BR");
+
+    return pecas.filter((peca) => {
+      if (marcaFiltrada !== "todas" && peca.marca !== marcaFiltrada) {
+        return false;
+      }
+
+      if (!termo) return true;
+
+      const valores =
+        campoBusca === "todos"
+          ? [
+              peca.codigoInterno,
+              peca.localizacao,
+              peca.marca,
+              peca.anoFabricacao,
+            ]
+          : [peca[campoBusca]];
+
+      return valores.some((valor) =>
+        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
+      );
+    });
+  }, [busca, campoBusca, marcaFiltrada, pecas]);
+
+  const idsVisiveis = pecasFiltradas.map((peca) => peca.id);
+  const todasVisiveisSelecionadas =
+    idsVisiveis.length > 0 &&
+    idsVisiveis.every((id) => selecionadas.includes(id));
+
+  const alternarTodas = () => {
+    setSelecionadas((idsAtuais) => {
+      if (todasVisiveisSelecionadas) {
+        return idsAtuais.filter((id) => !idsVisiveis.includes(id));
+      }
+
+      return [...new Set([...idsAtuais, ...idsVisiveis])];
+    });
   };
 
+  const alternarPeca = (id) => {
+    setSelecionadas((idsAtuais) =>
+      idsAtuais.includes(id)
+        ? idsAtuais.filter((idAtual) => idAtual !== id)
+        : [...idsAtuais, id],
+    );
+  };
+
+  const abrirDetalhes = (peca) => {
+    navigate("/verMaisPeca", { state: { peca } });
+  };
+
+  const excluirSelecionadas = () => {
+    setPecas((itensAtuais) =>
+      itensAtuais.filter((peca) => !selecionadas.includes(peca.id)),
+    );
+    setSelecionadas([]);
+  };
+
+  const editarSelecionada = () => {
+    const peca = pecas.find((item) => item.id === selecionadas[0]);
+    if (peca) abrirDetalhes(peca);
+  };
+
+  const campoBuscaAtivo = camposBusca.find(
+    ([valor]) => valor === campoBusca,
+  )?.[1];
+
   return (
-    <div>
+    <div className={styles.page}>
       <Header />
 
-      <button onClick={() => (window.location.href = "/verMaisPeca")}>
-        Ver Mais
-      </button>
-      <div className={styles.central}>
-        <SearchBar placeholder="Pesquisar peças..." />
-        <Table
-          columns={[
-            { name: "Nome", ordena: true, tipo: "string" },
-            { name: "Data", ordena: true, tipo: "date" },
-            { name: "Preço", ordena: true, tipo: "number" },
-          ]}
-          rows={[
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2024", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/09/2025", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2025", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2023", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2023", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2023", "0.9"],
-            ["Alfreds Futterkiste", "10/10/2023", "10"],
-            ["Centro comercial Moctezuma", "10/10/2023", "0.9"],
-          ]}
-        />
+      <main className={styles.content}>
+        <div className={styles.tabs} role="tablist" aria-label="Visões de peças">
+          <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            className={styles.activeTab}
+          >
+            Catálogo de Peças
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-disabled="true"
+            title="Entradas e saídas ainda não disponíveis"
+          >
+            Entradas e Saídas
+          </button>
+        </div>
 
-        <Kpi title="Total de peças" value="100%" />
+        <section className={styles.toolbar} aria-label="Ações do catálogo">
+          <div className={styles.searchActions}>
+            <div className={styles.menuContainer}>
+              <button
+                type="button"
+                className={styles.optionsButton}
+                aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                aria-expanded={menuBuscaAberto}
+                aria-controls="campos-busca-pecas"
+                title={`Pesquisar por: ${campoBuscaAtivo}`}
+                onClick={() => {
+                  setMenuBuscaAberto((aberto) => !aberto);
+                  setFiltroAberto(false);
+                }}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m7 10 5 5 5-5" />
+                </svg>
+              </button>
 
-        <ProgressoCadastro
-          passos={[
-            { label: "Passo 1", color: "#4CAF50", textColor: "#FFFFFF" },
-            { label: "Passo 2", color: "#2196F3", textColor: "#FFFFFF" },
-            { label: "Passo 3", color: "#FF9800", textColor: "#FFFFFF" },
-          ]}
-        />
+              {menuBuscaAberto && (
+                <div
+                  id="campos-busca-pecas"
+                  className={styles.popover}
+                  role="menu"
+                >
+                  {camposBusca.map(([valor, label]) => (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      key={valor}
+                      className={
+                        campoBusca === valor ? styles.selectedOption : ""
+                      }
+                      onClick={() => {
+                        setCampoBusca(valor);
+                        setMenuBuscaAberto(false);
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-        <DeleteModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleDelete}
-        />
-      </div>
+            <div className={styles.searchWrapper}>
+              <SearchBar
+                placeholder="Digite para buscar..."
+                value={busca}
+                onChange={(event) => setBusca(event.target.value)}
+                ariaLabel="Buscar no catálogo de peças"
+              />
+            </div>
 
-      <Filtro
-        onClick={() => console.log("Filtro clicado")}
-        ariaLabel="Filtrar peças"
+            <div className={styles.menuContainer}>
+              <Filtro
+                ariaLabel="Filtrar peças por marca"
+                onClick={() => {
+                  setFiltroAberto((aberto) => !aberto);
+                  setMenuBuscaAberto(false);
+                }}
+              />
+
+              {filtroAberto && (
+                <div
+                  className={`${styles.popover} ${styles.filterPopover}`}
+                  role="menu"
+                >
+                  {marcasDisponiveis.map((marca) => (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      key={marca}
+                      className={
+                        marcaFiltrada === marca ? styles.selectedOption : ""
+                      }
+                      onClick={() => {
+                        setMarcaFiltrada(marca);
+                        setFiltroAberto(false);
+                        setSelecionadas([]);
+                      }}
+                    >
+                      {marca === "todas" ? "Todas as marcas" : marca}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.actionButtons}>
+            <Button
+              icone="adicionar"
+              onClick={() => navigate("/cadastrarPeca")}
+            >
+              Adicionar Peça
+            </Button>
+            <Button
+              icone="editar"
+              estilo="editar"
+              disabled={selecionadas.length !== 1}
+              onClick={editarSelecionada}
+            >
+              Editar
+            </Button>
+            <Button
+              icone="deletar"
+              estilo="deletar"
+              disabled={selecionadas.length === 0}
+              onClick={() => {
+                if (selecionadas.length > 0) setModalExcluirAberto(true);
+              }}
+            >
+              Deletar
+            </Button>
+          </div>
+        </section>
+
+        <section className={styles.tableSection} aria-label="Catálogo de peças">
+          <table>
+            <thead>
+              <tr>
+                <th className={styles.checkboxColumn}>
+                  <input
+                    type="checkbox"
+                    className={styles.checkbox}
+                    checked={todasVisiveisSelecionadas}
+                    onChange={alternarTodas}
+                    aria-label="Selecionar todas as peças visíveis"
+                  />
+                </th>
+                <th>Código Interno</th>
+                <th>Quantidade em Estoque</th>
+                <th>Localização</th>
+                <th>Preço Médio de Compra</th>
+                <th>Preço Médio de Venda</th>
+                <th>Marca</th>
+                <th>Data de Cadastro</th>
+                <th>Ano de Fabricação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pecasFiltradas.map((peca) => {
+                const selecionada = selecionadas.includes(peca.id);
+                const rotuloCodigos =
+                  peca.codigosAssociados === 1
+                    ? "1 Código associado vinculado"
+                    : `${peca.codigosAssociados} Códigos associados vinculados`;
+
+                return (
+                  <tr
+                    key={peca.id}
+                    className={selecionada ? styles.selectedRow : ""}
+                    onClick={() => abrirDetalhes(peca)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        abrirDetalhes(peca);
+                      }
+                    }}
+                    tabIndex="0"
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={styles.checkbox}
+                        checked={selecionada}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={() => alternarPeca(peca.id)}
+                        aria-label={`Selecionar peça ${peca.codigoInterno}`}
+                      />
+                    </td>
+                    <td>
+                      <strong>{peca.codigoInterno}</strong>
+                      <span className={styles.associatedCodes}>
+                        {rotuloCodigos}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={styles.stockBadge}>
+                        {peca.quantidade.toLocaleString("pt-BR")} unidades
+                      </span>
+                    </td>
+                    <td>{peca.localizacao}</td>
+                    <td>{peca.precoCompra}</td>
+                    <td>{peca.precoVenda}</td>
+                    <td className={styles.brand}>{peca.marca}</td>
+                    <td>{peca.dataCadastro}</td>
+                    <td>{peca.anoFabricacao}</td>
+                  </tr>
+                );
+              })}
+
+              {pecasFiltradas.length === 0 && (
+                <tr>
+                  <td className={styles.emptyState} colSpan="9">
+                    Nenhuma peça encontrada.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </section>
+      </main>
+
+      <DeleteModal
+        isOpen={modalExcluirAberto}
+        onClose={() => setModalExcluirAberto(false)}
+        onConfirm={excluirSelecionadas}
       />
     </div>
   );

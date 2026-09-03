@@ -46,7 +46,12 @@ function Button(props) {
   }
 
   return (
-    <button onClick={props.onClick} className={styleClass}>
+    <button
+      type={props.type || "button"}
+      onClick={props.onClick}
+      className={styleClass}
+      disabled={props.disabled}
+    >
       {icone && <span className={styles.icone}>{icone}</span>}
       {props.children}
     </button>

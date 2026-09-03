@@ -6,7 +6,10 @@ function ProgressoCadastro(props) {
   return (
     <div className={styles.container}>
       <div className={styles.caixaProgresso}>
-        <div className={styles.linhaFundo} />
+        <div
+          className={styles.linhaFundo}
+          style={{ background: props.lineColor || "#e2e8f0" }}
+        />
 
         {progresso.map((passo, index) => {
           const passoIndex = index + 1;

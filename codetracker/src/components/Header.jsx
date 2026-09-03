@@ -8,8 +8,8 @@ function Header() {
   const navItems = [
     { name: "dashboard", label: "Dashboard", path: "/dashboard" },
     { name: "pecas", label: "Peças", path: "/pecas" },
-    { name: "pedidos", label: "Pedidos", path: "/pedidos" },
     { name: "contatos", label: "Contatos", path: "/contatos" },
+    { name: "pedidos", label: "Pedidos", path: "/pedidos" },
     { name: "periodo", label: "Período", path: "/periodo" },
   ];
 
@@ -55,7 +55,7 @@ function Header() {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          <span className={styles.userName}>Usuário</span>
+          <span className={styles.userName}>Usuário Conectado</span>
         </div>
       </div>
     </header>

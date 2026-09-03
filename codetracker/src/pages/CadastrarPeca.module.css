@@ -1,0 +1,539 @@
+.header {
+  min-height: 44px;
+  padding-top: 4px;
+}
+
+.header > h1 {
+  top: 4px;
+  font-size: 18px;
+}
+
+.progressWrapper {
+  width: min(100%, 470px);
+  margin: 0 auto 4px;
+}
+
+.progressWrapper > div {
+  padding-top: 0;
+}
+
+.progressWrapper > div > div > div:first-child {
+  top: 11px;
+  right: 11px;
+  left: 11px;
+}
+
+.progressWrapper > div > div > div:not(:first-child) {
+  width: 23px;
+}
+
+.progressWrapper > div > div > div:not(:first-child) > div {
+  width: 23px;
+  height: 23px;
+  font-size: 11px;
+}
+
+.progressWrapper span {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.card {
+  width: calc(100% - 66px);
+  height: 227px;
+  margin-top: 1px;
+  padding: 7px 24px 42px;
+}
+
+.card h2 {
+  margin-bottom: 6px;
+  font-size: 18px;
+}
+
+.generalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  justify-content: center;
+  column-gap: 84px;
+}
+
+.generalGrid > div {
+  gap: 16px;
+}
+
+.generalGrid label,
+.generalGrid span {
+  font-size: 11px;
+}
+
+.generalGrid input,
+.generalGrid textarea {
+  height: 20px;
+  padding: 0 10px;
+  font-size: 7px;
+}
+
+.generalGrid textarea {
+  height: 41px;
+  padding-top: 7px;
+}
+
+.requiredField {
+  position: relative;
+}
+
+.requiredField::before {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  color: #dc2626;
+  content: "*";
+  font-size: 10px;
+}
+
+.cardAction {
+  bottom: 7px;
+}
+
+.cardAction > button,
+.footerActions > button,
+.addButton > button {
+  height: 25px;
+  padding: 0 11px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.footerActions {
+  width: calc(100% - 66px);
+  margin-top: 11px;
+  gap: 18px;
+}
+
+.listCard {
+  height: 227px;
+  padding-top: 5px;
+}
+
+.listCard h2 {
+  margin-bottom: 2px;
+}
+
+.associationContent,
+.similarityContent {
+  width: 334px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.contactType {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  margin: 0 0 6px;
+  border: 0;
+}
+
+.contactType legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contactType label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #475569;
+  font-size: 10px;
+}
+
+.contactType input {
+  appearance: none;
+  width: 7px;
+  height: 7px;
+  margin: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+}
+
+.contactType input:checked {
+  border-color: #ffffff;
+  background: #0056cb;
+  box-shadow: 0 0 0 1px #cbd5e1;
+}
+
+.searchField {
+  position: relative;
+  width: 100%;
+}
+
+.searchField svg {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: #64748b;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  transform: translateY(-50%);
+}
+
+.searchField input,
+.codeRow > input {
+  width: 100%;
+  height: 20px;
+  padding: 0 7px 0 19px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  font-size: 7px;
+  outline: none;
+}
+
+.searchField input:focus,
+.codeRow > input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.codeRow {
+  display: grid;
+  grid-template-columns: auto 123px auto;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 10px;
+}
+
+.codeRow > label {
+  color: #475569;
+  font-size: 10px;
+}
+
+.codeRow > input {
+  padding: 0 7px;
+}
+
+.unregisteredContact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 3px 0 10px;
+  color: #64748b;
+  font-size: 6px;
+  text-decoration: underline;
+}
+
+.unregisteredContact button {
+  padding: 1px 7px;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 2px;
+  font-size: 6px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.itemsList {
+  width: 100%;
+  height: 78px;
+  padding: 5px 13px;
+  overflow-y: auto;
+  background: #f1f5f9;
+  border-right: 4px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.codeItem,
+.partItem {
+  display: grid;
+  grid-template-columns: 28px 1fr 1.4fr;
+  align-items: center;
+  min-height: 17px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 2px;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.codeItem button,
+.partItem button {
+  padding: 0;
+  color: #0f172a;
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.similarityContent > label {
+  display: block;
+  margin-bottom: 3px;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.searchRow {
+  display: flex;
+  gap: 11px;
+  margin-bottom: 6px;
+}
+
+.searchRow .searchField {
+  flex: 1;
+}
+
+.partItem {
+  grid-template-columns: 28px 1fr;
+}
+
+@media (min-width: 900px) {
+  .header > h1 {
+    font-size: 22px;
+  }
+
+  .progressWrapper {
+    width: min(100%, 600px);
+    margin: 4px auto 12px;
+  }
+
+  .card,
+  .footerActions {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .card,
+  .listCard {
+    height: auto;
+    min-height: 318px;
+    margin-top: 0;
+    padding: 14px 34px 54px;
+  }
+
+  .card h2,
+  .listCard h2 {
+    margin-bottom: 18px;
+    font-size: 24px;
+  }
+
+  .generalGrid {
+    grid-template-columns: repeat(2, 230px);
+    column-gap: 100px;
+  }
+
+  .generalGrid > div {
+    gap: 13px;
+  }
+
+  .generalGrid label,
+  .generalGrid span {
+    font-size: 14px;
+  }
+
+  .generalGrid input,
+  .generalGrid textarea {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .generalGrid textarea {
+    height: 72px;
+    padding-top: 10px;
+  }
+
+  .associationContent,
+  .similarityContent {
+    width: 540px;
+  }
+
+  .contactType {
+    margin-bottom: 12px;
+  }
+
+  .contactType label,
+  .codeRow > label,
+  .similarityContent > label {
+    font-size: 14px;
+  }
+
+  .contactType input {
+    width: 11px;
+    height: 11px;
+  }
+
+  .searchField input,
+  .codeRow > input {
+    height: 34px;
+    font-size: 11px;
+  }
+
+  .searchField input {
+    padding-left: 34px;
+  }
+
+  .searchField svg {
+    left: 10px;
+    width: 17px;
+    height: 17px;
+  }
+
+  .codeRow {
+    grid-template-columns: auto 200px auto;
+    margin-top: 13px;
+  }
+
+  .unregisteredContact {
+    margin: 5px 0 14px;
+    font-size: 10px;
+  }
+
+  .unregisteredContact button {
+    font-size: 9px;
+  }
+
+  .itemsList {
+    height: 125px;
+    padding: 9px 16px;
+  }
+
+  .codeItem,
+  .partItem {
+    min-height: 28px;
+    font-size: 13px;
+  }
+
+  .codeItem {
+    grid-template-columns: 38px 1fr 1.4fr;
+  }
+
+  .partItem {
+    grid-template-columns: 38px 1fr;
+  }
+
+  .searchRow {
+    margin-bottom: 10px;
+  }
+
+  .cardAction {
+    bottom: 14px;
+  }
+
+  .cardAction > button,
+  .footerActions > button,
+  .addButton > button {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .footerActions {
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 620px) {
+  .header {
+    min-height: 88px;
+    align-items: flex-start;
+    padding: 16px 14px;
+  }
+
+  .header > h1 {
+    top: 52px;
+    width: 100%;
+    font-size: 21px;
+    text-align: center;
+  }
+
+  .progressWrapper {
+    width: 100%;
+    margin: 0 auto 8px;
+  }
+
+  .progressWrapper > div > div > div:first-child {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .progressWrapper > div > div > div:not(:first-child),
+  .progressWrapper > div > div > div:not(:first-child) > div {
+    width: 32px;
+  }
+
+  .progressWrapper > div > div > div:not(:first-child) > div {
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .progressWrapper span {
+    font-size: 10px;
+  }
+
+  .card,
+  .listCard,
+  .footerActions {
+    width: 100%;
+  }
+
+  .card,
+  .listCard {
+    height: auto;
+    min-height: 300px;
+    padding: 16px 18px 58px;
+  }
+
+  .generalGrid {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+
+  .generalGrid input,
+  .searchField input,
+  .codeRow > input {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .generalGrid textarea {
+    height: 80px;
+    font-size: 13px;
+  }
+
+  .associationContent,
+  .similarityContent {
+    width: 100%;
+  }
+
+  .codeRow {
+    grid-template-columns: 1fr;
+  }
+
+  .codeRow > label {
+    font-size: 13px;
+  }
+
+  .contactType label,
+  .similarityContent > label {
+    font-size: 13px;
+  }
+
+  .itemsList {
+    height: 140px;
+  }
+}

@@ -94,7 +94,7 @@
   }
 
   .headerLogo {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .headerNav {
@@ -102,11 +102,16 @@
   }
 
   .navItem {
-    font-size: 14px;
+    font-size: 10px;
   }
 
   .userName {
-    font-size: 14px;
+    font-size: 10px;
+  }
+
+  .userIcon {
+    width: 20px;
+    height: 20px;
   }
 }
 
@@ -118,7 +123,7 @@
   }
 
   .headerLogo {
-    font-size: 14px;
+    font-size: 12px;
     min-width: fit-content;
   }
 
@@ -129,17 +134,17 @@
   }
 
   .navItem {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .userName {
-    font-size: 13px;
-    display: none;
+    display: inline;
+    font-size: 9px;
   }
 
   .userIcon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 }
 
@@ -168,5 +173,9 @@
   .userIcon {
     width: 22px;
     height: 22px;
+  }
+
+  .userName {
+    display: none;
   }
 }

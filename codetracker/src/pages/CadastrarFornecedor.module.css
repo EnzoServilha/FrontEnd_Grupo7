@@ -1,0 +1,469 @@
+.header {
+  min-height: 44px;
+  padding-top: 4px;
+}
+
+.header > h1 {
+  top: 4px;
+  font-size: 18px;
+}
+
+.progressWrapper {
+  width: 248px;
+  margin-left: 70px;
+}
+
+.progressWrapper > div {
+  padding-top: 0;
+}
+
+.progressWrapper > div > div > div:first-child {
+  top: 11px;
+  right: 11px;
+  left: 11px;
+}
+
+.progressWrapper > div > div > div:not(:first-child) {
+  width: 23px;
+}
+
+.progressWrapper > div > div > div:not(:first-child) > div {
+  width: 23px;
+  height: 23px;
+  font-size: 11px;
+}
+
+.progressWrapper span {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.card {
+  width: calc(100% - 66px);
+  height: 225px;
+  margin-top: 2px;
+  padding-top: 7px;
+}
+
+.card h2 {
+  margin-bottom: 3px;
+  font-size: 18px;
+}
+
+.generalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 138px);
+  justify-content: center;
+  column-gap: 44px;
+  transform: translateY(-5px);
+}
+
+.generalGrid > div {
+  gap: 3px;
+}
+
+.generalGrid label,
+.tagField > label {
+  font-size: 11px;
+}
+
+.generalGrid input,
+.generalGrid textarea {
+  height: 20px;
+  padding: 0 10px;
+  font-size: 7px;
+}
+
+.generalGrid textarea {
+  height: 40px;
+  padding-top: 6px;
+}
+
+.requiredField {
+  position: relative;
+}
+
+.requiredField::before {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  color: #dc2626;
+  content: "*";
+  font-size: 10px;
+}
+
+.middleColumn {
+  padding-top: 21px;
+}
+
+.tagsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tagField {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tagField > label {
+  color: #475569;
+  font-weight: 700;
+}
+
+.tagInput {
+  position: relative;
+}
+
+.tagInput svg {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: #64748b;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  transform: translateY(-50%);
+}
+
+.tagInput input {
+  width: 100%;
+  height: 20px;
+  padding: 0 5px 0 18px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  font-size: 7px;
+  outline: none;
+}
+
+.tagInput input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.tagList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px 9px;
+}
+
+.tagChip {
+  height: 11px;
+  padding: 0 3px;
+  overflow: hidden;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 2px;
+  font-size: 6px;
+  line-height: 9px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tagChip:hover {
+  color: #b4232b;
+  border-color: #fca5a5;
+}
+
+.addressCard {
+  width: calc(100% - 56px);
+  height: 226px;
+  margin-top: -2px;
+  transform: translateX(1px);
+}
+
+.addressCard h2 {
+  margin-bottom: 5px;
+  transform: translateY(-5px);
+}
+
+.addressGrid {
+  grid-template-columns: repeat(2, 138px);
+  column-gap: 87px;
+}
+
+.addressGrid > div {
+  gap: 3px;
+}
+
+.addressGrid > div:last-child {
+  padding-top: 23px;
+}
+
+.addressGrid label {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.addressGrid input {
+  height: 20px;
+  padding: 0 10px;
+  font-size: 7px;
+}
+
+.cardAction > button,
+.footerActions > button {
+  height: 25px;
+  padding: 0 10px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.cardAction {
+  bottom: 6px;
+}
+
+.footerActions {
+  width: calc(100% - 58px);
+  margin-top: 11px;
+  gap: 18px;
+  transform: translateX(1px);
+}
+
+@media (min-width: 900px) {
+  .progressWrapper {
+    width: min(100%, 440px);
+    margin: 4px auto 12px;
+  }
+
+  .card,
+  .addressCard,
+  .footerActions {
+    width: 100%;
+    max-width: 800px;
+    transform: none;
+  }
+
+  .card,
+  .addressCard {
+    height: auto;
+    min-height: 300px;
+    margin-top: 0;
+    padding: 14px 34px 54px;
+  }
+
+  .card h2 {
+    margin-bottom: 14px;
+    font-size: 24px;
+  }
+
+  .generalGrid {
+    grid-template-columns: repeat(3, 190px);
+    column-gap: 50px;
+    transform: none;
+  }
+
+  .generalGrid > div {
+    gap: 9px;
+  }
+
+  .generalGrid label,
+  .tagField > label {
+    font-size: 14px;
+  }
+
+  .generalGrid input,
+  .tagInput input {
+    height: 32px;
+    padding-right: 12px;
+    padding-left: 12px;
+    font-size: 10px;
+  }
+
+  .generalGrid textarea {
+    height: 66px;
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+
+  .middleColumn {
+    padding-top: 29px;
+  }
+
+  .tagsColumn {
+    gap: 14px;
+  }
+
+  .tagField {
+    gap: 6px;
+  }
+
+  .tagInput input {
+    padding-left: 30px;
+  }
+
+  .tagInput svg {
+    left: 8px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tagList {
+    gap: 5px 10px;
+  }
+
+  .tagChip {
+    height: 20px;
+    padding: 0 6px;
+    font-size: 9px;
+    line-height: 18px;
+  }
+
+  .addressCard h2 {
+    margin-bottom: 14px;
+    transform: none;
+  }
+
+  .addressGrid {
+    grid-template-columns: repeat(2, 230px);
+    column-gap: 100px;
+  }
+
+  .addressGrid > div {
+    gap: 9px;
+  }
+
+  .addressGrid > div:last-child {
+    padding-top: 38px;
+  }
+
+  .addressGrid label {
+    font-size: 14px;
+  }
+
+  .addressGrid input {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .cardAction {
+    bottom: 14px;
+  }
+
+  .cardAction > button,
+  .footerActions > button {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .footerActions {
+    margin-top: 14px;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 620px) {
+  .header {
+    min-height: 88px;
+    align-items: flex-start;
+    padding: 16px 14px;
+  }
+
+  .header > h1 {
+    top: 52px;
+    width: 100%;
+    font-size: 21px;
+    text-align: center;
+  }
+
+  .progressWrapper {
+    width: calc(100% - 40px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .progressWrapper > div > div > div:first-child {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .progressWrapper > div > div > div:not(:first-child),
+  .progressWrapper > div > div > div:not(:first-child) > div {
+    width: 32px;
+  }
+
+  .progressWrapper > div > div > div:not(:first-child) > div {
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .card,
+  .addressCard {
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .cardAction > button,
+  .footerActions > button {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .generalGrid {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+    transform: none;
+  }
+
+  .addressGrid {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+
+  .addressGrid > div:last-child {
+    padding-top: 0;
+  }
+
+  .addressGrid label {
+    font-size: 13px;
+  }
+
+  .addressGrid input {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .middleColumn {
+    padding-top: 0;
+  }
+
+  .generalGrid input,
+  .tagInput input {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .generalGrid textarea {
+    height: 80px;
+    font-size: 13px;
+  }
+
+  .tagInput input {
+    padding-left: 30px;
+  }
+
+  .tagInput svg {
+    left: 8px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tagChip {
+    height: 28px;
+    font-size: 12px;
+    line-height: 26px;
+  }
+}

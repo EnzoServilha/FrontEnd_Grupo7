@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Filtro from "../components/Filtro";
@@ -136,10 +136,19 @@ const contatos = {
 
 function Contatos() {
   const navigate = useNavigate();
-  const [tipoAtivo, setTipoAtivo] = useState("fornecedores");
+  const location = useLocation();
+  const [tipoAtivo, setTipoAtivo] = useState(
+    location.state?.tipoAtivo || "fornecedores",
+  );
   const isCliente = tipoAtivo === "clientes";
   const rotaDetalhes =
     isCliente ? "/verMaisCliente" : "/verMaisFornecedor";
+  const novoContato = isCliente
+    ? location.state?.novoCliente
+    : location.state?.novoFornecedor;
+  const contatosAtivos = novoContato
+    ? [novoContato, ...contatos[tipoAtivo]]
+    : contatos[tipoAtivo];
   const columns = [
     { name: "Empresa", ordena: false, tipo: "string" },
     { name: "Contato", ordena: true, tipo: "string" },
@@ -153,7 +162,7 @@ function Contatos() {
         ]
       : []),
   ];
-  const rows = contatos[tipoAtivo].map((contato) => [
+  const rows = contatosAtivos.map((contato) => [
     <button
       type="button"
       className={styles.tableLink}
@@ -217,7 +226,12 @@ function Contatos() {
           </div>
 
           <div className={styles.actionButtons}>
-            <Button icone="adicionar">
+            <Button
+              icone="adicionar"
+              onClick={() =>
+                navigate(isCliente ? "/cadastrarCliente" : "/cadastrarFornecedor")
+              }
+            >
               adicionar
             </Button>
             <Button icone="editar" estilo="editar">

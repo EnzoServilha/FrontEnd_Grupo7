@@ -1,0 +1,395 @@
+.page {
+  min-height: 100vh;
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 14px 20px 4px;
+}
+
+.header > h1 {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+.content {
+  padding: 0 20px 18px;
+}
+
+.progressWrapper {
+  width: 305px;
+  margin: 0 0 4px 84px;
+}
+
+.progressWrapper > div {
+  padding: 4px 0 0;
+}
+
+.progressWrapper span {
+  margin-top: 0;
+}
+
+.progressWrapper > div > div > div:not(:first-child) {
+  width: 32px;
+}
+
+.form {
+  width: 100%;
+}
+
+.card {
+  position: relative;
+  width: calc(100% - 66px);
+  height: 274px;
+  margin: 0 auto;
+  padding: 8px 24px 42px;
+  background: #ffffff;
+  border: 1px solid #d8e1ec;
+  border-radius: 6px;
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 21px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.generalGrid,
+.addressGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 168px);
+  justify-content: center;
+  column-gap: 100px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.column > div {
+  gap: 5px;
+}
+
+.column label,
+.textareaField > span {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.column input,
+.textareaField textarea {
+  width: 100%;
+  max-width: none;
+  height: 23px;
+  padding: 0 12px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  font-size: 8px;
+}
+
+.column input:focus,
+.textareaField textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.customerType {
+  display: flex;
+  gap: 4px;
+  padding: 0;
+  margin: 0 0 1px;
+  border: 0;
+}
+
+.customerType legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.customerType label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.customerType input {
+  appearance: none;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+}
+
+.customerType input:checked {
+  border-color: #ffffff;
+  background: #0056cb;
+  box-shadow: 0 0 0 1px #cbd5e1;
+}
+
+.rightColumn {
+  padding-top: 1px;
+}
+
+.textareaField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.textareaField textarea {
+  height: 49px;
+  padding: 7px 12px;
+  resize: none;
+  font-family: inherit;
+}
+
+.addressGrid {
+  column-gap: 107px;
+}
+
+.addressGrid .column {
+  gap: 3px;
+}
+
+.addressCard {
+  margin-top: -6px;
+  padding-top: 0;
+}
+
+.addressCard h2 {
+  margin-bottom: 11px;
+}
+
+.addressRightColumn {
+  padding-top: 29px;
+}
+
+.cardActionsRight,
+.cardActionsLeft {
+  position: absolute;
+  bottom: 9px;
+}
+
+.cardActionsRight {
+  right: 12px;
+}
+
+.cardActionsLeft {
+  left: 15px;
+}
+
+.cardActionsRight > button,
+.cardActionsLeft > button,
+.footerActions > button {
+  height: 30px;
+  padding: 0 13px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 22px;
+  width: calc(100% - 66px);
+  margin: 13px auto 0;
+}
+
+.footerActions > button:disabled {
+  color: #cbd5e1;
+  background: #e7edf5;
+  border-color: #d5deea;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (min-width: 900px) {
+  .progressWrapper {
+    width: min(100%, 440px);
+    margin: 4px auto 12px;
+  }
+
+  .card,
+  .footerActions {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .card {
+    height: auto;
+    min-height: 318px;
+    padding: 14px 34px 54px;
+  }
+
+  .card h2 {
+    margin-bottom: 18px;
+    font-size: 24px;
+  }
+
+  .generalGrid,
+  .addressGrid {
+    grid-template-columns: repeat(2, 230px);
+    column-gap: 100px;
+  }
+
+  .column {
+    gap: 13px;
+  }
+
+  .column > div,
+  .textareaField {
+    gap: 6px;
+  }
+
+  .column label,
+  .textareaField > span,
+  .customerType label {
+    font-size: 14px;
+  }
+
+  .column input,
+  .textareaField textarea {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .textareaField textarea {
+    height: 72px;
+    padding-top: 10px;
+  }
+
+  .customerType input {
+    width: 11px;
+    height: 11px;
+    padding: 0;
+  }
+
+  .addressRightColumn {
+    padding-top: 38px;
+  }
+
+  .addressCard {
+    min-height: 350px;
+    margin-top: 0;
+    padding-top: 14px;
+  }
+
+  .addressCard h2 {
+    margin-bottom: 18px;
+  }
+
+  .cardActionsRight,
+  .cardActionsLeft {
+    bottom: 14px;
+  }
+
+  .footerActions {
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 620px) {
+  .header {
+    min-height: 88px;
+    align-items: flex-start;
+    padding: 16px 14px;
+  }
+
+  .header > h1 {
+    top: 52px;
+    width: 100%;
+    font-size: 21px;
+    text-align: center;
+  }
+
+  .content {
+    padding: 0 14px 18px;
+  }
+
+  .progressWrapper {
+    width: calc(100% - 40px);
+    margin: 0 auto 8px;
+  }
+
+  .card,
+  .footerActions {
+    width: 100%;
+  }
+
+  .card {
+    height: auto;
+    min-height: 274px;
+    padding: 16px 18px 58px;
+  }
+
+  .addressCard {
+    margin-top: 0;
+  }
+
+  .addressCard h2 {
+    margin-bottom: 16px;
+  }
+
+  .generalGrid,
+  .addressGrid {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+
+  .addressRightColumn {
+    padding-top: 0;
+  }
+
+  .column input {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .customerType input {
+    width: 14px;
+    height: 14px;
+  }
+
+  .textareaField textarea {
+    height: 80px;
+    font-size: 13px;
+  }
+
+  .cardActionsRight > button,
+  .cardActionsLeft > button,
+  .footerActions > button {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .footerActions {
+    gap: 10px;
+  }
+}

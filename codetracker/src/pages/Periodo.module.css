@@ -1,40 +1,12 @@
 .page {
   min-height: 100vh;
   color: #0f172a;
-  background: #edf3f9;
+  background: #f1f5f9;
 }
 
 .content {
   width: 100%;
-  padding: 16px 29px 32px;
-}
-
-.tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 11px;
-}
-
-.tabs button {
-  min-width: 111px;
-  padding: 7px 14px;
-  color: #475569;
-  background: #dfe7f1;
-  border: 1px solid transparent;
-  border-radius: 5px 5px 0 0;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.tabs .activeTab {
-  color: #0f172a;
-  background: #ffffff;
-  border-color: #cbd5e1;
-  border-bottom-color: #ffffff;
-}
-
-.tabs button[aria-disabled="true"] {
-  cursor: default;
+  padding: 28px 32px 32px;
 }
 
 .toolbar {
@@ -44,28 +16,28 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 9px 10px;
-  margin-bottom: 12px;
+  gap: 20px;
+  padding: 10px;
+  margin-bottom: 18px;
   background: #ffffff;
-  border: 1px solid #d6deea;
-  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
 .searchActions,
 .actionButtons {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
 }
 
 .searchActions {
   min-width: 0;
-  flex: 1 1 430px;
+  flex: 1 1 500px;
 }
 
 .searchWrapper {
-  width: 360px;
+  width: 320px;
   max-width: 100%;
 }
 
@@ -81,12 +53,13 @@
 .optionsButton {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   color: #334155;
   background: #f8fafc;
-  border: 1px solid #b9c7d8;
-  border-radius: 5px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 7px;
+  transition: background 0.2s ease;
 }
 
 .optionsButton:hover {
@@ -94,24 +67,12 @@
 }
 
 .optionsButton svg {
-  width: 18px;
+  width: 20px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
-}
-
-.searchActions > .menuContainer:last-child > button {
-  width: 38px;
-  height: 38px;
-  border-width: 1px;
-  border-radius: 5px;
-}
-
-.searchActions > .menuContainer:last-child svg {
-  width: 18px;
-  height: 18px;
 }
 
 .popover {
@@ -120,11 +81,11 @@
   left: 0;
   z-index: 30;
   display: grid;
-  min-width: 185px;
+  min-width: 180px;
   padding: 6px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 7px;
+  border-radius: 8px;
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
 }
 
@@ -132,7 +93,7 @@
   padding: 8px 10px;
   color: #334155;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 13px;
   text-align: left;
 }
 
@@ -152,29 +113,17 @@
   flex-shrink: 0;
 }
 
-.actionButtons > button {
-  height: 38px;
-  padding: 0 17px;
-  border-radius: 5px;
-  font-size: 12px;
-}
-
-.actionButtons svg {
-  width: 17px;
-  height: 17px;
-}
-
 .actionButtons > button:disabled {
-  color: #8b96a7;
-  background: #edf1f6;
-  border-color: #d7dee8;
+  color: #c78f8f;
+  background: #f8eeee;
+  border-color: #ead6d6;
   box-shadow: none;
   cursor: not-allowed;
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .actionButtons > button:disabled svg {
-  fill: currentColor;
+  fill: #c78f8f;
 }
 
 .tableSection {
@@ -182,88 +131,65 @@
   overflow-x: auto;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 5px;
+  border-radius: 7px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .tableSection table {
   width: 100%;
-  min-width: 980px;
   border-collapse: collapse;
   color: #0f172a;
-  font-size: 11px;
+  font-size: 13px;
   table-layout: fixed;
 }
 
 .tableSection th,
 .tableSection td {
-  padding: 11px 10px;
-  border-bottom: 1px solid #d9e1ec;
+  height: 44px;
+  padding: 9px 14px;
+  border-bottom: 1px solid #dbe3ed;
   text-align: left;
   vertical-align: middle;
 }
 
 .tableSection th {
-  height: 43px;
-  background: #f8fafc;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.05;
-}
-
-.tableSection td {
-  height: 60px;
+  height: 38px;
   background: #ffffff;
-  line-height: 1.2;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .tableSection tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.tableSection tbody tr {
-  cursor: pointer;
-}
-
 .tableSection tbody tr:hover td,
-.tableSection tbody tr:focus td,
 .selectedRow td {
-  background: #f4f8fd;
-}
-
-.tableSection tbody tr:focus {
-  outline: 2px solid #60a5fa;
-  outline-offset: -2px;
+  background: #f8fbff;
 }
 
 .checkboxColumn {
-  width: 43px;
+  width: 42px;
 }
 
 .tableSection th:nth-child(2) {
-  width: 15%;
-}
-
-.tableSection th:nth-child(3) {
-  width: 13%;
-}
-
-.tableSection th:nth-child(4) {
-  width: 13%;
-}
-
-.tableSection th:nth-child(5),
-.tableSection th:nth-child(6) {
   width: 12%;
 }
 
-.tableSection th:nth-child(7) {
-  width: 11%;
+.tableSection th:nth-child(3) {
+  width: 18%;
 }
 
-.tableSection th:nth-child(8),
-.tableSection th:nth-child(9) {
-  width: 10%;
+.tableSection th:nth-child(4) {
+  width: 18%;
+}
+
+.tableSection th:nth-child(5) {
+  width: 38%;
+}
+
+.tableSection th:nth-child(6) {
+  width: 92px;
 }
 
 .checkbox {
@@ -272,7 +198,7 @@
   height: 14px;
   margin: 0;
   background: #ffffff;
-  border: 1px solid #94a3b8;
+  border: 1.5px solid #94a3b8;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -286,27 +212,38 @@
   border-color: #0056cb;
 }
 
-.associatedCodes {
+.periodNumber {
+  font-weight: 700;
+}
+
+.annotationBar {
   display: block;
-  margin-top: 3px;
-  color: #0056cb;
-  font-size: 8px;
-  font-weight: 700;
-}
-
-.stockBadge {
-  display: inline-block;
-  padding: 5px 8px;
-  color: #17733b;
-  background: #dcf7e7;
-  border: 1px solid #b7ebcb;
+  width: 100%;
+  height: 25px;
+  background: #e1e7f0;
   border-radius: 3px;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
-.brand {
-  font-weight: 700;
+.consultColumn {
+  text-align: center !important;
+}
+
+.consultButton {
+  min-width: 76px;
+  height: 28px;
+  padding: 0 14px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.consultButton:hover {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #93c5fd;
 }
 
 .emptyState {
@@ -315,19 +252,100 @@
   text-align: center !important;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.modalCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 470px);
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+}
+
+.modalCard h2 {
+  margin: 0 0 4px;
+  color: #1e293b;
+  font-size: 23px;
+  text-align: center;
+}
+
+.modalCard label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modalCard input,
+.modalCard textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+}
+
+.modalCard input:focus,
+.modalCard textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.modalCard textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.detailsCard dl {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.detailsCard dl > div {
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 7px;
+}
+
+.detailsCard dt {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.detailsCard dd {
+  margin: 3px 0 0;
+  color: #1e293b;
+  font-size: 15px;
+}
+
 @media (max-width: 1100px) {
   .content {
-    padding: 13px 14px 28px;
-  }
-
-  .tabs {
-    margin-bottom: 10px;
-  }
-
-  .tabs button {
-    min-width: 100px;
-    padding: 6px 12px;
-    font-size: 8px;
+    padding: 10px 18px 24px;
   }
 
   .toolbar {
@@ -338,43 +356,40 @@
 
   .searchActions,
   .actionButtons {
-    gap: 6px;
-  }
-
-  .searchActions {
-    flex-basis: 320px;
+    gap: 5px;
   }
 
   .searchWrapper {
-    width: 200px;
+    width: 205px;
   }
 
   .searchWrapper input {
-    height: 26px;
-    padding: 0 9px;
+    height: 24px;
+    padding: 0 8px;
     border-width: 1px;
     border-radius: 3px;
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .optionsButton,
   .searchActions > .menuContainer:last-child > button {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 24px;
+    border-width: 1px;
     border-radius: 3px;
   }
 
   .optionsButton svg,
   .searchActions > .menuContainer:last-child svg {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
   }
 
   .actionButtons > button {
-    height: 27px;
+    height: 26px;
     gap: 4px;
-    padding: 0 10px;
-    border-radius: 3px;
+    padding: 0 11px;
+    border-radius: 4px;
     font-size: 8px;
   }
 
@@ -384,44 +399,48 @@
   }
 
   .tableSection table {
-    min-width: 0;
     font-size: 7px;
   }
 
   .tableSection th,
   .tableSection td {
-    padding: 7px 8px;
+    height: 33px;
+    padding: 5px 8px;
   }
 
   .tableSection th {
-    height: 35px;
+    height: 25px;
     font-size: 7px;
   }
 
-  .tableSection td {
-    height: 44px;
-  }
-
   .checkboxColumn {
-    width: 31px;
+    width: 20px;
   }
 
   .checkbox {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
     border-radius: 2px;
   }
 
-  .associatedCodes {
+  .annotationBar {
+    height: 17px;
+  }
+
+  .tableSection th:nth-child(6) {
+    width: 67px;
+  }
+
+  .consultButton {
+    min-width: 52px;
+    height: 16px;
+    padding: 0 8px;
     font-size: 6px;
   }
 
-  .stockBadge {
-    padding: 4px 6px;
-  }
-
   .popover {
-    min-width: 140px;
+    min-width: 130px;
   }
 
   .popover button {
@@ -430,21 +449,17 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 620px) {
   .content {
-    padding: 14px 12px 24px;
+    padding: 16px 12px 24px;
   }
 
-  .tabs button {
-    min-width: 0;
-    flex: 1;
-    padding: 9px 10px;
-    font-size: 11px;
+  .toolbar {
+    flex-wrap: wrap;
   }
 
   .searchActions {
     width: 100%;
-    flex-basis: 100%;
   }
 
   .searchWrapper {
@@ -468,34 +483,30 @@
   }
 
   .actionButtons {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
     margin-left: 0;
+    justify-content: flex-end;
   }
 
   .actionButtons > button {
-    min-width: 0;
     height: 40px;
-    padding: 0 7px;
-    font-size: 10px;
-  }
-
-  .actionButtons span {
-    display: none;
+    padding: 0 14px;
+    font-size: 12px;
   }
 
   .tableSection table {
-    min-width: 880px;
-    font-size: 10px;
+    min-width: 680px;
+    font-size: 11px;
+  }
+
+  .tableSection th,
+  .tableSection td {
+    height: 42px;
+    padding: 8px 10px;
   }
 
   .tableSection th {
-    font-size: 9px;
-  }
-
-  .tableSection td {
-    height: 52px;
+    font-size: 10px;
   }
 
   .checkbox {
@@ -503,7 +514,22 @@
     height: 13px;
   }
 
-  .associatedCodes {
-    font-size: 8px;
+  .annotationBar {
+    height: 22px;
+  }
+
+  .consultButton {
+    min-width: 68px;
+    height: 27px;
+    font-size: 10px;
+  }
+
+  .modalCard {
+    padding: 22px 18px;
+  }
+
+  .modalActions > button {
+    min-width: 0;
+    flex: 1;
   }
 }
