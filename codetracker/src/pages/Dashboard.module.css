@@ -1,10 +1,8 @@
 /* Dashboard.module.css */
-
 .dashboardWrapper {
   padding: 24px;
-  background-color: #ffffff;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f7fb;
+  font-family: sans-serif;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -16,12 +14,14 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+
 /* Layout dos Três Cards */
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  flex-shrink: 0; /* Impede os cards de esmagarem se a tela for muito baixa */
+  flex-shrink: 0;
+  /* Impede os cards de esmagarem se a tela for muito baixa */
 }
 
 /* Base Comum dos Cards */
@@ -40,9 +40,11 @@
 .blueBorder {
   border-left: 6px solid #0052cc;
 }
+
 .greenBorder {
   border-left: 6px solid #10b981;
 }
+
 .orangeBorder {
   border-left: 6px solid #ff9f1c;
 }
@@ -61,7 +63,8 @@
 }
 
 .cardValue {
-  font-size: 28px; /* Leve redução para previnir quebras */
+  font-size: 28px;
+  /* Leve redução para previnir quebras */
   font-weight: 700;
   color: #1e293b;
   margin: 0;
@@ -87,7 +90,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Correção crucial para o flexbox permitir encolhimento de filhos */
+  min-height: 0;
+  /* Correção crucial para o flexbox permitir encolhimento de filhos */
 }
 
 .chartSectionTitle {
@@ -114,21 +118,25 @@
     padding: 16px;
     gap: 16px;
   }
+
   .cardsGrid {
     gap: 16px;
   }
+
   .cardValue {
     font-size: 24px;
   }
 }
 
 @media (max-width: 768px) {
+
   /* Se a tela for muito pequena (mobile), a rolagem passa a ser necessária. 
      Caso queira travar mesmo no mobile, remova este bloco de media query vertical */
   .dashboardWrapper {
     height: auto;
     overflow-y: auto;
   }
+
   .cardsGrid {
     grid-template-columns: 1fr;
     gap: 12px;

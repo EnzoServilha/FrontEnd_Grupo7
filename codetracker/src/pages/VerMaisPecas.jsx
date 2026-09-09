@@ -8,6 +8,8 @@ import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
 import Select from "../components/Select";
+import { useNavigate } from "react-router-dom";
+
 
 function VerMaisPecas() {
   // Configuração das Colunas e Linhas para a Tabela de Códigos Associados
@@ -15,6 +17,7 @@ function VerMaisPecas() {
     { name: "Código item", ordena: true, tipo: "string" },
     { name: "Cliente/Fornecedor", ordena: true, tipo: "string" },
   ];
+  const navigate = useNavigate()
 
   const rowsCodigos = [
     ["Código item", "Cliente/Fornecedor"],
@@ -153,16 +156,20 @@ function VerMaisPecas() {
         {/* Cabeçalho superior */}
         <div className={styles.headerPeca}>
           <div className={styles.titleGroup}>
-            <svg
-              className={styles.backIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              height="28px"
-              viewBox="0 -960 960 960"
-              width="28px"
-              fill="#0f172a"
+            <button
+              onClick={() => navigate("/pecas")}
             >
-              <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
-            </svg>
+              <svg
+                className={styles.backIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                height="28px"
+                viewBox="0 -960 960 960"
+                width="28px"
+                fill="#0f172a"
+              >
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+              </svg>
+            </button>
             <h1>Detalhes da Peça</h1>
           </div>
 

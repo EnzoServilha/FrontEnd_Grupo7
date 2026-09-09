@@ -1,22 +1,26 @@
 .page {
   min-height: 100vh;
   color: #0f172a;
-  background: #f1f5f9;
+  background: #f4f7fb;
+  font-family: sans-serif;
 }
 
 .content {
   width: 100%;
-  padding: 28px 32px 32px;
+  padding: 24px 32px 32px;
+}
+
+.tabsSpacer {
+  height: 60px;
 }
 
 .toolbar {
   position: relative;
-  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   padding: 10px;
   margin-bottom: 18px;
   background: #ffffff;
@@ -33,7 +37,7 @@
 
 .searchActions {
   min-width: 0;
-  flex: 1 1 500px;
+  flex: 1 1 390px;
 }
 
 .searchWrapper {
@@ -41,7 +45,7 @@
   max-width: 100%;
 }
 
-.searchWrapper > div {
+.searchWrapper>div {
   padding: 0;
 }
 
@@ -55,19 +59,20 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  color: #334155;
-  background: #f8fafc;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 7px;
-  transition: background 0.2s ease;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  transition: all 0.2s ease;
 }
 
 .optionsButton:hover {
   background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 .optionsButton svg {
-  width: 20px;
+  width: 22px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -113,7 +118,7 @@
   flex-shrink: 0;
 }
 
-.actionButtons > button:disabled {
+.actionButtons>button:disabled {
   color: #c78f8f;
   background: #f8eeee;
   border-color: #ead6d6;
@@ -122,94 +127,15 @@
   opacity: 0.7;
 }
 
-.actionButtons > button:disabled svg {
+.actionButtons>button:disabled svg {
   fill: #c78f8f;
 }
 
 .tableSection {
-  width: 100%;
-  overflow-x: auto;
+  min-width: 0;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 7px;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.tableSection table {
-  width: 100%;
-  border-collapse: collapse;
-  color: #0f172a;
-  font-size: 13px;
-  table-layout: fixed;
-}
-
-.tableSection th,
-.tableSection td {
-  height: 44px;
-  padding: 9px 14px;
-  border-bottom: 1px solid #dbe3ed;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.tableSection th {
-  height: 38px;
-  background: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.tableSection tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.tableSection tbody tr:hover td,
-.selectedRow td {
-  background: #f8fbff;
-}
-
-.checkboxColumn {
-  width: 42px;
-}
-
-.tableSection th:nth-child(2) {
-  width: 12%;
-}
-
-.tableSection th:nth-child(3) {
-  width: 18%;
-}
-
-.tableSection th:nth-child(4) {
-  width: 18%;
-}
-
-.tableSection th:nth-child(5) {
-  width: 38%;
-}
-
-.tableSection th:nth-child(6) {
-  width: 92px;
-}
-
-.checkbox {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  margin: 0;
-  background: #ffffff;
-  border: 1.5px solid #94a3b8;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.checkbox:checked {
-  background-color: #0056cb;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 13px;
-  border-color: #0056cb;
 }
 
 .periodNumber {
@@ -244,12 +170,6 @@
   color: #1d4ed8;
   background: #eff6ff;
   border-color: #93c5fd;
-}
-
-.emptyState {
-  height: 100px !important;
-  color: #64748b;
-  text-align: center !important;
 }
 
 .modalOverlay {
@@ -325,7 +245,7 @@
   margin: 0;
 }
 
-.detailsCard dl > div {
+.detailsCard dl>div {
   padding: 12px;
   background: #f8fafc;
   border-radius: 7px;
@@ -345,113 +265,76 @@
 
 @media (max-width: 1100px) {
   .content {
-    padding: 10px 18px 24px;
+    padding: 14px 16px 24px;
+  }
+
+  .tabsSpacer {
+    height: 50px;
   }
 
   .toolbar {
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 8px;
     margin-bottom: 12px;
   }
 
   .searchActions,
   .actionButtons {
-    gap: 5px;
+    gap: 6px;
   }
 
   .searchWrapper {
-    width: 205px;
+    width: auto;
+    min-width: 0;
+    flex: 1;
   }
 
   .searchWrapper input {
-    height: 24px;
-    padding: 0 8px;
-    border-width: 1px;
-    border-radius: 3px;
-    font-size: 7px;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
   }
 
-  .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
-    width: 22px;
-    height: 24px;
-    border-width: 1px;
-    border-radius: 3px;
+  .optionsButton {
+    width: 40px;
+    height: 40px;
+    border-width: 2px;
+    border-radius: 8px;
   }
 
-  .optionsButton svg,
-  .searchActions > .menuContainer:last-child svg {
-    width: 12px;
-    height: 12px;
+  .optionsButton svg {
+    width: 18px;
+    height: 18px;
   }
 
-  .actionButtons > button {
-    height: 26px;
+  .actionButtons>button {
+    height: 40px;
     gap: 4px;
-    padding: 0 11px;
-    border-radius: 4px;
-    font-size: 8px;
+    padding: 0 12px;
+    border-radius: 5px;
+    font-size: 12px;
   }
 
   .actionButtons svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .tableSection table {
-    font-size: 7px;
-  }
-
-  .tableSection th,
-  .tableSection td {
-    height: 33px;
-    padding: 5px 8px;
-  }
-
-  .tableSection th {
-    height: 25px;
-    font-size: 7px;
-  }
-
-  .checkboxColumn {
-    width: 20px;
-  }
-
-  .checkbox {
-    width: 8px;
-    height: 8px;
-    border-width: 1px;
-    border-radius: 2px;
-  }
-
-  .annotationBar {
-    height: 17px;
-  }
-
-  .tableSection th:nth-child(6) {
-    width: 67px;
+    width: 16px;
+    height: 16px;
   }
 
   .consultButton {
-    min-width: 52px;
-    height: 16px;
-    padding: 0 8px;
-    font-size: 6px;
-  }
-
-  .popover {
-    min-width: 130px;
-  }
-
-  .popover button {
-    padding: 6px 8px;
-    font-size: 9px;
+    min-width: 64px;
+    height: 26px;
+    padding: 0 10px;
+    font-size: 10px;
   }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 760px) {
   .content {
-    padding: 16px 12px 24px;
+    padding: 14px;
+  }
+
+  .tabsSpacer {
+    height: 48px;
   }
 
   .toolbar {
@@ -459,27 +342,24 @@
   }
 
   .searchActions {
-    width: 100%;
+    flex-basis: 100%;
   }
 
   .searchWrapper {
+    width: auto;
     min-width: 0;
     flex: 1;
   }
 
-  .searchWrapper input,
-  .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
-    height: 40px;
-  }
-
   .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
     font-size: 12px;
   }
 
-  .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .optionsButton {
     width: 40px;
+    height: 40px;
   }
 
   .actionButtons {
@@ -488,39 +368,22 @@
     justify-content: flex-end;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
+    min-width: 0;
     height: 40px;
-    padding: 0 14px;
-    font-size: 12px;
-  }
-
-  .tableSection table {
-    min-width: 680px;
+    flex: 1;
+    padding: 0 8px;
     font-size: 11px;
   }
 
-  .tableSection th,
-  .tableSection td {
-    height: 42px;
-    padding: 8px 10px;
-  }
-
-  .tableSection th {
-    font-size: 10px;
-  }
-
-  .checkbox {
-    width: 13px;
-    height: 13px;
-  }
-
-  .annotationBar {
-    height: 22px;
+  .actionButtons span {
+    display: none;
   }
 
   .consultButton {
-    min-width: 68px;
-    height: 27px;
+    min-width: 60px;
+    height: 24px;
+    padding: 0 8px;
     font-size: 10px;
   }
 
@@ -528,8 +391,33 @@
     padding: 22px 18px;
   }
 
-  .modalActions > button {
+  .modalActions>button {
     min-width: 0;
     flex: 1;
   }
+}
+
+.actionButtons>button {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actionButtons svg {
+  width: 18px;
+  height: 18px;
+}
+
+.actionButtons>button:disabled {
+  color: #8b96a7;
+  background: #edf1f6;
+  border-color: #d7dee8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.actionButtons>button:disabled svg {
+  fill: currentColor;
 }

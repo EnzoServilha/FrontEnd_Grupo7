@@ -88,11 +88,6 @@ function Login() {
               posicaoLabel="cima"
             />
           </div>
-          <div>
-            <a href="/cadastro" className={styles.link}>
-              Não tem uma conta? Cadastre-se
-            </a>
-          </div>
 
           <div className={styles.buttonContainer}>
             <Button onClick={irParaDash}>Entrar</Button>

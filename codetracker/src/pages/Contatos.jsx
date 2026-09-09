@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Button from "../components/Button";
+import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Contatos.module.css";
 
-const contatos = {
+const contatosIniciais = {
   fornecedores: [
     {
       id: 1,
@@ -134,6 +135,28 @@ const contatos = {
   ],
 };
 
+const camposBuscaFornecedores = [
+  ["todos", "Todos os campos"],
+  ["empresa", "Empresa"],
+  ["contato", "Contato"],
+  ["telefone", "Telefone"],
+  ["email", "E-mail"],
+  ["localizacao", "Localização"],
+  ["categorias", "Categorias"],
+  ["fabricantes", "Fabricantes"],
+];
+
+const camposBuscaClientes = [
+  ["todos", "Todos os campos"],
+  ["empresa", "Empresa"],
+  ["contato", "Contato"],
+  ["telefone", "Telefone"],
+  ["email", "E-mail"],
+  ["localizacao", "Localização"],
+  ["categorias", "Categorias"],
+  ["fabricantes", "Fabricantes"],
+];
+
 function Contatos() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -141,14 +164,68 @@ function Contatos() {
     location.state?.tipoAtivo || "fornecedores",
   );
   const isCliente = tipoAtivo === "clientes";
-  const rotaDetalhes =
-    isCliente ? "/verMaisCliente" : "/verMaisFornecedor";
+  const rotaDetalhes = isCliente ? "/verMaisCliente" : "/verMaisFornecedor";
   const novoContato = isCliente
     ? location.state?.novoCliente
     : location.state?.novoFornecedor;
-  const contatosAtivos = novoContato
-    ? [novoContato, ...contatos[tipoAtivo]]
-    : contatos[tipoAtivo];
+
+  const [contatosPorTipo, setContatosPorTipo] = useState(contatosIniciais);
+
+  const contatosAtivos = useMemo(
+    () =>
+      novoContato
+        ? [novoContato, ...contatosPorTipo[tipoAtivo]]
+        : contatosPorTipo[tipoAtivo],
+    [novoContato, contatosPorTipo, tipoAtivo],
+  );
+
+  const [busca, setBusca] = useState("");
+  const [campoBusca, setCampoBusca] = useState("todos");
+  const [selecionados, setSelecionados] = useState([]);
+  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+
+  const camposBuscaAtual = isCliente
+    ? camposBuscaClientes
+    : camposBuscaFornecedores;
+
+  const contatosFiltrados = useMemo(() => {
+    const termo = busca.trim().toLocaleLowerCase("pt-BR");
+
+    return contatosAtivos.filter((contato) => {
+      if (!termo) return true;
+
+      const valores =
+        campoBusca === "todos"
+          ? Object.values(contato)
+          : [contato[campoBusca]];
+
+      return valores.some((valor) =>
+        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
+      );
+    });
+  }, [busca, campoBusca, contatosAtivos]);
+
+  const abrirDetalhes = (contato) => {
+    navigate(rotaDetalhes, { state: { contato } });
+  };
+
+  const excluirSelecionados = () => {
+    setContatosPorTipo((dadosAtuais) => ({
+      ...dadosAtuais,
+      [tipoAtivo]: dadosAtuais[tipoAtivo].filter(
+        (contato) => !selecionados.includes(contato.id),
+      ),
+    }));
+    setSelecionados([]);
+    setModalExcluirAberto(false);
+  };
+
+  const editarSelecionado = () => {
+    const contato = contatosAtivos.find((item) => item.id === selecionados[0]);
+    if (contato) abrirDetalhes(contato);
+  };
+
   const columns = [
     { name: "Empresa", ordena: false, tipo: "string" },
     { name: "Contato", ordena: true, tipo: "string" },
@@ -157,27 +234,35 @@ function Contatos() {
     { name: "Localização", ordena: true, tipo: "string" },
     ...(!isCliente
       ? [
-          { name: "Categorias", ordena: true, tipo: "string" },
-          { name: "Fabricantes", ordena: true, tipo: "string" },
-        ]
+        { name: "Categorias", ordena: true, tipo: "string" },
+        { name: "Fabricantes", ordena: true, tipo: "string" },
+      ]
       : []),
   ];
-  const rows = contatosAtivos.map((contato) => [
-    <button
-      type="button"
-      className={styles.tableLink}
-      onClick={() => navigate(rotaDetalhes)}
-    >
-      {contato.empresa}
-    </button>,
-    contato.contato,
-    contato.telefone,
-    contato.email,
-    contato.localizacao,
-    ...(!isCliente
-      ? [contato.categorias.join(", "), contato.fabricantes.join(", ")]
-      : []),
-  ]);
+
+  const rows = contatosFiltrados.map((contato) => ({
+    id: contato.id,
+    cells: [
+      <button
+        type="button"
+        className={styles.tableLink}
+        onClick={() => abrirDetalhes(contato)}
+      >
+        {contato.empresa}
+      </button>,
+      contato.contato,
+      contato.telefone,
+      contato.email,
+      contato.localizacao,
+      ...(!isCliente
+        ? [contato.categorias.join(", "), contato.fabricantes.join(", ")]
+        : []),
+    ],
+  }));
+
+  const campoBuscaAtivo = camposBuscaAtual.find(
+    ([valor]) => valor === campoBusca,
+  )?.[1];
 
   return (
     <div className={styles.page}>
@@ -190,7 +275,10 @@ function Contatos() {
             role="tab"
             aria-selected={tipoAtivo === "fornecedores"}
             className={tipoAtivo === "fornecedores" ? styles.activeTab : ""}
-            onClick={() => setTipoAtivo("fornecedores")}
+            onClick={() => {
+              setTipoAtivo("fornecedores");
+              setSelecionados([]);
+            }}
           >
             Fornecedores
           </button>
@@ -199,7 +287,10 @@ function Contatos() {
             role="tab"
             aria-selected={tipoAtivo === "clientes"}
             className={tipoAtivo === "clientes" ? styles.activeTab : ""}
-            onClick={() => setTipoAtivo("clientes")}
+            onClick={() => {
+              setTipoAtivo("clientes");
+              setSelecionados([]);
+            }}
           >
             Clientes
           </button>
@@ -207,22 +298,66 @@ function Contatos() {
 
         <section className={styles.toolbar} aria-label="Ações dos contatos">
           <div className={styles.searchActions}>
-            <button
-              type="button"
-              className={styles.optionsButton}
-              aria-label="Opções de busca"
-              title="Opções de busca"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m7 10 5 5 5-5" />
-              </svg>
-            </button>
+            <div className={styles.menuContainer}>
+              <button
+                type="button"
+                className={styles.optionsButton}
+                aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                aria-expanded={menuBuscaAberto}
+                aria-controls="campos-busca-contatos"
+                title={`Pesquisar por: ${campoBuscaAtivo}`}
+                onClick={() => {
+                  setMenuBuscaAberto((aberto) => !aberto);
+                }}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m7 10 5 5 5-5" />
+                </svg>
+              </button>
+
+              {menuBuscaAberto && (
+                <div
+                  id="campos-busca-contatos"
+                  className={styles.popover}
+                  role="menu"
+                >
+                  {camposBuscaAtual.map(([valor, label]) => (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      key={valor}
+                      className={
+                        campoBusca === valor ? styles.selectedOption : ""
+                      }
+                      onClick={() => {
+                        setCampoBusca(valor);
+                        setMenuBuscaAberto(false);
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className={styles.searchWrapper}>
               <SearchBar
                 placeholder="Buscar contatos..."
+                value={busca}
+                onChange={(event) => setBusca(event.target.value)}
+                ariaLabel="Buscar contatos"
               />
             </div>
-            <Filtro ariaLabel="Filtrar contatos" />
+
+            <div className={styles.menuContainer}>
+              <Filtro
+                ariaLabel="Filtrar contatos"
+                onClick={() => {
+                  setMenuBuscaAberto(false);
+                }}
+              />
+            </div>
           </div>
 
           <div className={styles.actionButtons}>
@@ -232,12 +367,24 @@ function Contatos() {
                 navigate(isCliente ? "/cadastrarCliente" : "/cadastrarFornecedor")
               }
             >
-              adicionar
+              Adicionar Contato
             </Button>
-            <Button icone="editar" estilo="editar">
+            <Button
+              icone="editar"
+              estilo="editar"
+              disabled={selecionados.length !== 1}
+              onClick={editarSelecionado}
+            >
               Editar
             </Button>
-            <Button icone="deletar" estilo="deletar">
+            <Button
+              icone="deletar"
+              estilo="deletar"
+              disabled={selecionados.length === 0}
+              onClick={() => {
+                if (selecionados.length > 0) setModalExcluirAberto(true);
+              }}
+            >
               Deletar
             </Button>
           </div>
@@ -247,9 +394,22 @@ function Contatos() {
           className={styles.tableSection}
           aria-label={isCliente ? "Clientes" : "Fornecedores"}
         >
-          <Table key={tipoAtivo} columns={columns} rows={rows} />
+          <Table
+            key={`${tipoAtivo}-${busca}-${campoBusca}`}
+            columns={columns}
+            rows={rows}
+            getRowId={(row) => row.id}
+            selectedRows={selecionados}
+            onSelectionChange={setSelecionados}
+          />
         </section>
       </main>
+
+      <DeleteModal
+        isOpen={modalExcluirAberto}
+        onClose={() => setModalExcluirAberto(false)}
+        onConfirm={excluirSelecionados}
+      />
     </div>
   );
 }

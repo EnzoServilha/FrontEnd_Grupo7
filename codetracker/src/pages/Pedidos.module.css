@@ -2,6 +2,7 @@
   min-height: 100vh;
   color: #0f172a;
   background: #f4f7fb;
+  font-family: sans-serif;
 }
 
 .content {
@@ -65,7 +66,7 @@
   max-width: 100%;
 }
 
-.searchWrapper > div {
+.searchWrapper>div {
   padding: 0;
 }
 
@@ -265,11 +266,11 @@
     padding: 0 7px;
     border-width: 1px;
     border-radius: 5px;
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 20px;
     height: 20px;
     border-width: 1px;
@@ -277,7 +278,7 @@
   }
 
   .optionsButton svg,
-  .searchActions > .menuContainer:last-child svg {
+  .searchActions>.menuContainer:last-child svg {
     width: 13px;
     height: 13px;
   }
@@ -292,7 +293,7 @@
     font-size: 7px;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     height: 20px;
     gap: 3px;
     padding: 0 5px;
@@ -369,7 +370,7 @@
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 40px;
     height: 40px;
   }
@@ -392,7 +393,7 @@
     flex: 2;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     min-width: 0;
     height: 40px;
     flex: 1;
@@ -417,4 +418,29 @@
   .statusBadge {
     font-size: 9px;
   }
+}
+
+.actionButtons>button {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actionButtons svg {
+  width: 18px;
+  height: 18px;
+}
+
+.actionButtons>button:disabled {
+  color: #8b96a7;
+  background: #edf1f6;
+  border-color: #d7dee8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.actionButtons>button:disabled svg {
+  fill: currentColor;
 }

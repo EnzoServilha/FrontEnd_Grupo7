@@ -5,6 +5,7 @@ import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
+import Table from "../components/Table";
 import styles from "./Pecas.module.css";
 
 const pecasIniciais = [
@@ -71,11 +72,11 @@ function Pecas() {
       const valores =
         campoBusca === "todos"
           ? [
-              peca.codigoInterno,
-              peca.localizacao,
-              peca.marca,
-              peca.anoFabricacao,
-            ]
+            peca.codigoInterno,
+            peca.localizacao,
+            peca.marca,
+            peca.anoFabricacao,
+          ]
           : [peca[campoBusca]];
 
       return valores.some((valor) =>
@@ -83,29 +84,6 @@ function Pecas() {
       );
     });
   }, [busca, campoBusca, marcaFiltrada, pecas]);
-
-  const idsVisiveis = pecasFiltradas.map((peca) => peca.id);
-  const todasVisiveisSelecionadas =
-    idsVisiveis.length > 0 &&
-    idsVisiveis.every((id) => selecionadas.includes(id));
-
-  const alternarTodas = () => {
-    setSelecionadas((idsAtuais) => {
-      if (todasVisiveisSelecionadas) {
-        return idsAtuais.filter((id) => !idsVisiveis.includes(id));
-      }
-
-      return [...new Set([...idsAtuais, ...idsVisiveis])];
-    });
-  };
-
-  const alternarPeca = (id) => {
-    setSelecionadas((idsAtuais) =>
-      idsAtuais.includes(id)
-        ? idsAtuais.filter((idAtual) => idAtual !== id)
-        : [...idsAtuais, id],
-    );
-  };
 
   const abrirDetalhes = (peca) => {
     navigate("/verMaisPeca", { state: { peca } });
@@ -122,6 +100,47 @@ function Pecas() {
     const peca = pecas.find((item) => item.id === selecionadas[0]);
     if (peca) abrirDetalhes(peca);
   };
+
+  const columns = [
+    { name: "Código Interno", ordena: false, tipo: "string" },
+    { name: "Quantidade em Estoque", ordena: true, tipo: "number" },
+    { name: "Localização", ordena: false, tipo: "string" },
+    { name: "Preço Médio de Compra", ordena: true, tipo: "number" },
+    { name: "Preço Médio de Venda", ordena: true, tipo: "number" },
+    { name: "Marca", ordena: false, tipo: "string" },
+    { name: "Data de Cadastro", ordena: true, tipo: "date" },
+    { name: "Ano de Fabricação", ordena: true, tipo: "number" },
+  ];
+
+  const rows = pecasFiltradas.map((peca) => {
+    const rotuloCodigos =
+      peca.codigosAssociados === 1
+        ? "1 Código associado vinculado"
+        : `${peca.codigosAssociados} Códigos associados vinculados`;
+
+    return {
+      id: peca.id,
+      cells: [
+        <button
+          type="button"
+          className={styles.tableLink}
+          onClick={() => abrirDetalhes(peca)}
+        >
+          <strong>{peca.codigoInterno}</strong>
+          <span className={styles.associatedCodes}>{rotuloCodigos}</span>
+        </button>,
+        <span className={styles.stockBadge}>
+          {peca.quantidade.toLocaleString("pt-BR")} unidades
+        </span>,
+        peca.localizacao,
+        peca.precoCompra,
+        peca.precoVenda,
+        <span className={styles.brand}>{peca.marca}</span>,
+        peca.dataCadastro,
+        peca.anoFabricacao,
+      ],
+    };
+  });
 
   const campoBuscaAtivo = camposBusca.find(
     ([valor]) => valor === campoBusca,
@@ -272,89 +291,14 @@ function Pecas() {
         </section>
 
         <section className={styles.tableSection} aria-label="Catálogo de peças">
-          <table>
-            <thead>
-              <tr>
-                <th className={styles.checkboxColumn}>
-                  <input
-                    type="checkbox"
-                    className={styles.checkbox}
-                    checked={todasVisiveisSelecionadas}
-                    onChange={alternarTodas}
-                    aria-label="Selecionar todas as peças visíveis"
-                  />
-                </th>
-                <th>Código Interno</th>
-                <th>Quantidade em Estoque</th>
-                <th>Localização</th>
-                <th>Preço Médio de Compra</th>
-                <th>Preço Médio de Venda</th>
-                <th>Marca</th>
-                <th>Data de Cadastro</th>
-                <th>Ano de Fabricação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pecasFiltradas.map((peca) => {
-                const selecionada = selecionadas.includes(peca.id);
-                const rotuloCodigos =
-                  peca.codigosAssociados === 1
-                    ? "1 Código associado vinculado"
-                    : `${peca.codigosAssociados} Códigos associados vinculados`;
-
-                return (
-                  <tr
-                    key={peca.id}
-                    className={selecionada ? styles.selectedRow : ""}
-                    onClick={() => abrirDetalhes(peca)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        abrirDetalhes(peca);
-                      }
-                    }}
-                    tabIndex="0"
-                  >
-                    <td>
-                      <input
-                        type="checkbox"
-                        className={styles.checkbox}
-                        checked={selecionada}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={() => alternarPeca(peca.id)}
-                        aria-label={`Selecionar peça ${peca.codigoInterno}`}
-                      />
-                    </td>
-                    <td>
-                      <strong>{peca.codigoInterno}</strong>
-                      <span className={styles.associatedCodes}>
-                        {rotuloCodigos}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={styles.stockBadge}>
-                        {peca.quantidade.toLocaleString("pt-BR")} unidades
-                      </span>
-                    </td>
-                    <td>{peca.localizacao}</td>
-                    <td>{peca.precoCompra}</td>
-                    <td>{peca.precoVenda}</td>
-                    <td className={styles.brand}>{peca.marca}</td>
-                    <td>{peca.dataCadastro}</td>
-                    <td>{peca.anoFabricacao}</td>
-                  </tr>
-                );
-              })}
-
-              {pecasFiltradas.length === 0 && (
-                <tr>
-                  <td className={styles.emptyState} colSpan="9">
-                    Nenhuma peça encontrada.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <Table
+            key={`${busca}-${campoBusca}-${marcaFiltrada}`}
+            columns={columns}
+            rows={rows}
+            getRowId={(row) => row.id}
+            selectedRows={selecionadas}
+            onSelectionChange={setSelecionadas}
+          />
         </section>
       </main>
 

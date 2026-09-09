@@ -1,5 +1,5 @@
 import styles from "./Table.module.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 function formatarData(data) {
   if (!data || !data.includes("/")) return data;
@@ -11,44 +11,58 @@ function Table(props) {
   const [linhas, setLinhas] = useState(props.rows);
   const [novaDirecao, setNovaDirecao] = useState(true);
 
-  const [selecionadas, setSelecionadas] = useState([]);
+  const getRowId = useMemo(
+    () => props.getRowId || ((row) => (Array.isArray(row) ? null : row?.id)),
+    [props.getRowId]
+  );
+
+  const [selecionadasInternas, setSelecionadasInternas] = useState([]);
+  const isControlled = props.selectedRows !== undefined;
+  const selecionadas = isControlled ? props.selectedRows : selecionadasInternas;
+  const setSelecionadas = isControlled ? props.onSelectionChange : setSelecionadasInternas;
+
+  const idsVisiveis = useMemo(() => linhas.map(getRowId).filter((id) => id !== null), [linhas, getRowId]);
 
   function handleSelectAll(event) {
     if (event.target.checked) {
-      const todosIndices = linhas.map((linha, idx) => idx);
-      setSelecionadas(todosIndices);
+      setSelecionadas(idsVisiveis);
     } else {
       setSelecionadas([]);
     }
   }
 
-  function handleSelectRow(index) {
-    if (selecionadas.includes(index)) {
-      setSelecionadas(selecionadas.filter((idx) => idx !== index));
+  function handleSelectRow(rowId) {
+    if (selecionadas.includes(rowId)) {
+      setSelecionadas(selecionadas.filter((id) => id !== rowId));
     } else {
-      setSelecionadas([...selecionadas, index]);
+      setSelecionadas([...selecionadas, rowId]);
     }
   }
 
   function ordenacao(tipo, index) {
     let listaOrdenada = [...linhas];
 
+    const getCellValue = (row, cellIndex) => {
+      if (Array.isArray(row)) return row[cellIndex];
+      return row?.cells?.[cellIndex];
+    };
+
     if (tipo === "number") {
       listaOrdenada.sort((a, b) => {
-        const numA = parseFloat(a[index]) || 0;
-        const numB = parseFloat(b[index]) || 0;
+        const numA = parseFloat(getCellValue(a, index)) || 0;
+        const numB = parseFloat(getCellValue(b, index)) || 0;
         return novaDirecao ? numA - numB : numB - numA;
       });
     } else if (tipo === "date") {
       listaOrdenada.sort((a, b) => {
-        const dataA = new Date(formatarData(a[index]));
-        const dataB = new Date(formatarData(b[index]));
+        const dataA = new Date(formatarData(getCellValue(a, index)));
+        const dataB = new Date(formatarData(getCellValue(b, index)));
         return novaDirecao ? dataA - dataB : dataB - dataA;
       });
     } else {
       listaOrdenada.sort((a, b) => {
-        const strA = String(a[index]).toLowerCase();
-        const strB = String(b[index]).toLowerCase();
+        const strA = String(getCellValue(a, index)).toLowerCase();
+        const strB = String(getCellValue(b, index)).toLowerCase();
         return novaDirecao
           ? strA.localeCompare(strB)
           : strB.localeCompare(strA);
@@ -60,6 +74,8 @@ function Table(props) {
     setSelecionadas([]);
   }
 
+  const getCells = (row) => (Array.isArray(row) ? row : row?.cells || []);
+
   return (
     <div className={styles["table-container"]}>
       <table className={styles["custom-table"]}>
@@ -70,7 +86,7 @@ function Table(props) {
                 className={styles["custom-checkbox"]}
                 type="checkbox"
                 checked={
-                  selecionadas.length === linhas.length && linhas.length > 0
+                  idsVisiveis.length > 0 && idsVisiveis.every((id) => selecionadas.includes(id))
                 }
                 onChange={handleSelectAll}
               />
@@ -112,10 +128,11 @@ function Table(props) {
         </thead>
         <tbody>
           {linhas.map((row, index) => {
-            const isSelected = selecionadas.includes(index);
+            const rowId = getRowId(row);
+            const isSelected = rowId !== null && selecionadas.includes(rowId);
             return (
               <tr
-                key={index}
+                key={rowId !== null ? rowId : index}
                 className={isSelected ? styles["selected-row"] : ""}
               >
                 <td>
@@ -123,10 +140,10 @@ function Table(props) {
                     className={styles["custom-checkbox"]}
                     type="checkbox"
                     checked={isSelected}
-                    onChange={() => handleSelectRow(index)}
+                    onChange={() => rowId !== null && handleSelectRow(rowId)}
                   />
                 </td>
-                {row.map((cell, cellIndex) => (
+                {getCells(row).map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}
               </tr>

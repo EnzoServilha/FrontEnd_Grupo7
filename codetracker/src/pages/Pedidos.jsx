@@ -8,7 +8,7 @@ import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Pedidos.module.css";
 
-const pedidos = [
+const pedidosIniciais = [
   {
     id: 1,
     tipo: "Compra",
@@ -114,10 +114,12 @@ const statusDisponiveis = [
 
 function Pedidos() {
   const navigate = useNavigate();
+  const [pedidos, setPedidos] = useState(pedidosIniciais);
   const [tabAtiva, setTabAtiva] = useState("todos");
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [statusFiltrado, setStatusFiltrado] = useState("todos");
+  const [selecionados, setSelecionados] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
@@ -141,7 +143,39 @@ function Pedidos() {
         String(valor).toLocaleLowerCase("pt-BR").includes(termo),
       );
     });
-  }, [busca, campoBusca, statusFiltrado, tabAtiva]);
+  }, [busca, campoBusca, pedidos, statusFiltrado, tabAtiva]);
+
+  const excluirSelecionados = () => {
+    setPedidos((itensAtuais) =>
+      itensAtuais.filter((pedido) => !selecionados.includes(pedido.id)),
+    );
+    setSelecionados([]);
+    setModalExcluirAberto(false);
+  };
+
+  const editarSelecionado = () => {
+    const pedido = pedidos.find((item) => item.id === selecionados[0]);
+    if (pedido) navigate("/verMaisPedido", { state: { pedido } });
+  };
+
+  const gerarEtiquetaSelecionados = () => {
+    if (selecionados.length === 0) return;
+    // TODO: integrar geração de etiqueta para os pedidos selecionados
+  };
+
+  const alterarStatusSelecionados = (event) => {
+    const novoStatus = event.target.value;
+    if (!novoStatus || selecionados.length === 0) return;
+
+    setPedidos((itensAtuais) =>
+      itensAtuais.map((pedido) =>
+        selecionados.includes(pedido.id)
+          ? { ...pedido, status: novoStatus }
+          : pedido,
+      ),
+    );
+    event.target.value = "";
+  };
 
   const columns = [
     { name: "Tipo", ordena: false, tipo: "string" },
@@ -157,27 +191,30 @@ function Pedidos() {
     { name: "Data do Pedido", ordena: true, tipo: "date" },
   ];
 
-  const rows = pedidosFiltrados.map((pedido) => [
-    <button
-      type="button"
-      className={styles.tableLink}
-      onClick={() => navigate("/verMaisPedido")}
-    >
-      {pedido.tipo}
-    </button>,
-    <span className={`${styles.statusBadge} ${styles[pedido.statusClass]}`}>
-      {pedido.status}
-    </span>,
-    pedido.valorTotal,
-    pedido.pagadorFrete,
-    pedido.precoFrete,
-    pedido.precoImposto,
-    pedido.precoProdutos,
-    pedido.quantidade,
-    pedido.dataEntrega,
-    pedido.dataPrevista,
-    pedido.dataPedido,
-  ]);
+  const rows = pedidosFiltrados.map((pedido) => ({
+    id: pedido.id,
+    cells: [
+      <button
+        type="button"
+        className={styles.tableLink}
+        onClick={() => navigate("/verMaisPedido", { state: { pedido } })}
+      >
+        {pedido.tipo}
+      </button>,
+      <span className={`${styles.statusBadge} ${styles[pedido.statusClass]}`}>
+        {pedido.status}
+      </span>,
+      pedido.valorTotal,
+      pedido.pagadorFrete,
+      pedido.precoFrete,
+      pedido.precoImposto,
+      pedido.precoProdutos,
+      pedido.quantidade,
+      pedido.dataEntrega,
+      pedido.dataPrevista,
+      pedido.dataPedido,
+    ],
+  }));
 
   const campoBuscaAtivo = camposBusca.find(
     ([valor]) => valor === campoBusca,
@@ -196,7 +233,10 @@ function Pedidos() {
               key={valor}
               aria-selected={tabAtiva === valor}
               className={tabAtiva === valor ? styles.activeTab : ""}
-              onClick={() => setTabAtiva(valor)}
+              onClick={() => {
+                setTabAtiva(valor);
+                setSelecionados([]);
+              }}
             >
               {label}
             </button>
@@ -294,19 +334,6 @@ function Pedidos() {
           </div>
 
           <div className={styles.actionControls}>
-            <select
-              className={styles.statusSelect}
-              aria-label="Alterar status dos pedidos selecionados"
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Alterar Status
-              </option>
-              <option>Em Andamento</option>
-              <option>Concluída</option>
-              <option>Cancelada</option>
-            </select>
-
             <div className={styles.actionButtons}>
               <Button
                 icone="adicionar"
@@ -315,16 +342,42 @@ function Pedidos() {
                 Adicionar
               </Button>
               <Button
+                estilo="editar"
+                disabled={selecionados.length === 0}
+                onClick={gerarEtiquetaSelecionados}
+              >
+                Gerar Etiqueta
+              </Button>
+              <select
+                className={styles.statusSelect}
+                aria-label="Alterar status dos pedidos selecionados"
+                defaultValue=""
+                disabled={selecionados.length === 0}
+                onChange={alterarStatusSelecionados}
+              >
+                <option value="" disabled>
+                  Alterar Status
+                </option>
+                <option>Em Andamento</option>
+                <option>Concluída</option>
+                <option>Cancelada</option>
+              </select>
+
+              <Button
                 icone="editar"
                 estilo="editar"
-                onClick={() => navigate("/verMaisPedido")}
+                disabled={selecionados.length !== 1}
+                onClick={editarSelecionado}
               >
                 Editar
               </Button>
               <Button
                 icone="deletar"
                 estilo="deletar"
-                onClick={() => setModalExcluirAberto(true)}
+                disabled={selecionados.length === 0}
+                onClick={() => {
+                  if (selecionados.length > 0) setModalExcluirAberto(true);
+                }}
               >
                 Deletar
               </Button>
@@ -337,6 +390,9 @@ function Pedidos() {
             key={`${tabAtiva}-${busca}-${campoBusca}-${statusFiltrado}`}
             columns={columns}
             rows={rows}
+            getRowId={(row) => row.id}
+            selectedRows={selecionados}
+            onSelectionChange={setSelecionados}
           />
         </section>
       </main>
@@ -344,7 +400,7 @@ function Pedidos() {
       <DeleteModal
         isOpen={modalExcluirAberto}
         onClose={() => setModalExcluirAberto(false)}
-        onConfirm={() => setModalExcluirAberto(false)}
+        onConfirm={excluirSelecionados}
       />
     </div>
   );

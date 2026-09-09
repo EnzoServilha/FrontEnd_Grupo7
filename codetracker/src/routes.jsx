@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/Login";
-import Cadastro from "./pages/Cadastro";
 import ContaInativa from "./pages/ContaInativa";
 import Dashboard from "./pages/Dashboard";
 import Pecas from "./pages/Pecas";
@@ -21,10 +20,6 @@ export const routes = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
-  },
-  {
-    path: "/cadastro",
-    element: <Cadastro />,
   },
   {
     path: "/inativa",

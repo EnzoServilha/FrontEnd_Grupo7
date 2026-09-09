@@ -1,11 +1,12 @@
 .page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: #f4f7fb;
   color: #0f172a;
+  font-family: sans-serif;
 }
 
 .content {
-  padding: 24px 32px;
+  padding: 24px 32px 32px;
 }
 
 .tabs {
@@ -37,7 +38,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   padding: 10px;
   margin-bottom: 18px;
   background: #ffffff;
@@ -54,15 +55,15 @@
 
 .searchActions {
   min-width: 0;
-  flex: 1 1 500px;
+  flex: 1 1 390px;
 }
 
 .searchWrapper {
-  width: 420px;
+  width: 320px;
   max-width: 100%;
 }
 
-.searchWrapper > div {
+.searchWrapper>div {
   padding: 0;
 }
 
@@ -87,6 +88,39 @@
   stroke-linejoin: round;
 }
 
+.popover {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 180px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+}
+
+.popover button {
+  padding: 8px 10px;
+  color: #334155;
+  border-radius: 5px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.popover button:hover,
+.popover .selectedOption {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.filterPopover {
+  right: 0;
+  left: auto;
+}
+
 .actionButtons {
   margin-left: auto;
   flex-shrink: 0;
@@ -107,14 +141,34 @@
   text-decoration: underline;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 1100px) {
   .content {
-    padding: 14px;
+    padding: 14px 16px 24px;
+  }
+
+  .tabs {
+    margin-bottom: 10px;
   }
 
   .tabs button {
     min-width: 0;
-    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .toolbar {
+    gap: 6px;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  .searchActions,
+  .actionButtons {
+    gap: 6px;
+  }
+
+  .searchActions {
+    flex-basis: 100%;
   }
 
   .searchWrapper {
@@ -124,23 +178,113 @@
   }
 
   .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .optionsButton {
+    width: 40px;
+    height: 40px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .optionsButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .actionButtons>button {
+    height: 40px;
+    gap: 4px;
+    padding: 0 12px;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+
+  .actionButtons svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .content {
+    padding: 14px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tabs button {
+    min-width: 76px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .searchActions {
+    flex-basis: 100%;
+  }
+
+  .searchWrapper {
+    width: auto;
     min-width: 0;
+    flex: 1;
+  }
+
+  .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .optionsButton {
+    width: 40px;
+    height: 40px;
   }
 
   .actionButtons {
     width: 100%;
     margin-left: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: flex-end;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     min-width: 0;
+    height: 40px;
+    flex: 1;
     padding: 0 8px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .actionButtons span {
     display: none;
   }
+}
+
+.actionButtons>button {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actionButtons svg {
+  width: 18px;
+  height: 18px;
+}
+
+.actionButtons>button:disabled {
+  color: #8b96a7;
+  background: #edf1f6;
+  border-color: #d7dee8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.actionButtons>button:disabled svg {
+  fill: currentColor;
 }

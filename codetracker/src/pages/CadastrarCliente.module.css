@@ -1,7 +1,8 @@
 .page {
   min-height: 100vh;
   color: #0f172a;
-  background: #f1f5f9;
+  background: #f4f7fb;
+  font-family: sans-serif;
 }
 
 .header {
@@ -12,7 +13,7 @@
   padding: 14px 20px 4px;
 }
 
-.header > h1 {
+.header>h1 {
   position: absolute;
   left: 50%;
   margin: 0;
@@ -30,7 +31,7 @@
   margin: 0 0 4px 84px;
 }
 
-.progressWrapper > div {
+.progressWrapper>div {
   padding: 4px 0 0;
 }
 
@@ -38,7 +39,7 @@
   margin-top: 0;
 }
 
-.progressWrapper > div > div > div:not(:first-child) {
+.progressWrapper>div>div>div:not(:first-child) {
   width: 32px;
 }
 
@@ -80,12 +81,12 @@
   min-width: 0;
 }
 
-.column > div {
+.column>div {
   gap: 5px;
 }
 
 .column label,
-.textareaField > span {
+.textareaField>span {
   color: #475569;
   font-size: 13px;
   font-weight: 700;
@@ -204,9 +205,9 @@
   left: 15px;
 }
 
-.cardActionsRight > button,
-.cardActionsLeft > button,
-.footerActions > button {
+.cardActionsRight>button,
+.cardActionsLeft>button,
+.footerActions>button {
   height: 30px;
   padding: 0 13px;
   border-radius: 4px;
@@ -221,7 +222,7 @@
   margin: 13px auto 0;
 }
 
-.footerActions > button:disabled {
+.footerActions>button:disabled {
   color: #cbd5e1;
   background: #e7edf5;
   border-color: #d5deea;
@@ -262,13 +263,13 @@
     gap: 13px;
   }
 
-  .column > div,
+  .column>div,
   .textareaField {
     gap: 6px;
   }
 
   .column label,
-  .textareaField > span,
+  .textareaField>span,
   .customerType label {
     font-size: 14px;
   }
@@ -322,7 +323,7 @@
     padding: 16px 14px;
   }
 
-  .header > h1 {
+  .header>h1 {
     top: 52px;
     width: 100%;
     font-size: 21px;
@@ -382,9 +383,9 @@
     font-size: 13px;
   }
 
-  .cardActionsRight > button,
-  .cardActionsLeft > button,
-  .footerActions > button {
+  .cardActionsRight>button,
+  .cardActionsLeft>button,
+  .footerActions>button {
     min-height: 40px;
     font-size: 14px;
   }
