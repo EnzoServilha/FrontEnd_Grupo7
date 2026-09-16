@@ -157,6 +157,7 @@ function Pecas() {
             role="tab"
             aria-selected="true"
             className={styles.activeTab}
+            onClick={() => navigate("/pecas")}
           >
             Catálogo de Peças
           </button>
@@ -164,8 +165,7 @@ function Pecas() {
             type="button"
             role="tab"
             aria-selected="false"
-            aria-disabled="true"
-            title="Entradas e saídas ainda não disponíveis"
+            onClick={() => navigate("/entradasESaidas")}
           >
             Entradas e Saídas
           </button>

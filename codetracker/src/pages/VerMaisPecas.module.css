@@ -61,6 +61,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
+  max-height: 78vh;
 }
 
 .cardInfo {
@@ -108,10 +110,11 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  max-height: 230px;
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .cardCodigos h3 {
@@ -130,7 +133,8 @@
 .tableWrapper {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .suppliersCard {
   background-color: #ffffff;
@@ -253,6 +257,13 @@
   min-width: 0;
 }
 
+.cardSimilares {
+  max-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .sectionHeader {
   display: flex;
   justify-content: space-between;
@@ -273,6 +284,70 @@
   align-items: center;
   flex-wrap: wrap;
   width: 100%;
+}
+
+.menuContainer {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.optionsButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.optionsButton:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.optionsButton svg {
+  width: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 180px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+}
+
+.popover button {
+  padding: 8px 10px;
+  color: #334155;
+  border-radius: 5px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.popover button:hover,
+.popover .selectedOption {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.filterPopover {
+  right: 0;
+  left: auto;
 }
 
 .selectFilter {

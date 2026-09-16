@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import ButtonMenor from "../components/ButtonMenor";
@@ -7,17 +8,27 @@ import Table from "../components/Table";
 import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
-import Select from "../components/Select";
 import { useNavigate } from "react-router-dom";
 
 
 function VerMaisPecas() {
+  const navigate = useNavigate();
+  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [campoBusca, setCampoBusca] = useState("todos");
+
+  const camposBusca = [
+    ["todos", "Todos os campos"],
+    ["codigo", "Código"],
+    ["descricao", "Descrição"],
+    ["fornecedor", "Fornecedor"],
+  ];
+
+  const campoBuscaAtivo = camposBusca.find(([valor]) => valor === campoBusca)?.[1];
   // Configuração das Colunas e Linhas para a Tabela de Códigos Associados
   const columnsCodigos = [
     { name: "Código item", ordena: true, tipo: "string" },
     { name: "Cliente/Fornecedor", ordena: true, tipo: "string" },
   ];
-  const navigate = useNavigate()
 
   const rowsCodigos = [
     ["Código item", "Cliente/Fornecedor"],
@@ -41,6 +52,110 @@ function VerMaisPecas() {
   ];
 
   const rowsHistorico = [
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
+    [
+      "Compra",
+      "Concluída",
+      "R$ X.XXX,00",
+      "XXXXX",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "R$ XXX,00",
+      "XX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+      "XX/XX/XXXX",
+    ],
     [
       "Compra",
       "Concluída",
@@ -147,6 +262,7 @@ function VerMaisPecas() {
       "Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     ],
   ];
+  const handleVoltar = () => navigate("/pecas");
 
   return (
     <div className={styles.pageContainer}>
@@ -156,9 +272,7 @@ function VerMaisPecas() {
         {/* Cabeçalho superior */}
         <div className={styles.headerPeca}>
           <div className={styles.titleGroup}>
-            <button
-              onClick={() => navigate("/pecas")}
-            >
+            <button onClick={handleVoltar} className={styles.btnBack}>
               <svg
                 className={styles.backIcon}
                 xmlns="http://www.w3.org/2000/svg"
@@ -256,7 +370,46 @@ function VerMaisPecas() {
           {/* Coluna Direita Superior: Cards dos Fornecedores A e B */}
           <section className={styles.suppliersCard}>
             <div className={styles.searchHeader}>
-              <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+              <div className={styles.menuContainer}>
+                <button
+                  type="button"
+                  className={styles.optionsButton}
+                  aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                  aria-expanded={menuBuscaAberto}
+                  aria-controls="campos-busca-fornecedores"
+                  title={`Pesquisar por: ${campoBuscaAtivo}`}
+                  onClick={() => {
+                    setMenuBuscaAberto((aberto) => !aberto);
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m7 10 5 5 5-5" />
+                  </svg>
+                </button>
+
+                {menuBuscaAberto && (
+                  <div
+                    id="campos-busca-fornecedores"
+                    className={styles.popover}
+                    role="menu"
+                  >
+                    {camposBusca.map(([valor, label]) => (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        key={valor}
+                        className={campoBusca === valor ? styles.selectedOption : ""}
+                        onClick={() => {
+                          setCampoBusca(valor);
+                          setMenuBuscaAberto(false);
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <SearchBar />
               <Filtro />
             </div>
@@ -350,23 +503,103 @@ function VerMaisPecas() {
         {/* --- GRID INFERIOR (Histórico + Peças Similares) --- */}
         <div className={styles.bottomGrid}>
           {/* Histórico de Vendas e Compras */}
-          <section className={styles.cardBottom}>
+          <section className={`${styles.cardBottom} ${styles.cardSimilares}`}>
             <div className={styles.sectionHeader}>
               <h2>Histórico de Vendas e Compras</h2>
               <div className={styles.filterGroup}>
-                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <div className={styles.menuContainer}>
+                  <button
+                    type="button"
+                    className={styles.optionsButton}
+                    aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                    aria-expanded={menuBuscaAberto}
+                    aria-controls="campos-busca-historico"
+                    title={`Pesquisar por: ${campoBuscaAtivo}`}
+                    onClick={() => {
+                      setMenuBuscaAberto((aberto) => !aberto);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m7 10 5 5 5-5" />
+                    </svg>
+                  </button>
+
+                  {menuBuscaAberto && (
+                    <div
+                      id="campos-busca-historico"
+                      className={styles.popover}
+                      role="menu"
+                    >
+                      {camposBusca.map(([valor, label]) => (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          key={valor}
+                          className={campoBusca === valor ? styles.selectedOption : ""}
+                          onClick={() => {
+                            setCampoBusca(valor);
+                            setMenuBuscaAberto(false);
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <SearchBar size="500px" />
                 <Filtro />
               </div>
             </div>
-            <Table columns={columnsHistorico} rows={rowsHistorico} />
+            <div className={styles.tableWrapper}>
+              <Table columns={columnsHistorico} rows={rowsHistorico} />
+            </div>
           </section>
 
-          <section className={styles.cardBottom}>
+          <section className={`${styles.cardBottom} ${styles.cardSimilares}`}>
             <div className={styles.sectionHeader}>
               <h2>Peças Similares</h2>
               <div className={styles.filterGroup}>
-                <Select options={[{ value: null, name: "Pesquisar Por" }]} />
+                <div className={styles.menuContainer}>
+                  <button
+                    type="button"
+                    className={styles.optionsButton}
+                    aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                    aria-expanded={menuBuscaAberto}
+                    aria-controls="campos-busca-similares"
+                    title={`Pesquisar por: ${campoBuscaAtivo}`}
+                    onClick={() => {
+                      setMenuBuscaAberto((aberto) => !aberto);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m7 10 5 5 5-5" />
+                    </svg>
+                  </button>
+
+                  {menuBuscaAberto && (
+                    <div
+                      id="campos-busca-similares"
+                      className={styles.popover}
+                      role="menu"
+                    >
+                      {camposBusca.map(([valor, label]) => (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          key={valor}
+                          className={campoBusca === valor ? styles.selectedOption : ""}
+                          onClick={() => {
+                            setCampoBusca(valor);
+                            setMenuBuscaAberto(false);
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <SearchBar size="250px" />
                 <Filtro />
                 <ButtonMenor
@@ -380,7 +613,9 @@ function VerMaisPecas() {
                 </ButtonMenor>
               </div>
             </div>
-            <Table columns={columnsSimilares} rows={rowsSimilares} />
+            <div className={styles.tableWrapper}>
+              <Table columns={columnsSimilares} rows={rowsSimilares} />
+            </div>
           </section>
         </div>
       </main>
