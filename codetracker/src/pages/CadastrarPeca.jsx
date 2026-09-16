@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
@@ -12,7 +13,6 @@ const formularioInicial = {
   marca: "",
   codigoInterno: "",
   localizacao: "",
-  quantidadeInicial: "",
   descricao: "",
 };
 
@@ -83,10 +83,30 @@ function CadastrarPeca() {
     setBuscaPeca("");
   };
 
-  const cadastrarPeca = (event) => {
+  const cadastrarPeca = async (event) => {
     event.preventDefault();
-    if (etapa === 1) return;
-    navigate(-1);
+
+    const payload = {
+      codigoInterno: formulario.codigoInterno.trim(),
+      marca: formulario.marca.trim() || null,
+      ano: formulario.ano === "" ? null : Number(formulario.ano),
+      descricao: formulario.descricao.trim() || null,
+      localizacao: formulario.localizacao.trim() || null,
+      dataCadastro: new Date().toISOString(),
+      codigosAssociadosIds: [],
+      itensSimilaresIds: [],
+    };
+
+    if (!payload.codigoInterno) {
+      return;
+    }
+
+    try {
+      await api.post("/itens", payload);
+      navigate(-1);
+    } catch (error) {
+      console.error("Erro ao cadastrar peça:", error);
+    }
   };
 
   const passos = [
@@ -175,14 +195,6 @@ function CadastrarPeca() {
                       value={formulario.localizacao}
                       onChange={atualizarCampo("localizacao")}
                       placeholder="Localização no estoque"
-                    />
-                    <Input
-                      id="quantidade-peca"
-                      label="Quantidade Inicial:"
-                      type="number"
-                      value={formulario.quantidadeInicial}
-                      onChange={atualizarCampo("quantidadeInicial")}
-                      placeholder="Digite a quantidade existente da peça"
                     />
                     <label
                       className={baseStyles.textareaField}
@@ -405,7 +417,7 @@ function CadastrarPeca() {
             <Button type="button" estilo="editar" onClick={() => navigate(-1)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={etapa === 1}>
+            <Button type="submit">
               Cadastrar
             </Button>
           </footer>

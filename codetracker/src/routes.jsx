@@ -16,6 +16,7 @@ import VerMaisPedidos from "./pages/VerMaisPedidos";
 import CadastrarCliente from "./pages/CadastrarCliente";
 import CadastrarFornecedor from "./pages/CadastrarFornecedor";
 import CadastrarPeca from "./pages/CadastrarPeca";
+import CadastrarPedido from "./pages/CadastrarPedido";
 
 export const routes = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ export const routes = createBrowserRouter([
   {
     path: "/cadastrarPeca",
     element: <CadastrarPeca />,
+  },
+  {
+    path: "/cadastrarPedido",
+    element: <CadastrarPedido />,
   },
   {
     path: "/periodo",

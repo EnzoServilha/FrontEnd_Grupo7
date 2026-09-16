@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
@@ -8,88 +9,7 @@ import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Pedidos.module.css";
 
-const pedidos = [
-  {
-    id: 1,
-    tipo: "Compra",
-    categoria: "compras",
-    status: "Concluída",
-    statusClass: "concluido",
-    valorTotal: "R$ XXX.XXX",
-    pagadorFrete: "XXXXXXX",
-    precoFrete: "R$ XXX.XXX",
-    precoImposto: "R$ XXX.XXX",
-    precoProdutos: "R$ XXX.XXX",
-    quantidade: "XXX",
-    dataEntrega: "XX/XX/XX",
-    dataPrevista: "XX/XX/XX",
-    dataPedido: "XX/XX/XX",
-  },
-  {
-    id: 2,
-    tipo: "Venda",
-    categoria: "vendas",
-    status: "Concluída com Atraso",
-    statusClass: "atrasado",
-    valorTotal: "R$ XXX.XXX",
-    pagadorFrete: "XXXXXXX",
-    precoFrete: "R$ XXX.XXX",
-    precoImposto: "R$ XXX.XXX",
-    precoProdutos: "R$ XXX.XXX",
-    quantidade: "XXX",
-    dataEntrega: "XX/XX/XX",
-    dataPrevista: "XX/XX/XX",
-    dataPedido: "XX/XX/XX",
-  },
-  {
-    id: 3,
-    tipo: "Venda",
-    categoria: "vendas",
-    status: "Em Andamento",
-    statusClass: "andamento",
-    valorTotal: "R$ XXX.XXX",
-    pagadorFrete: "XXXXXXX",
-    precoFrete: "R$ XXX.XXX",
-    precoImposto: "R$ XXX.XXX",
-    precoProdutos: "R$ XXX.XXX",
-    quantidade: "XXX",
-    dataEntrega: "XX/XX/XX",
-    dataPrevista: "XX/XX/XX",
-    dataPedido: "XX/XX/XX",
-  },
-  {
-    id: 4,
-    tipo: "Compra",
-    categoria: "compras",
-    status: "Cancelada",
-    statusClass: "cancelado",
-    valorTotal: "R$ XXX.XXX",
-    pagadorFrete: "XXXXXXX",
-    precoFrete: "R$ XXX.XXX",
-    precoImposto: "R$ XXX.XXX",
-    precoProdutos: "R$ XXX.XXX",
-    quantidade: "XXX",
-    dataEntrega: "XX/XX/XX",
-    dataPrevista: "XX/XX/XX",
-    dataPedido: "XX/XX/XX",
-  },
-  {
-    id: 5,
-    tipo: "Cotação",
-    categoria: "cotacoes",
-    status: "Concluída Completamente",
-    statusClass: "completo",
-    valorTotal: "R$ XXX.XXX",
-    pagadorFrete: "XXXXXXX",
-    precoFrete: "R$ XXX.XXX",
-    precoImposto: "R$ XXX.XXX",
-    precoProdutos: "R$ XXX.XXX",
-    quantidade: "XXX",
-    dataEntrega: "XX/XX/XX",
-    dataPrevista: "XX/XX/XX",
-    dataPedido: "XX/XX/XX",
-  },
-];
+const placeholder = "---";
 
 const tabs = [
   ["todos", "Todos"],
@@ -105,15 +25,82 @@ const camposBusca = [
   ["dataPedido", "Data do pedido"],
 ];
 
-const statusDisponiveis = [
-  ["todos", "Todos os status"],
-  ["Concluída", "Concluídos"],
-  ["Em Andamento", "Em andamento"],
-  ["Cancelada", "Cancelados"],
-];
+const normalizarTexto = (valor) => {
+  if (valor === null || valor === undefined || valor === "") return placeholder;
+  return String(valor);
+};
+
+const formatarData = (valor) => {
+  if (!valor) return placeholder;
+
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return normalizarTexto(valor);
+
+  return data.toLocaleDateString("pt-BR");
+};
+
+const formatarMoeda = (valor) => {
+  if (valor === null || valor === undefined || valor === "") return placeholder;
+
+  const numero = Number(valor);
+  if (Number.isNaN(numero)) return normalizarTexto(valor);
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(numero);
+};
+
+const obterCategoria = (tipo = "") => {
+  const texto = String(tipo).trim().toLowerCase();
+
+  if (texto.includes("venda")) return "vendas";
+  if (texto.includes("compra")) return "compras";
+  if (texto.includes("cot")) return "cotacoes";
+
+  return "todos";
+};
+
+const obterStatusClass = (status = "") => {
+  const texto = String(status).trim().toLowerCase();
+
+  if (texto.includes("atras")) return "atrasado";
+  if (texto.includes("andamento") || texto.includes("em") || texto.includes("pend")) return "andamento";
+  if (texto.includes("cancel")) return "cancelado";
+  if (texto.includes("conclu")) return "concluido";
+  if (texto.includes("cot")) return "completo";
+
+  return "";
+};
+
+const normalizarPedido = (movimentacao) => {
+  const tipo = normalizarTexto(movimentacao?.tipo?.nome ?? movimentacao?.tipo ?? "");
+  const status = normalizarTexto(movimentacao?.status?.nome ?? movimentacao?.status ?? "");
+
+  return {
+    id: movimentacao?.id ?? null,
+    tipo,
+    categoria: obterCategoria(tipo),
+    status,
+    statusClass: obterStatusClass(status),
+    valorTotal: formatarMoeda(movimentacao?.valorTotal),
+    pagadorFrete:
+      normalizarTexto(
+        movimentacao?.cliente?.nome ?? movimentacao?.fornecedor?.razaoSocial ?? movimentacao?.pagadorFrete,
+      ),
+    precoFrete: formatarMoeda(movimentacao?.precoFrete),
+    precoImposto: formatarMoeda(movimentacao?.totalGastoImpostos),
+    precoProdutos: formatarMoeda(movimentacao?.precoProdutos),
+    quantidade: movimentacao?.qtdItens ?? placeholder,
+    dataEntrega: formatarData(movimentacao?.dataEntrega),
+    dataPrevista: formatarData(movimentacao?.dataEntregaPrevista),
+    dataPedido: formatarData(movimentacao?.dataMovimentacao),
+  };
+};
 
 function Pedidos() {
   const navigate = useNavigate();
+  const [pedidos, setPedidos] = useState([]);
   const [tabAtiva, setTabAtiva] = useState("todos");
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
@@ -121,6 +108,42 @@ function Pedidos() {
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    const carregarPedidos = async () => {
+      try {
+        setCarregando(true);
+
+        const respostaPeriodo = await api.get("/periodos/ultimo");
+        const periodoAtual = respostaPeriodo.data ?? null;
+
+        let lista = [];
+
+        if (periodoAtual?.id) {
+          const respostaMovimentacoes = await api.get(`/movimentacoes/periodo/${periodoAtual.id}`);
+          lista = Array.isArray(respostaMovimentacoes.data) ? respostaMovimentacoes.data : [];
+        }
+
+        setPedidos(lista.map(normalizarPedido));
+      } catch (error) {
+        console.error("Erro ao buscar pedidos:", error);
+        setPedidos([]);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    carregarPedidos();
+  }, []);
+
+  const statusDisponiveis = useMemo(
+    () => [
+      ["todos", "Todos os status"],
+      ...Array.from(new Set(pedidos.map((pedido) => pedido.status).filter(Boolean))).map((status) => [status, status]),
+    ],
+    [pedidos],
+  );
 
   const pedidosFiltrados = useMemo(() => {
     const termo = busca.trim().toLocaleLowerCase("pt-BR");
@@ -129,19 +152,33 @@ function Pedidos() {
       const correspondeATab =
         tabAtiva === "todos" || pedido.categoria === tabAtiva;
       const correspondeAoStatus =
-        statusFiltrado === "todos" || pedido.status.includes(statusFiltrado);
+        statusFiltrado === "todos" || pedido.status.toLowerCase().includes(statusFiltrado.toLowerCase());
 
       if (!correspondeATab || !correspondeAoStatus) return false;
       if (!termo) return true;
 
       const valores =
-        campoBusca === "todos" ? Object.values(pedido) : [pedido[campoBusca]];
+        campoBusca === "todos"
+          ? [
+              pedido.tipo,
+              pedido.status,
+              pedido.valorTotal,
+              pedido.pagadorFrete,
+              pedido.precoFrete,
+              pedido.precoImposto,
+              pedido.precoProdutos,
+              pedido.quantidade,
+              pedido.dataEntrega,
+              pedido.dataPrevista,
+              pedido.dataPedido,
+            ]
+          : [pedido[campoBusca]];
 
       return valores.some((valor) =>
-        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
+        String(valor ?? "").toLocaleLowerCase("pt-BR").includes(termo),
       );
     });
-  }, [busca, campoBusca, statusFiltrado, tabAtiva]);
+  }, [busca, campoBusca, pedidos, statusFiltrado, tabAtiva]);
 
   const columns = [
     { name: "Tipo", ordena: false, tipo: "string" },
@@ -161,7 +198,7 @@ function Pedidos() {
     <button
       type="button"
       className={styles.tableLink}
-      onClick={() => navigate("/verMaisPedido")}
+      onClick={() => navigate("/verMaisPedido", { state: { pedido } })}
     >
       {pedido.tipo}
     </button>,
@@ -182,6 +219,8 @@ function Pedidos() {
   const campoBuscaAtivo = camposBusca.find(
     ([valor]) => valor === campoBusca,
   )?.[1];
+
+  const rowsExibidos = rows.length ? rows : [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]];
 
   return (
     <div className={styles.page}>
@@ -310,7 +349,7 @@ function Pedidos() {
             <div className={styles.actionButtons}>
               <Button
                 icone="adicionar"
-                onClick={() => navigate("/verMaisPedido")}
+                onClick={() => navigate("/cadastrarPedido")}
               >
                 Adicionar
               </Button>
@@ -336,7 +375,7 @@ function Pedidos() {
           <Table
             key={`${tabAtiva}-${busca}-${campoBusca}-${statusFiltrado}`}
             columns={columns}
-            rows={rows}
+            rows={carregando ? [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]] : rowsExibidos}
           />
         </section>
       </main>

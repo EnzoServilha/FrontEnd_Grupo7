@@ -1,5 +1,5 @@
 import styles from "./Table.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function formatarData(data) {
   if (!data || !data.includes("/")) return data;
@@ -10,6 +10,10 @@ function formatarData(data) {
 function Table(props) {
   const [linhas, setLinhas] = useState(props.rows);
   const [novaDirecao, setNovaDirecao] = useState(true);
+
+  useEffect(() => {
+    setLinhas(props.rows);
+  }, [props.rows]);
 
   const [selecionadas, setSelecionadas] = useState([]);
 

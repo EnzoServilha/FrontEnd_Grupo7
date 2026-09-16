@@ -1,56 +1,56 @@
+import { useState } from "react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import styles from "./Login.module.css";
 import Logo from "../components/Logo";
 import { useNavigate } from "react-router-dom";
-// import { api } from "./provider/api";
-// import { useState } from "react";
-// import ServerResponse from "../components/ServerResponse";
+import { api } from "../provider/api";
+import ServerResponse from "../components/ServerResponse";
 
 function Login() {
   const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", senha: "" });
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
-  function irParaDash() {
-    navigate("/dashboard");
+  function handleChange(campo) {
+    return (event) => {
+      setForm((dadosAtuais) => ({
+        ...dadosAtuais,
+        [campo]: event.target.value,
+      }));
+    };
   }
 
-  // const [usuarioId, setUsuarioId] = useState("");
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setErro("");
+    setCarregando(true);
 
-  // function login() {
-  //   api
-  //     .get("/pokemon")
-  //     .then((res) => {
-  //       setUsuarioId(res.data[0].userId);
-  //       if (usuarioId != "" && usuarioId != null) {
-  //     api
-  //     .get({ usuarioId })
-  //   .then((res) => {})
-  // .catch((err) => {
-  // <ServerResponse
-  // type="error"
-  // title="Falha no Login"
-  //   message="Não foi possível realizar o login. Por favor, tente novamente."
-  //  />;
-  //  console.log(err);
-  //  });
-  // } else {
-  // <ServerResponse
-  //  type="error"
-  // title="Falha no Login"
-  // message="Usuário não encontrado. Por favor, verifique suas credenciais."
-  // />;
-  // }
-  // })
-  //  .catch((err) => {
-  // <ServerResponse
-  // type="error"
-  // title="Falha no Login"
-  // message="Não foi possível realizar o login. Por favor, tente novamente."
-  // />;
+    try {
+      const resposta = await api.post("/usuarios/login", {
+        email: form.email.trim(),
+        senha: form.senha,
+      });
 
-  //  console.log(err);
-  // });
-  // }
+      const usuario = resposta?.data ?? {};
+
+      if (usuario?.email) {
+        localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+      }
+
+      navigate("/dashboard");
+    } catch (error) {
+      const mensagem =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Não foi possível realizar o login. Verifique suas credenciais.";
+
+      setErro(mensagem);
+    } finally {
+      setCarregando(false);
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -70,13 +70,16 @@ function Login() {
           <Logo />
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <Input
               label="Email"
               type="email"
               placeholder="seu@email.com"
               posicaoLabel="cima"
+              value={form.email}
+              onChange={handleChange("email")}
+              autoComplete="email"
             />
           </div>
 
@@ -86,16 +89,30 @@ function Login() {
               type="password"
               placeholder="••••••••"
               posicaoLabel="cima"
+              value={form.senha}
+              onChange={handleChange("senha")}
+              autoComplete="current-password"
             />
           </div>
+
           <div>
             <a href="/cadastro" className={styles.link}>
               Não tem uma conta? Cadastre-se
             </a>
           </div>
 
+          {erro && (
+            <ServerResponse
+              type="error"
+              title="Falha no login"
+              message={erro}
+            />
+          )}
+
           <div className={styles.buttonContainer}>
-            <Button onClick={irParaDash}>Entrar</Button>
+            <Button type="submit" disabled={carregando}>
+              {carregando ? "Entrando..." : "Entrar"}
+            </Button>
           </div>
         </form>
       </div>
