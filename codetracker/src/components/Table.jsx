@@ -1,5 +1,5 @@
 import styles from "./Table.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function formatarData(data) {
   if (!data || !data.includes("/")) return data;
@@ -10,28 +10,54 @@ function formatarData(data) {
 function Table(props) {
   const [linhas, setLinhas] = useState(props.rows);
   const [novaDirecao, setNovaDirecao] = useState(true);
+  const chaveLinhasRef = useRef("");
 
   useEffect(() => {
-    setLinhas(props.rows);
-  }, [props.rows]);
+    const proximaChave = (props.rowIds ?? []).map(String).join("|");
+
+    if (proximaChave !== chaveLinhasRef.current) {
+      setLinhas(props.rows);
+      setSelecionadas([]);
+
+      if (props.onSelectionChange) {
+        props.onSelectionChange([]);
+      }
+
+      chaveLinhasRef.current = proximaChave;
+    }
+  }, [props.rowIds, props.rows, props.onSelectionChange]);
 
   const [selecionadas, setSelecionadas] = useState([]);
+
+  function notificarSelecao(proximasSelecionadas) {
+    if (props.onSelectionChange) {
+      const idsSelecionados = proximasSelecionadas.map((index) => {
+        const rowId = props.rowIds?.[index];
+        return rowId ?? index;
+      });
+
+      props.onSelectionChange(idsSelecionados);
+    }
+  }
 
   function handleSelectAll(event) {
     if (event.target.checked) {
       const todosIndices = linhas.map((linha, idx) => idx);
       setSelecionadas(todosIndices);
+      notificarSelecao(todosIndices);
     } else {
       setSelecionadas([]);
+      notificarSelecao([]);
     }
   }
 
   function handleSelectRow(index) {
-    if (selecionadas.includes(index)) {
-      setSelecionadas(selecionadas.filter((idx) => idx !== index));
-    } else {
-      setSelecionadas([...selecionadas, index]);
-    }
+    const proximasSelecionadas = selecionadas.includes(index)
+      ? selecionadas.filter((idx) => idx !== index)
+      : [...selecionadas, index];
+
+    setSelecionadas(proximasSelecionadas);
+    notificarSelecao(proximasSelecionadas);
   }
 
   function ordenacao(tipo, index) {

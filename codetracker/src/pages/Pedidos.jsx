@@ -101,6 +101,7 @@ const normalizarPedido = (movimentacao) => {
 function Pedidos() {
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
+  const [selecionados, setSelecionados] = useState([]);
   const [tabAtiva, setTabAtiva] = useState("todos");
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
@@ -194,6 +195,8 @@ function Pedidos() {
     { name: "Data do Pedido", ordena: true, tipo: "date" },
   ];
 
+  const rowIds = pedidosFiltrados.map((pedido) => pedido.id);
+
   const rows = pedidosFiltrados.map((pedido) => [
     <button
       type="button"
@@ -221,6 +224,29 @@ function Pedidos() {
   )?.[1];
 
   const rowsExibidos = rows.length ? rows : [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]];
+
+  const cancelarSelecionados = async () => {
+    if (selecionados.length === 0) {
+      setModalExcluirAberto(false);
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selecionados.map((id) => api.patch(`/movimentacoes/${id}/cancelamento`)),
+      );
+
+      const idsSelecionados = new Set(selecionados);
+      setPedidos((listaAtual) =>
+        listaAtual.filter((pedido) => !idsSelecionados.has(pedido.id)),
+      );
+      setSelecionados([]);
+    } catch (error) {
+      console.error("Erro ao cancelar pedidos:", error);
+    } finally {
+      setModalExcluirAberto(false);
+    }
+  };
 
   return (
     <div className={styles.page}>
@@ -363,7 +389,10 @@ function Pedidos() {
               <Button
                 icone="deletar"
                 estilo="deletar"
-                onClick={() => setModalExcluirAberto(true)}
+                disabled={selecionados.length === 0}
+                onClick={() => {
+                  if (selecionados.length > 0) setModalExcluirAberto(true);
+                }}
               >
                 Deletar
               </Button>
@@ -376,6 +405,8 @@ function Pedidos() {
             key={`${tabAtiva}-${busca}-${campoBusca}-${statusFiltrado}`}
             columns={columns}
             rows={carregando ? [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]] : rowsExibidos}
+            rowIds={rowIds}
+            onSelectionChange={setSelecionados}
           />
         </section>
       </main>
@@ -383,7 +414,7 @@ function Pedidos() {
       <DeleteModal
         isOpen={modalExcluirAberto}
         onClose={() => setModalExcluirAberto(false)}
-        onConfirm={() => setModalExcluirAberto(false)}
+        onConfirm={cancelarSelecionados}
       />
     </div>
   );

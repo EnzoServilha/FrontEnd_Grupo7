@@ -159,12 +159,27 @@ function Pecas() {
     navigate("/verMaisPeca", { state: { peca } });
   };
 
-  const excluirSelecionadas = () => {
-    setPecas((itensAtuais) =>
-      itensAtuais.filter((peca) => !selecionadas.includes(peca.id)),
-    );
-    setSelecionadas([]);
-    setModalExcluirAberto(false);
+  const excluirSelecionadas = async () => {
+    if (selecionadas.length === 0) {
+      setModalExcluirAberto(false);
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selecionadas.map((id) => api.patch(`/itens/${id}/desativacao`)),
+      );
+
+      const idsSelecionados = new Set(selecionadas);
+      setPecas((itensAtuais) =>
+        itensAtuais.filter((peca) => !idsSelecionados.has(peca.id)),
+      );
+      setSelecionadas([]);
+    } catch (error) {
+      console.error("Erro ao desativar peças:", error);
+    } finally {
+      setModalExcluirAberto(false);
+    }
   };
 
   const editarSelecionada = () => {
