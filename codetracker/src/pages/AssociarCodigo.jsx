@@ -1,7 +1,11 @@
 import styles from "./AssociarCodigo.module.css";
 import { useState } from "react";
+import Logo from "../components/Logo";
+import { useNavigate } from "react-router-dom";
+
 
 function AssociarCodigo() {
+  const navigate = useNavigate();
   const [tipoContato, setTipoContato] = useState("cliente");
   const [busca, setBusca] = useState("");
   const [codigoInput, setCodigoInput] = useState("");
@@ -31,7 +35,8 @@ function AssociarCodigo() {
       {/* Header Simples */}
       <header className={styles.header}>
         <div className={styles.logo}>
-          Code<span>Tracker</span>
+          <Logo />
+
         </div>
       </header>
 
@@ -128,7 +133,9 @@ function AssociarCodigo() {
 
         {/* Ações Inferiores (Fora do Card) */}
         <div className={styles.bottomActions}>
-          <button className={styles.btnCancel}>Cancelar</button>
+          <button className={styles.btnCancel} onClick={() => navigate(-1)}>
+            Cancelar
+          </button>
           <button className={styles.btnConfirm}>Confirmar</button>
         </div>
       </main>
