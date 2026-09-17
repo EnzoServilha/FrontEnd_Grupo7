@@ -9,7 +9,6 @@ import Table from "../components/Table";
 import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
-import Select from "../components/Select";
 import { api } from "../provider/api";
 
 const placeholder = "---";
@@ -44,7 +43,17 @@ function VerMaisPecas() {
   const [peca, setPeca] = useState(null);
   const [historico, setHistorico] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [campoBusca, setCampoBusca] = useState("todos");
+  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
 
+  const camposBusca = [
+    ["todos", "Todos os campos"],
+    ["codigo", "Código"],
+    ["nome", "Nome"],
+  ];
+  const campoBuscaAtivo = camposBusca.find(
+    ([valor]) => valor === campoBusca,
+  )?.[1];
   useEffect(() => {
     const itemSelecionado = location.state?.peca;
     const itemId = itemSelecionado?.id ?? Number(new URLSearchParams(location.search).get("id"));

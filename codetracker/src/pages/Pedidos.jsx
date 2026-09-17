@@ -73,6 +73,10 @@ const obterStatusClass = (status = "") => {
   return "";
 };
 
+
+
+
+
 const normalizarPedido = (movimentacao) => {
   const tipo = normalizarTexto(movimentacao?.tipo?.nome ?? movimentacao?.tipo ?? "");
   const status = normalizarTexto(movimentacao?.status?.nome ?? movimentacao?.status ?? "");
@@ -106,11 +110,33 @@ function Pedidos() {
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [statusFiltrado, setStatusFiltrado] = useState("todos");
-  const [selecionados, setSelecionados] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
+
+  const gerarEtiquetaSelecionados = () => {
+    if (selecionados.length === 0) return;
+    // TODO: integrar geração de etiqueta para os pedidos selecionados
+  };
+
+  const alterarStatusSelecionados = (event) => {
+    const novoStatus = event.target.value;
+    if (!novoStatus || selecionados.length === 0) return;
+
+    setPedidos((itensAtuais) =>
+      itensAtuais.map((pedido) =>
+        selecionados.includes(pedido.id)
+          ? { ...pedido, status: novoStatus }
+          : pedido,
+      ),
+    );
+    event.target.value = "";
+  };
+  const editarSelecionado = () => {
+    const pedido = pedidos.find((item) => item.id === selecionados[0]);
+    if (pedido) navigate("/verMaisPedido", { state: { pedido } });
+  };
 
   useEffect(() => {
     const carregarPedidos = async () => {

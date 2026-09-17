@@ -210,6 +210,7 @@ function Pecas() {
     ([valor]) => valor === campoBusca,
   )?.[1];
 
+  console.log("rows:", rows);
   return (
     <div className={styles.page}>
       <Header />
