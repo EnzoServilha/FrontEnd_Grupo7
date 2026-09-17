@@ -134,7 +134,7 @@ function Pecas() {
   }, [busca, campoBusca, marcaFiltrada, pecas]);
 
   const abrirDetalhes = (peca) => {
-    navigate("/verMaisPeca", { state: { peca } });
+    navigate(`/verMaisPeca?id=${peca.id}`, { state: { peca } });
   };
 
   const excluirSelecionadas = async () => {
