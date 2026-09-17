@@ -46,10 +46,11 @@ function VerMaisPecas() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const itemSelecionado = location.state?.peca;
-    const itemId = itemSelecionado?.id ?? Number(new URLSearchParams(location.search).get("id"));
+    const itemSelecionado = location.state?.peca ?? location.state?.item ?? null;
+    const itemIdFromState = itemSelecionado?.id ?? location.state?.id ?? location.state?.itemId;
+    const itemId = Number(itemIdFromState ?? new URLSearchParams(location.search).get("id"));
 
-    if (!itemId) {
+    if (!Number.isFinite(itemId) || itemId <= 0) {
       setCarregando(false);
       return;
     }
@@ -139,23 +140,29 @@ function VerMaisPecas() {
   const rowsHistorico = useMemo(
     () =>
       historico.map((registro) => {
-        const movimentacao = registro?.movimentacaoEstoque ?? {};
-        const tipo = movimentacao?.tipo?.nome ?? placeholder;
-        const status = movimentacao?.status?.nome ?? placeholder;
-        const valorTotal = formatarMoeda(movimentacao?.valorTotal ?? registro?.valorTotal);
-        const frete = formatarMoeda(movimentacao?.precoFrete ?? 0);
-        const imposto = formatarMoeda(movimentacao?.totalGastoImpostos ?? 0);
-        const produtos = formatarMoeda(movimentacao?.precoProdutos ?? 0);
+        const movimentacao = registro?.movimentacaoEstoque ?? registro ?? {};
+        const tipo = movimentacao?.tipo?.nome ?? registro?.tipo?.nome ?? placeholder;
+        const status = movimentacao?.status?.nome ?? registro?.status?.nome ?? placeholder;
+        const valorTotal = formatarMoeda(movimentacao?.valorTotal ?? registro?.valorTotal ?? 0);
+        const frete = formatarMoeda(movimentacao?.precoFrete ?? registro?.precoFrete ?? 0);
+        const imposto = formatarMoeda(movimentacao?.totalGastoImpostos ?? registro?.totalGastoImpostos ?? 0);
+        const produtos = formatarMoeda(movimentacao?.precoProdutos ?? registro?.precoProdutos ?? 0);
         const qtdItens = movimentacao?.qtdItens ?? registro?.qtd ?? placeholder;
-        const dataEntrega = formatarData(movimentacao?.dataEntrega);
-        const dataPrevista = formatarData(movimentacao?.dataEntregaPrevista);
-        const dataPedido = formatarData(movimentacao?.dataMovimentacao);
+        const dataEntrega = formatarData(movimentacao?.dataEntrega ?? registro?.dataEntrega);
+        const dataPrevista = formatarData(movimentacao?.dataEntregaPrevista ?? registro?.dataEntregaPrevista);
+        const dataPedido = formatarData(movimentacao?.dataMovimentacao ?? registro?.dataMovimentacao);
+        const pagador =
+          movimentacao?.cliente?.nome ??
+          movimentacao?.fornecedor?.razaoSocial ??
+          registro?.cliente?.nome ??
+          registro?.fornecedor?.razaoSocial ??
+          placeholder;
 
         return [
           tipo,
           status,
           valorTotal,
-          movimentacao?.cliente?.nome ?? movimentacao?.fornecedor?.razaoSocial ?? placeholder,
+          pagador,
           frete,
           imposto,
           produtos,
@@ -179,20 +186,20 @@ function VerMaisPecas() {
     registros.forEach((registro) => {
       const movimentacao = registro?.movimentacaoEstoque ?? registro ?? {};
       const tipo = String(movimentacao?.tipo?.nome ?? "").trim().toUpperCase();
-      const valorTotal = Number(movimentacao?.valorTotal ?? registro?.valorTotal ?? 0);
+      const valorProdutos = Number(movimentacao?.precoProdutos ?? registro?.precoProdutos ?? 0);
       const qtdItens = Number(movimentacao?.qtdItens ?? registro?.qtdItens ?? registro?.qtd ?? 0);
 
-      if (!Number.isFinite(valorTotal) || !Number.isFinite(qtdItens) || qtdItens <= 0) {
+      if (!Number.isFinite(valorProdutos) || !Number.isFinite(qtdItens) || qtdItens <= 0) {
         return;
       }
 
       if (tipo.includes("ENTRADA") || tipo.includes("COMPRA")) {
-        acumuladores.compra.total += valorTotal;
+        acumuladores.compra.total += valorProdutos;
         acumuladores.compra.quantidade += qtdItens;
       }
 
       if (tipo.includes("SAIDA") || tipo.includes("VENDA")) {
-        acumuladores.venda.total += valorTotal;
+        acumuladores.venda.total += valorProdutos;
         acumuladores.venda.quantidade += qtdItens;
       }
     });
@@ -365,10 +372,14 @@ function VerMaisPecas() {
                 <Filtro />
               </div>
             </div>
-            <Table
-              columns={columnsHistorico}
-              rows={rowsHistorico.length ? rowsHistorico : [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]]}
-            />
+            {rowsHistorico.length > 0 ? (
+              <Table
+                columns={columnsHistorico}
+                rows={rowsHistorico}
+              />
+            ) : (
+              <p className={styles.emptyState}>Nenhum histórico de compras ou vendas encontrado para esta peça.</p>
+            )}
           </section>
 
           <section className={styles.cardBottom}>
