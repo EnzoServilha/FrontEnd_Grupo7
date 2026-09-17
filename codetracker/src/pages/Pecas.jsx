@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
@@ -7,33 +8,6 @@ import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Pecas.module.css";
-
-const pecasIniciais = [
-  {
-    id: 1,
-    codigoInterno: "CT-9482X",
-    codigosAssociados: 1,
-    quantidade: 1250,
-    localizacao: "Galpão A - Prateleira 4",
-    precoCompra: "R$ 145,20",
-    precoVenda: "R$ 289,90",
-    marca: "Bosch Premium",
-    dataCadastro: "12/04/2026",
-    anoFabricacao: "2025",
-  },
-  {
-    id: 2,
-    codigoInterno: "CT-1053Y",
-    codigosAssociados: 3,
-    quantidade: 420,
-    localizacao: "Galpão B - Prateleira 2",
-    precoCompra: "R$ 18,90",
-    precoVenda: "R$ 45,00",
-    marca: "Magneti Marelli",
-    dataCadastro: "18/05/2026",
-    anoFabricacao: "2026",
-  },
-];
 
 const camposBusca = [
   ["todos", "Todos os campos"],
@@ -43,9 +17,48 @@ const camposBusca = [
   ["anoFabricacao", "Ano de fabricação"],
 ];
 
+const valorPadrao = (valor, fallback = "---") => {
+  if (valor === null || valor === undefined || valor === "") return fallback;
+  return valor;
+};
+
+const formatarData = (valor) => {
+  if (!valor) return "---";
+
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return valor;
+
+  return data.toLocaleDateString("pt-BR");
+};
+
+const normalizarPeca = (item, quantidadeMovimentacao = null) => {
+  const codigosAssociados = Array.isArray(item?.codigosAssociados)
+    ? item.codigosAssociados.length
+    : Number.isFinite(Number(item?.codigosAssociados))
+      ? Number(item.codigosAssociados)
+      : 0;
+
+  const quantidade = Number.isFinite(Number(quantidadeMovimentacao))
+    ? Number(quantidadeMovimentacao)
+    : null;
+
+  return {
+    id: item?.id ?? null,
+    codigoInterno: valorPadrao(item?.codigoInterno),
+    codigosAssociados,
+    quantidade: quantidade ?? "---",
+    localizacao: valorPadrao(item?.localizacao),
+    precoCompra: valorPadrao(item?.precoCompra, "---"),
+    precoVenda: valorPadrao(item?.precoVenda, "---"),
+    marca: valorPadrao(item?.marca),
+    dataCadastro: formatarData(item?.dataCadastro),
+    anoFabricacao: valorPadrao(item?.ano ?? item?.anoFabricacao, "---"),
+  };
+};
+
 function Pecas() {
   const navigate = useNavigate();
-  const [pecas, setPecas] = useState(pecasIniciais);
+  const [pecas, setPecas] = useState([]);
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [marcaFiltrada, setMarcaFiltrada] = useState("todas");
@@ -54,8 +67,41 @@ function Pecas() {
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
+  useEffect(() => {
+    const carregarPecas = async () => {
+      try {
+        const resposta = await api.get("/itens");
+        const itens = Array.isArray(resposta.data) ? resposta.data : [];
+
+        const itensComQuantidade = await Promise.all(
+          itens.map(async (item) => {
+            try {
+              const respostaMovimentacao = await api.get(`/itensNaMovimentacao/item/${item.id}`);
+              const ocorrencias = Array.isArray(respostaMovimentacao.data) ? respostaMovimentacao.data : [];
+              const quantidade = ocorrencias.reduce((soma, ocorrencia) => {
+                const qtd = Number(ocorrencia?.qtd ?? 0);
+                return Number.isFinite(qtd) ? soma + qtd : soma;
+              }, 0);
+
+              return normalizarPeca(item, quantidade);
+            } catch {
+              return normalizarPeca(item, null);
+            }
+          }),
+        );
+
+        setPecas(itensComQuantidade);
+      } catch (error) {
+        console.error("Erro ao buscar itens:", error);
+        setPecas([]);
+      }
+    };
+
+    carregarPecas();
+  }, []);
+
   const marcasDisponiveis = useMemo(
-    () => ["todas", ...new Set(pecas.map((peca) => peca.marca))],
+    () => ["todas", ...new Set(pecas.map((peca) => peca.marca).filter(Boolean))],
     [pecas],
   );
 
@@ -80,7 +126,9 @@ function Pecas() {
           : [peca[campoBusca]];
 
       return valores.some((valor) =>
-        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
+        String(valor ?? "")
+          .toLocaleLowerCase("pt-BR")
+          .includes(termo),
       );
     });
   }, [busca, campoBusca, marcaFiltrada, pecas]);
@@ -89,11 +137,27 @@ function Pecas() {
     navigate("/verMaisPeca", { state: { peca } });
   };
 
-  const excluirSelecionadas = () => {
-    setPecas((itensAtuais) =>
-      itensAtuais.filter((peca) => !selecionadas.includes(peca.id)),
-    );
-    setSelecionadas([]);
+  const excluirSelecionadas = async () => {
+    if (selecionadas.length === 0) {
+      setModalExcluirAberto(false);
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selecionadas.map((id) => api.patch(`/itens/${id}/desativacao`)),
+      );
+
+      const idsSelecionados = new Set(selecionadas);
+      setPecas((itensAtuais) =>
+        itensAtuais.filter((peca) => !idsSelecionados.has(peca.id)),
+      );
+      setSelecionadas([]);
+    } catch (error) {
+      console.error("Erro ao desativar peças:", error);
+    } finally {
+      setModalExcluirAberto(false);
+    }
   };
 
   const editarSelecionada = () => {

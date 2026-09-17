@@ -1,5 +1,5 @@
 import styles from "./Table.module.css";
-import { useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 function formatarData(data) {
   if (!data || !data.includes("/")) return data;
@@ -10,33 +10,54 @@ function formatarData(data) {
 function Table(props) {
   const [linhas, setLinhas] = useState(props.rows);
   const [novaDirecao, setNovaDirecao] = useState(true);
+  const chaveLinhasRef = useRef("");
 
-  const getRowId = useMemo(
-    () => props.getRowId || ((row) => (Array.isArray(row) ? null : row?.id)),
-    [props.getRowId]
-  );
+  useEffect(() => {
+    const proximaChave = (props.rowIds ?? []).map(String).join("|");
 
-  const [selecionadasInternas, setSelecionadasInternas] = useState([]);
-  const isControlled = props.selectedRows !== undefined;
-  const selecionadas = isControlled ? props.selectedRows : selecionadasInternas;
-  const setSelecionadas = isControlled ? props.onSelectionChange : setSelecionadasInternas;
-
-  const idsVisiveis = useMemo(() => linhas.map(getRowId).filter((id) => id !== null), [linhas, getRowId]);
-
-  function handleSelectAll(event) {
-    if (event.target.checked) {
-      setSelecionadas(idsVisiveis);
-    } else {
+    if (proximaChave !== chaveLinhasRef.current) {
+      setLinhas(props.rows);
       setSelecionadas([]);
+
+      if (props.onSelectionChange) {
+        props.onSelectionChange([]);
+      }
+
+      chaveLinhasRef.current = proximaChave;
+    }
+  }, [props.rowIds, props.rows, props.onSelectionChange]);
+
+  const [selecionadas, setSelecionadas] = useState([]);
+
+  function notificarSelecao(proximasSelecionadas) {
+    if (props.onSelectionChange) {
+      const idsSelecionados = proximasSelecionadas.map((index) => {
+        const rowId = props.rowIds?.[index];
+        return rowId ?? index;
+      });
+
+      props.onSelectionChange(idsSelecionados);
     }
   }
 
-  function handleSelectRow(rowId) {
-    if (selecionadas.includes(rowId)) {
-      setSelecionadas(selecionadas.filter((id) => id !== rowId));
+  function handleSelectAll(event) {
+    if (event.target.checked) {
+      const todosIndices = linhas.map((linha, idx) => idx);
+      setSelecionadas(todosIndices);
+      notificarSelecao(todosIndices);
     } else {
-      setSelecionadas([...selecionadas, rowId]);
+      setSelecionadas([]);
+      notificarSelecao([]);
     }
+  }
+
+  function handleSelectRow(index) {
+    const proximasSelecionadas = selecionadas.includes(index)
+      ? selecionadas.filter((idx) => idx !== index)
+      : [...selecionadas, index];
+
+    setSelecionadas(proximasSelecionadas);
+    notificarSelecao(proximasSelecionadas);
   }
 
   function ordenacao(tipo, index) {
