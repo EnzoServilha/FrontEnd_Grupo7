@@ -5,8 +5,12 @@ import FilterButton from "../components/Filtro";
 import styles from "./VerMaisCliente.module.css";
 import Table from "../components/Table";
 import SearchBar from "../components/SearchBar";
+import { useNavigate } from "react-router-dom";
+
 
 function VerMaisCliente() {
+  const navigate = useNavigate();
+
   return (
     <div className={styles.pageContainer}>
       <Header />
@@ -14,16 +18,20 @@ function VerMaisCliente() {
       <main className={styles.content}>
         <div className={styles.headerCliente}>
           <div className={styles.titleGroup}>
-            <svg
-              className={styles.backIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              height="28px"
-              viewBox="0 -960 960 960"
-              width="28px"
-              fill="#0f172a"
+            <button
+              onClick={() => navigate("/contatos")}
             >
-              <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
-            </svg>
+              <svg
+                className={styles.backIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                height="28px"
+                viewBox="0 -960 960 960"
+                width="28px"
+                fill="#0f172a"
+              >
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+              </svg>
+            </button>
             <h1>Detalhes do Cliente</h1>
           </div>
 

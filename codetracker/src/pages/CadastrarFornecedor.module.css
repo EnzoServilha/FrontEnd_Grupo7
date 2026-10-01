@@ -3,7 +3,7 @@
   padding-top: 4px;
 }
 
-.header > h1 {
+.header>h1 {
   top: 4px;
   font-size: 18px;
 }
@@ -13,21 +13,26 @@
   margin-left: 70px;
 }
 
-.progressWrapper > div {
+.progressWrapper>div {
   padding-top: 0;
 }
 
-.progressWrapper > div > div > div:first-child {
+.page {
+  background: #f4f7fb;
+  font-family: sans-serif;
+}
+
+.progressWrapper>div>div>div:first-child {
   top: 11px;
   right: 11px;
   left: 11px;
 }
 
-.progressWrapper > div > div > div:not(:first-child) {
+.progressWrapper>div>div>div:not(:first-child) {
   width: 23px;
 }
 
-.progressWrapper > div > div > div:not(:first-child) > div {
+.progressWrapper>div>div>div:not(:first-child)>div {
   width: 23px;
   height: 23px;
   font-size: 11px;
@@ -59,12 +64,12 @@
   transform: translateY(-5px);
 }
 
-.generalGrid > div {
+.generalGrid>div {
   gap: 3px;
 }
 
 .generalGrid label,
-.tagField > label {
+.tagField>label {
   font-size: 11px;
 }
 
@@ -107,9 +112,10 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+
 }
 
-.tagField > label {
+.tagField>label {
   color: #475569;
   font-weight: 700;
 }
@@ -191,11 +197,11 @@
   column-gap: 87px;
 }
 
-.addressGrid > div {
+.addressGrid>div {
   gap: 3px;
 }
 
-.addressGrid > div:last-child {
+.addressGrid>div:last-child {
   padding-top: 23px;
 }
 
@@ -210,8 +216,8 @@
   font-size: 7px;
 }
 
-.cardAction > button,
-.footerActions > button {
+.cardAction>button,
+.footerActions>button {
   height: 25px;
   padding: 0 10px;
   border-radius: 3px;
@@ -262,12 +268,12 @@
     transform: none;
   }
 
-  .generalGrid > div {
+  .generalGrid>div {
     gap: 9px;
   }
 
   .generalGrid label,
-  .tagField > label {
+  .tagField>label {
     font-size: 14px;
   }
 
@@ -328,11 +334,11 @@
     column-gap: 100px;
   }
 
-  .addressGrid > div {
+  .addressGrid>div {
     gap: 9px;
   }
 
-  .addressGrid > div:last-child {
+  .addressGrid>div:last-child {
     padding-top: 38px;
   }
 
@@ -350,8 +356,8 @@
     bottom: 14px;
   }
 
-  .cardAction > button,
-  .footerActions > button {
+  .cardAction>button,
+  .footerActions>button {
     height: 36px;
     padding: 0 16px;
     font-size: 14px;
@@ -370,7 +376,7 @@
     padding: 16px 14px;
   }
 
-  .header > h1 {
+  .header>h1 {
     top: 52px;
     width: 100%;
     font-size: 21px;
@@ -383,18 +389,18 @@
     margin-left: auto;
   }
 
-  .progressWrapper > div > div > div:first-child {
+  .progressWrapper>div>div>div:first-child {
     top: 16px;
     right: 16px;
     left: 16px;
   }
 
-  .progressWrapper > div > div > div:not(:first-child),
-  .progressWrapper > div > div > div:not(:first-child) > div {
+  .progressWrapper>div>div>div:not(:first-child),
+  .progressWrapper>div>div>div:not(:first-child)>div {
     width: 32px;
   }
 
-  .progressWrapper > div > div > div:not(:first-child) > div {
+  .progressWrapper>div>div>div:not(:first-child)>div {
     height: 32px;
     font-size: 14px;
   }
@@ -406,8 +412,8 @@
     transform: none;
   }
 
-  .cardAction > button,
-  .footerActions > button {
+  .cardAction>button,
+  .footerActions>button {
     min-height: 40px;
     font-size: 14px;
   }
@@ -423,7 +429,7 @@
     row-gap: 12px;
   }
 
-  .addressGrid > div:last-child {
+  .addressGrid>div:last-child {
     padding-top: 0;
   }
 

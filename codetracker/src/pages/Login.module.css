@@ -5,6 +5,7 @@
   min-height: 100vh;
   min-width: 100%;
   background: linear-gradient(45deg, #0256cc, #5ea0fc);
+  font-family: sans-serif;
   padding: 20px;
 }
 

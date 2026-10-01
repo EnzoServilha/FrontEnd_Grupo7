@@ -1,28 +1,29 @@
 .page {
   min-height: 100vh;
   color: #0f172a;
-  background: #edf3f9;
+  background: #f4f7fb;
+  font-family: sans-serif;
 }
 
 .content {
   width: 100%;
-  padding: 16px 29px 32px;
+  padding: 24px 32px 32px;
 }
 
 .tabs {
   display: flex;
   gap: 4px;
-  margin-bottom: 11px;
+  margin-bottom: 16px;
 }
 
 .tabs button {
-  min-width: 111px;
-  padding: 7px 14px;
+  min-width: 88px;
+  padding: 10px 18px;
   color: #475569;
-  background: #dfe7f1;
+  background: #e7edf5;
   border: 1px solid transparent;
-  border-radius: 5px 5px 0 0;
-  font-size: 11px;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -39,33 +40,32 @@
 
 .toolbar {
   position: relative;
-  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 9px 10px;
-  margin-bottom: 12px;
+  padding: 10px;
+  margin-bottom: 18px;
   background: #ffffff;
-  border: 1px solid #d6deea;
-  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
 .searchActions,
 .actionButtons {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
 }
 
 .searchActions {
   min-width: 0;
-  flex: 1 1 430px;
+  flex: 1 1 390px;
 }
 
 .searchWrapper {
-  width: 360px;
+  width: 320px;
   max-width: 100%;
 }
 
@@ -81,37 +81,39 @@
 .optionsButton {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  color: #334155;
-  background: #f8fafc;
-  border: 1px solid #b9c7d8;
-  border-radius: 5px;
+  width: 44px;
+  height: 44px;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  transition: all 0.2s ease;
 }
 
 .optionsButton:hover {
   background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 .optionsButton svg {
-  width: 18px;
+  width: 22px;
   fill: none;
   stroke: currentColor;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2;
 }
 
 .searchActions > .menuContainer:last-child > button {
-  width: 38px;
-  height: 38px;
-  border-width: 1px;
-  border-radius: 5px;
+  width: 44px;
+  height: 44px;
+  border-width: 2px;
+  border-radius: 10px;
 }
 
 .searchActions > .menuContainer:last-child svg {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
 }
 
 .popover {
@@ -120,11 +122,11 @@
   left: 0;
   z-index: 30;
   display: grid;
-  min-width: 185px;
+  min-width: 180px;
   padding: 6px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 7px;
+  border-radius: 8px;
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
 }
 
@@ -132,7 +134,7 @@
   padding: 8px 10px;
   color: #334155;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 13px;
   text-align: left;
 }
 
@@ -153,15 +155,15 @@
 }
 
 .actionButtons > button {
-  height: 38px;
-  padding: 0 17px;
-  border-radius: 5px;
-  font-size: 12px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .actionButtons svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
 }
 
 .actionButtons > button:disabled {
@@ -178,119 +180,30 @@
 }
 
 .tableSection {
-  width: 100%;
-  overflow-x: auto;
+  min-width: 0;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 5px;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.tableSection table {
-  width: 100%;
-  min-width: 980px;
-  border-collapse: collapse;
+.tableLink {
+  padding: 0;
   color: #0f172a;
-  font-size: 11px;
-  table-layout: fixed;
-}
-
-.tableSection th,
-.tableSection td {
-  padding: 11px 10px;
-  border-bottom: 1px solid #d9e1ec;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.tableSection th {
-  height: 43px;
-  background: #f8fafc;
-  font-size: 10px;
+  font-size: inherit;
   font-weight: 700;
-  line-height: 1.05;
+  text-align: left;
 }
 
-.tableSection td {
-  height: 60px;
-  background: #ffffff;
-  line-height: 1.2;
-}
-
-.tableSection tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.tableSection tbody tr {
-  cursor: pointer;
-}
-
-.tableSection tbody tr:hover td,
-.tableSection tbody tr:focus td,
-.selectedRow td {
-  background: #f4f8fd;
-}
-
-.tableSection tbody tr:focus {
-  outline: 2px solid #60a5fa;
-  outline-offset: -2px;
-}
-
-.checkboxColumn {
-  width: 43px;
-}
-
-.tableSection th:nth-child(2) {
-  width: 15%;
-}
-
-.tableSection th:nth-child(3) {
-  width: 13%;
-}
-
-.tableSection th:nth-child(4) {
-  width: 13%;
-}
-
-.tableSection th:nth-child(5),
-.tableSection th:nth-child(6) {
-  width: 12%;
-}
-
-.tableSection th:nth-child(7) {
-  width: 11%;
-}
-
-.tableSection th:nth-child(8),
-.tableSection th:nth-child(9) {
-  width: 10%;
-}
-
-.checkbox {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  margin: 0;
-  background: #ffffff;
-  border: 1px solid #94a3b8;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.checkbox:checked {
-  background-color: #0056cb;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 13px;
-  border-color: #0056cb;
+.tableLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
 .associatedCodes {
   display: block;
   margin-top: 3px;
   color: #0056cb;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -309,15 +222,9 @@
   font-weight: 700;
 }
 
-.emptyState {
-  height: 100px !important;
-  color: #64748b;
-  text-align: center !important;
-}
-
 @media (max-width: 1100px) {
   .content {
-    padding: 13px 14px 28px;
+    padding: 14px 16px 24px;
   }
 
   .tabs {
@@ -325,14 +232,14 @@
   }
 
   .tabs button {
-    min-width: 100px;
-    padding: 6px 12px;
-    font-size: 8px;
+    min-width: 0;
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
   .toolbar {
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 8px;
     margin-bottom: 12px;
   }
 
@@ -342,168 +249,101 @@
   }
 
   .searchActions {
-    flex-basis: 320px;
-  }
-
-  .searchWrapper {
-    width: 200px;
-  }
-
-  .searchWrapper input {
-    height: 26px;
-    padding: 0 9px;
-    border-width: 1px;
-    border-radius: 3px;
-    font-size: 8px;
-  }
-
-  .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
-    width: 26px;
-    height: 26px;
-    border-radius: 3px;
-  }
-
-  .optionsButton svg,
-  .searchActions > .menuContainer:last-child svg {
-    width: 13px;
-    height: 13px;
-  }
-
-  .actionButtons > button {
-    height: 27px;
-    gap: 4px;
-    padding: 0 10px;
-    border-radius: 3px;
-    font-size: 8px;
-  }
-
-  .actionButtons svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .tableSection table {
-    min-width: 0;
-    font-size: 7px;
-  }
-
-  .tableSection th,
-  .tableSection td {
-    padding: 7px 8px;
-  }
-
-  .tableSection th {
-    height: 35px;
-    font-size: 7px;
-  }
-
-  .tableSection td {
-    height: 44px;
-  }
-
-  .checkboxColumn {
-    width: 31px;
-  }
-
-  .checkbox {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-  }
-
-  .associatedCodes {
-    font-size: 6px;
-  }
-
-  .stockBadge {
-    padding: 4px 6px;
-  }
-
-  .popover {
-    min-width: 140px;
-  }
-
-  .popover button {
-    padding: 6px 8px;
-    font-size: 9px;
-  }
-}
-
-@media (max-width: 700px) {
-  .content {
-    padding: 14px 12px 24px;
-  }
-
-  .tabs button {
-    min-width: 0;
-    flex: 1;
-    padding: 9px 10px;
-    font-size: 11px;
-  }
-
-  .searchActions {
-    width: 100%;
     flex-basis: 100%;
   }
 
   .searchWrapper {
+    width: auto;
     min-width: 0;
     flex: 1;
   }
 
-  .searchWrapper input,
-  .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
-    height: 40px;
-  }
-
   .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
     font-size: 12px;
   }
 
   .optionsButton,
   .searchActions > .menuContainer:last-child > button {
     width: 40px;
+    height: 40px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .optionsButton svg,
+  .searchActions > .menuContainer:last-child svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .actionButtons > button {
+    height: 40px;
+    gap: 4px;
+    padding: 0 12px;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+
+  .actionButtons svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .content {
+    padding: 14px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tabs button {
+    min-width: 76px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .searchActions {
+    flex-basis: 100%;
+  }
+
+  .searchWrapper {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .optionsButton,
+  .searchActions > .menuContainer:last-child > button {
+    width: 40px;
+    height: 40px;
   }
 
   .actionButtons {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
     margin-left: 0;
+    justify-content: flex-end;
   }
 
   .actionButtons > button {
     min-width: 0;
     height: 40px;
-    padding: 0 7px;
-    font-size: 10px;
+    flex: 1;
+    padding: 0 8px;
+    font-size: 11px;
   }
 
   .actionButtons span {
     display: none;
-  }
-
-  .tableSection table {
-    min-width: 880px;
-    font-size: 10px;
-  }
-
-  .tableSection th {
-    font-size: 9px;
-  }
-
-  .tableSection td {
-    height: 52px;
-  }
-
-  .checkbox {
-    width: 13px;
-    height: 13px;
-  }
-
-  .associatedCodes {
-    font-size: 8px;
   }
 }

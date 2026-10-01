@@ -1,0 +1,271 @@
+.page {
+  min-height: 100vh;
+  background: #eef2f6;
+  color: #0f172a;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 14px 32px 0;
+  min-height: 48px;
+}
+
+.header > :first-child {
+  justify-self: start;
+}
+
+.header h1 {
+  grid-column: 2;
+  justify-self: center;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #475569;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 0 32px;
+}
+
+.progressWrapper {
+  width: min(100%, 520px);
+  margin: 0 auto 12px;
+}
+
+.form {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  width: min(100%, 980px);
+  background: #f8f9fb;
+  border: 1px solid #dfe4ea;
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  padding: 12px 28px 18px;
+  min-height: 255px;
+}
+
+.cardPedido {
+  min-height: 500px;
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.generalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 28px 52px;
+  padding: 0 18px;
+}
+
+.column,
+.columnRight {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tipoPedido {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 11px;
+  color: #334155;
+}
+
+.tipoPedido legend {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tipoPedido label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tipoPedido input {
+  accent-color: #0056cb;
+}
+
+.textareaField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.textareaField textarea {
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 1px solid #d7dde3;
+  border-radius: 4px;
+  background: #ffffff;
+  resize: vertical;
+  font: inherit;
+}
+
+.cardActionsRight {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.inventoryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.searchField {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.searchField svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: #64748b;
+  stroke-linecap: round;
+  stroke-width: 1.7;
+  transform: translateY(-50%);
+}
+
+.searchField input {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px 0 36px;
+  border: 1px solid #d7dde3;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 12px;
+}
+
+.suggestionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.suggestionItem {
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.inlineInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.inlineInputs > div {
+  width: 100%;
+}
+
+.addButton {
+  display: flex;
+  justify-content: center;
+}
+
+.errorMessage {
+  margin: 0 0 14px;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid #d8dee6;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 12px;
+  color: #334155;
+}
+
+.tableWrap thead th {
+  background: #eef4fb;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.footerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.footerRight {
+  display: flex;
+  gap: 16px;
+}
+
+@media (max-width: 760px) {
+  .generalGrid,
+  .inlineInputs {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 12px 18px 16px;
+  }
+
+  .header {
+    padding-inline: 18px;
+  }
+}

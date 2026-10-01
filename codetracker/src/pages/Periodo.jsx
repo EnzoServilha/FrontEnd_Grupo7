@@ -4,6 +4,7 @@ import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
+import Table from "../components/Table";
 import styles from "./Periodo.module.css";
 
 const periodosIniciais = [
@@ -105,29 +106,6 @@ function Periodo() {
     });
   }, [anoFiltrado, busca, campoBusca, periodos]);
 
-  const idsVisiveis = periodosFiltrados.map((periodo) => periodo.id);
-  const todosVisiveisSelecionados =
-    idsVisiveis.length > 0 &&
-    idsVisiveis.every((id) => selecionados.includes(id));
-
-  const alternarTodos = () => {
-    setSelecionados((idsAtuais) => {
-      if (todosVisiveisSelecionados) {
-        return idsAtuais.filter((id) => !idsVisiveis.includes(id));
-      }
-
-      return [...new Set([...idsAtuais, ...idsVisiveis])];
-    });
-  };
-
-  const alternarPeriodo = (id) => {
-    setSelecionados((idsAtuais) =>
-      idsAtuais.includes(id)
-        ? idsAtuais.filter((idAtual) => idAtual !== id)
-        : [...idsAtuais, id],
-    );
-  };
-
   const excluirSelecionados = () => {
     setPeriodos((itensAtuais) =>
       itensAtuais.filter((periodo) => !selecionados.includes(periodo.id)),
@@ -162,6 +140,23 @@ function Periodo() {
     setModalAdicionarAberto(false);
   };
 
+  const columns = [
+    { name: "Número", ordena: false, tipo: "string" },
+    { name: "Data cadastro", ordena: true, tipo: "date" },
+    { name: "Total de peças", ordena: true, tipo: "number" },
+    { name: "Anotações", ordena: false, tipo: "string" },
+  ];
+
+  const rows = periodosFiltrados.map((periodo) => ({
+    id: periodo.id,
+    cells: [
+      <span className={styles.periodNumber}>{periodo.numero}</span>,
+      periodo.dataCadastro,
+      periodo.totalPecas,
+      <span className={styles.annotationBar} title={periodo.anotacoes} />,
+    ],
+  }));
+
   const campoBuscaAtivo = camposBusca.find(
     ([valor]) => valor === campoBusca,
   )?.[1];
@@ -171,6 +166,8 @@ function Periodo() {
       <Header />
 
       <main className={styles.content}>
+        <div className={styles.tabsSpacer} aria-hidden="true" />
+
         <section className={styles.toolbar} aria-label="Ações dos períodos">
           <div className={styles.searchActions}>
             <div className={styles.menuContainer}>
@@ -283,74 +280,14 @@ function Periodo() {
         </section>
 
         <section className={styles.tableSection} aria-label="Lista de períodos">
-          <table>
-            <thead>
-              <tr>
-                <th className={styles.checkboxColumn}>
-                  <input
-                    type="checkbox"
-                    className={styles.checkbox}
-                    checked={todosVisiveisSelecionados}
-                    onChange={alternarTodos}
-                    aria-label="Selecionar todos os períodos visíveis"
-                  />
-                </th>
-                <th>Número</th>
-                <th>Data cadastro</th>
-                <th>Total de peças</th>
-                <th>Anotações</th>
-                <th aria-label="Ações" />
-              </tr>
-            </thead>
-            <tbody>
-              {periodosFiltrados.map((periodo) => {
-                const selecionado = selecionados.includes(periodo.id);
-
-                return (
-                  <tr
-                    key={periodo.id}
-                    className={selecionado ? styles.selectedRow : ""}
-                  >
-                    <td>
-                      <input
-                        type="checkbox"
-                        className={styles.checkbox}
-                        checked={selecionado}
-                        onChange={() => alternarPeriodo(periodo.id)}
-                        aria-label={`Selecionar período ${periodo.numero}`}
-                      />
-                    </td>
-                    <td className={styles.periodNumber}>{periodo.numero}</td>
-                    <td>{periodo.dataCadastro}</td>
-                    <td>{periodo.totalPecas}</td>
-                    <td>
-                      <span
-                        className={styles.annotationBar}
-                        title={periodo.anotacoes}
-                      />
-                    </td>
-                    <td className={styles.consultColumn}>
-                      <button
-                        type="button"
-                        className={styles.consultButton}
-                        onClick={() => setPeriodoConsultado(periodo)}
-                      >
-                        Consultar
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              {periodosFiltrados.length === 0 && (
-                <tr>
-                  <td className={styles.emptyState} colSpan="6">
-                    Nenhum período encontrado.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <Table
+            key={`${busca}-${campoBusca}-${anoFiltrado}`}
+            columns={columns}
+            rows={rows}
+            getRowId={(row) => row.id}
+            selectedRows={selecionados}
+            onSelectionChange={setSelecionados}
+          />
         </section>
       </main>
 

@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/Login";
-import Cadastro from "./pages/Cadastro";
 import ContaInativa from "./pages/ContaInativa";
 import Dashboard from "./pages/Dashboard";
 import Pecas from "./pages/Pecas";
@@ -16,15 +15,13 @@ import VerMaisPedidos from "./pages/VerMaisPedidos";
 import CadastrarCliente from "./pages/CadastrarCliente";
 import CadastrarFornecedor from "./pages/CadastrarFornecedor";
 import CadastrarPeca from "./pages/CadastrarPeca";
+import CadastrarPedido from "./pages/CadastrarPedido";
+import EntradasESaidas from "./pages/EntradasESaidas";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
-  },
-  {
-    path: "/cadastro",
-    element: <Cadastro />,
   },
   {
     path: "/inativa",
@@ -57,6 +54,14 @@ export const routes = createBrowserRouter([
   {
     path: "/cadastrarPeca",
     element: <CadastrarPeca />,
+  },
+  {
+    path: "/cadastrarPedido",
+    element: <CadastrarPedido />,
+  },
+  {
+    path: "/entradasESaidas",
+    element: <EntradasESaidas />,
   },
   {
     path: "/periodo",

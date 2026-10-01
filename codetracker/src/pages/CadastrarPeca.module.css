@@ -1,3 +1,8 @@
+.page {
+  background: #f4f7fb;
+  font-family: sans-serif;
+}
+
 .header {
   min-height: 44px;
   padding-top: 4px;

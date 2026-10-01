@@ -13,6 +13,8 @@ function Header() {
     { name: "periodo", label: "Período", path: "/periodo" },
   ];
 
+  const isPecasActive = location.pathname === "/pecas" || location.pathname === "/entradasESaidas";
+
   const handleNavClick = (path) => {
     navigate(path);
   };
@@ -25,21 +27,25 @@ function Header() {
         </div>
 
         <nav className={styles.headerNav}>
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.path}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick(item.path);
-              }}
-              className={`${styles.navItem} ${
-                location.pathname === item.path ? styles.active : ""
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) => {
+            const isActive =
+              item.name === "pecas"
+                ? isPecasActive
+                : location.pathname === item.path;
+            return (
+              <a
+                key={item.name}
+                href={item.path}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.path);
+                }}
+                className={`${styles.navItem} ${isActive ? styles.active : ""}`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className={styles.headerUser}>
