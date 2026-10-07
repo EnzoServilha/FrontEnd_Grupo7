@@ -1,35 +1,33 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
+import ServerResponse from "../components/ServerResponse";
 import Table from "../components/Table";
+import { api } from "../provider/api";
 import styles from "./Periodo.module.css";
 
-const periodosIniciais = [
-  {
-    id: 3,
-    numero: "03",
-    dataCadastro: "01/04/2026",
-    totalPecas: 10,
-    anotacoes: "Inventário mensal de abril",
-  },
-  {
-    id: 2,
-    numero: "02",
-    dataCadastro: "01/03/2026",
-    totalPecas: 42,
-    anotacoes: "Inventário mensal de março",
-  },
-  {
-    id: 1,
-    numero: "01",
-    dataCadastro: "01/04/2025",
-    totalPecas: 150,
-    anotacoes: "Inventário anual",
-  },
-];
+// "2026-10-07T15:12:42" -> "07/10/2026" (sem new Date, para não deslocar por fuso)
+function formatarDataApi(valor) {
+  if (!valor) return "---";
+  const [ano, mes, dia] = String(valor).slice(0, 10).split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+function mapearPeriodo(periodo) {
+  return {
+    id: periodo.id,
+    numero: String(periodo.id).padStart(2, "0"),
+    dataCadastro: formatarDataApi(periodo.dataCriacao),
+    totalPecas: periodo.qtdPecas ?? 0,
+    anotacoes: periodo.anotacao || "Sem anotações",
+    fechado: periodo.fechado,
+    dataFechamento: periodo.dataFechamento,
+  };
+}
 
 const camposBusca = [
   ["todos", "Todos os campos"],
@@ -39,13 +37,6 @@ const camposBusca = [
   ["anotacoes", "Anotações"],
 ];
 
-function dataAtualParaInput() {
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const dia = String(hoje.getDate()).padStart(2, "0");
-  return `${ano}-${mes}-${dia}`;
-}
 
 function formatarData(data) {
   const [ano, mes, dia] = data.split("-");
@@ -53,7 +44,29 @@ function formatarData(data) {
 }
 
 function Periodo() {
-  const [periodos, setPeriodos] = useState(periodosIniciais);
+  const navigate = useNavigate();
+  const [periodos, setPeriodos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+  const [erroAdicionar, setErroAdicionar] = useState("");
+
+  const carregarPeriodos = useCallback(async () => {
+    setErro("");
+    try {
+      const resposta = await api.get("/periodos");
+      const lista = Array.isArray(resposta.data) ? resposta.data : [];
+      setPeriodos(lista.map(mapearPeriodo));
+    } catch (error) {
+      console.error("Erro ao buscar períodos:", error);
+      setErro("Não foi possível carregar os períodos.");
+    } finally {
+      setCarregando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    carregarPeriodos();
+  }, [carregarPeriodos]);
   const [busca, setBusca] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [anoFiltrado, setAnoFiltrado] = useState("todos");
@@ -64,8 +77,6 @@ function Periodo() {
   const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
   const [periodoConsultado, setPeriodoConsultado] = useState(null);
   const [novoPeriodo, setNovoPeriodo] = useState({
-    dataCadastro: dataAtualParaInput(),
-    totalPecas: "",
     anotacoes: "",
   });
 
@@ -93,11 +104,11 @@ function Periodo() {
       const valores =
         campoBusca === "todos"
           ? [
-              periodo.numero,
-              periodo.dataCadastro,
-              periodo.totalPecas,
-              periodo.anotacoes,
-            ]
+            periodo.numero,
+            periodo.dataCadastro,
+            periodo.totalPecas,
+            periodo.anotacoes,
+          ]
           : [periodo[campoBusca]];
 
       return valores.some((valor) =>
@@ -113,32 +124,32 @@ function Periodo() {
     setSelecionados([]);
   };
 
-  const adicionarPeriodo = (event) => {
+  const adicionarPeriodo = async (event) => {
     event.preventDefault();
+    setErroAdicionar("");
 
-    const maiorNumero = periodos.reduce(
-      (maior, periodo) => Math.max(maior, Number(periodo.numero)),
-      0,
-    );
+    try {
+      await api.post("/periodos", {
+        anotacao: novoPeriodo.anotacoes,
+        qtdPecas: Number(novoPeriodo.totalPecas) || 0,
+        dataCriacao: `${novoPeriodo.dataCadastro}T00:00:00`,
+      });
 
-    setPeriodos((itensAtuais) => [
-      {
-        id: Date.now(),
-        numero: String(maiorNumero + 1).padStart(2, "0"),
-        dataCadastro: formatarData(novoPeriodo.dataCadastro),
-        totalPecas: Number(novoPeriodo.totalPecas) || 0,
-        anotacoes: novoPeriodo.anotacoes || "Sem anotações",
-      },
-      ...itensAtuais,
-    ]);
+      await carregarPeriodos();
 
-    setNovoPeriodo({
-      dataCadastro: dataAtualParaInput(),
-      totalPecas: "",
-      anotacoes: "",
-    });
-    setModalAdicionarAberto(false);
+      setNovoPeriodo({
+        anotacoes: "",
+      });
+      setModalAdicionarAberto(false);
+    } catch (error) {
+      console.error("Erro ao adicionar período:", error);
+      setErroAdicionar(
+        error?.response?.data?.message ||
+        "Não foi possível adicionar o período.",
+      );
+    }
   };
+
 
   const columns = [
     { name: "Número", ordena: false, tipo: "string" },
@@ -150,10 +161,16 @@ function Periodo() {
   const rows = periodosFiltrados.map((periodo) => ({
     id: periodo.id,
     cells: [
-      <span className={styles.periodNumber}>{periodo.numero}</span>,
+      <button
+        type="button"
+        className={styles.periodLink}
+        onClick={() => navigate("/verMaisPeriodo", { state: { periodo } })}
+      >
+        {periodo.numero}
+      </button>,
       periodo.dataCadastro,
       periodo.totalPecas,
-      <span className={styles.annotationBar} title={periodo.anotacoes} />,
+      periodo.anotacoes,
     ],
   }));
 
@@ -167,6 +184,13 @@ function Periodo() {
 
       <main className={styles.content}>
         <div className={styles.tabsSpacer} aria-hidden="true" />
+        {erro && (
+          <ServerResponse
+            type="error"
+            title="Falha ao carregar"
+            message={erro}
+          />
+        )}
 
         <section className={styles.toolbar} aria-label="Ações dos períodos">
           <div className={styles.searchActions}>
@@ -266,28 +290,20 @@ function Periodo() {
             >
               Adicionar
             </Button>
-            <Button
-              icone="deletar"
-              estilo="deletar"
-              disabled={selecionados.length === 0}
-              onClick={() => {
-                if (selecionados.length > 0) setModalExcluirAberto(true);
-              }}
-            >
-              Deletar
-            </Button>
           </div>
         </section>
 
         <section className={styles.tableSection} aria-label="Lista de períodos">
-          <Table
-            key={`${busca}-${campoBusca}-${anoFiltrado}`}
-            columns={columns}
-            rows={rows}
-            getRowId={(row) => row.id}
-            selectedRows={selecionados}
-            onSelectionChange={setSelecionados}
-          />
+          {carregando ? (
+            <p>Carregando períodos...</p>
+          ) : (
+            <Table
+              key={`${busca}-${campoBusca}-${anoFiltrado}`}
+              columns={columns}
+              rows={rows}
+              selecionavel={false}
+            />
+          )}
         </section>
       </main>
 
@@ -309,40 +325,6 @@ function Periodo() {
           >
             <h2>Adicionar Período</h2>
 
-            <label htmlFor="data-periodo">
-              Data de cadastro
-              <input
-                id="data-periodo"
-                type="date"
-                required
-                value={novoPeriodo.dataCadastro}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    dataCadastro: event.target.value,
-                  }))
-                }
-              />
-            </label>
-
-            <label htmlFor="total-pecas-periodo">
-              Total de peças
-              <input
-                id="total-pecas-periodo"
-                type="number"
-                min="0"
-                required
-                value={novoPeriodo.totalPecas}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    totalPecas: event.target.value,
-                  }))
-                }
-                placeholder="Digite o total de peças"
-              />
-            </label>
-
             <label htmlFor="anotacoes-periodo">
               Anotações
               <textarea
@@ -357,6 +339,13 @@ function Periodo() {
                 placeholder="Digite as anotações do período"
               />
             </label>
+            {erroAdicionar && (
+              <ServerResponse
+                type="error"
+                title="Falha ao adicionar"
+                message={erroAdicionar}
+              />
+            )}
 
             <div className={styles.modalActions}>
               <Button

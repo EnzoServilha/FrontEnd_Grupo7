@@ -7,7 +7,29 @@ function formatarData(data) {
   return `${partes[2]}-${partes[1]}-${partes[0]}`;
 }
 
+// Converte o texto da célula em número para a ordenação.
+// "remover" pode ser uma string ou um array de strings a serem
+// retiradas do texto antes da conversão (ex.: "R$").
+function paraNumero(valor, remover) {
+  let texto = String(valor ?? "");
+
+  [].concat(remover ?? []).forEach((trecho) => {
+    if (trecho) texto = texto.split(trecho).join("");
+  });
+
+  texto = texto.trim();
+
+  // Formato brasileiro: "21.780,00" -> "21780.00"
+  if (texto.includes(",")) {
+    texto = texto.replace(/\./g, "").replace(",", ".");
+  }
+
+  return parseFloat(texto) || 0;
+}
+
 function Table(props) {
+
+  const selecionavel = props.selecionavel ?? true;
   // Id de cada linha: prioriza rowIds (se vier), depois row.id, depois o índice.
   const resolverId = (row, idx) => props.rowIds?.[idx] ?? row?.id ?? idx;
 
@@ -77,8 +99,8 @@ function Table(props) {
 
     if (tipo === "number") {
       listaOrdenada.sort((a, b) => {
-        const numA = parseFloat(a.cells[index]) || 0;
-        const numB = parseFloat(b.cells[index]) || 0;
+        const numA = paraNumero(a.cells[index], props.removerNaOrdenacao);
+        const numB = paraNumero(b.cells[index], props.removerNaOrdenacao);
         return novaDirecao ? numA - numB : numB - numA;
       });
     } else if (tipo === "date") {
@@ -108,17 +130,19 @@ function Table(props) {
       <table className={styles["custom-table"]}>
         <thead>
           <tr>
-            <th>
-              <input
-                className={styles["custom-checkbox"]}
-                type="checkbox"
-                checked={
-                  idsVisiveis.length > 0 &&
-                  idsVisiveis.every((id) => selecionadas.includes(id))
-                }
-                onChange={handleSelectAll}
-              />
-            </th>
+            {selecionavel && (
+              <th>
+                <input
+                  className={styles["custom-checkbox"]}
+                  type="checkbox"
+                  checked={
+                    idsVisiveis.length > 0 &&
+                    idsVisiveis.every((id) => selecionadas.includes(id))
+                  }
+                  onChange={handleSelectAll}
+                />
+              </th>
+            )}
             {props.columns.map((column, index) => (
               <th
                 key={index}
@@ -162,14 +186,16 @@ function Table(props) {
                 key={linha.id}
                 className={isSelected ? styles["selected-row"] : ""}
               >
-                <td>
-                  <input
-                    className={styles["custom-checkbox"]}
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleSelectRow(linha.id)}
-                  />
-                </td>
+                {selecionavel && (
+                  <td>
+                    <input
+                      className={styles["custom-checkbox"]}
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleSelectRow(linha.id)}
+                    />
+                  </td>
+                )}
                 {linha.cells.map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}

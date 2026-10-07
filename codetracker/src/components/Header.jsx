@@ -1,9 +1,20 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
+
+function lerUsuarioLogado() {
+  try {
+    return JSON.parse(localStorage.getItem("usuarioLogado")) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [usuario] = useState(lerUsuarioLogado);
+
 
   const navItems = [
     { name: "dashboard", label: "Dashboard", path: "/dashboard" },
@@ -61,7 +72,9 @@ function Header() {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          <span className={styles.userName}>Usuário Conectado</span>
+          <span className={styles.userName}>
+            {usuario?.nome ?? "Usuário Conectado"}
+          </span>
         </div>
       </div>
     </header>

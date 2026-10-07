@@ -27,8 +27,11 @@ const camposBusca = [
 
 const normalizarTexto = (valor) => {
   if (valor === null || valor === undefined || valor === "") return placeholder;
+  if (valor === "SAIDA") return "SAÍDA";
   return String(valor);
 };
+
+
 
 const formatarData = (valor) => {
   if (!valor) return placeholder;
@@ -99,12 +102,15 @@ const normalizarPedido = (movimentacao) => {
     dataEntrega: formatarData(movimentacao?.dataEntrega),
     dataPrevista: formatarData(movimentacao?.dataEntregaPrevista),
     dataPedido: formatarData(movimentacao?.dataMovimentacao),
+    usuarioCriador: normalizarTexto(movimentacao?.usuario?.nome),
+    movimentacaoOriginalId: movimentacao?.id ?? null
   };
 };
 
 function Pedidos() {
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
+  const [pedidosOriginais, setPedidosOriginais] = useState([]);
   const [selecionados, setSelecionados] = useState([]);
   const [tabAtiva, setTabAtiva] = useState("todos");
   const [busca, setBusca] = useState("");
@@ -115,10 +121,10 @@ function Pedidos() {
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
 
-  const gerarEtiquetaSelecionados = () => {
-    if (selecionados.length === 0) return;
-    // TODO: integrar geração de etiqueta para os pedidos selecionados
-  };
+  // const gerarEtiquetaSelecionados = () => {
+  //   if (selecionados.length === 0) return;
+  //   // TODO: integrar geração de etiqueta para os pedidos selecionados
+  // };
 
   const alterarStatusSelecionados = (event) => {
     const novoStatus = event.target.value;
@@ -134,8 +140,8 @@ function Pedidos() {
     event.target.value = "";
   };
   const editarSelecionado = () => {
-    const pedido = pedidos.find((item) => item.id === selecionados[0]);
-    if (pedido) navigate("/verMaisPedido", { state: { pedido } });
+    const pedidoOriginal = pedidosOriginais.find((item) => item.id === selecionados[0]);
+    if (pedidoOriginal) navigate("/verMaisPedido", { state: { pedido: pedidoOriginal } });
   };
 
   useEffect(() => {
@@ -153,6 +159,7 @@ function Pedidos() {
           lista = Array.isArray(respostaMovimentacoes.data) ? respostaMovimentacoes.data : [];
         }
 
+        setPedidosOriginais(lista);
         setPedidos(lista.map(normalizarPedido));
       } catch (error) {
         console.error("Erro ao buscar pedidos:", error);
@@ -220,31 +227,36 @@ function Pedidos() {
     { name: "Data da Entrega", ordena: true, tipo: "date" },
     { name: "Data Prevista", ordena: true, tipo: "date" },
     { name: "Data do Pedido", ordena: true, tipo: "date" },
+    { name: "Usuário Criador", ordena: false, tipo: "string" },
   ];
 
   const rowIds = pedidosFiltrados.map((pedido) => pedido.id);
 
-  const rows = pedidosFiltrados.map((pedido) => [
-    <button
-      type="button"
-      className={styles.tableLink}
-      onClick={() => navigate("/verMaisPedido", { state: { pedido } })}
-    >
-      {pedido.tipo}
-    </button>,
-    <span className={`${styles.statusBadge} ${styles[pedido.statusClass]}`}>
-      {pedido.status}
-    </span>,
-    pedido.valorTotal,
-    pedido.pagadorFrete,
-    pedido.precoFrete,
-    pedido.precoImposto,
-    pedido.precoProdutos,
-    pedido.quantidade,
-    pedido.dataEntrega,
-    pedido.dataPrevista,
-    pedido.dataPedido,
-  ]);
+  const rows = pedidosFiltrados.map((pedido) => {
+    const original = pedidosOriginais.find((o) => o.id === pedido.id);
+    return [
+      <button
+        type="button"
+        className={styles.tableLink}
+        onClick={() => navigate("/verMaisPedido", { state: { pedido: original ?? pedido } })}
+      >
+        {pedido.tipo}
+      </button>,
+      <span className={`${styles.statusBadge} ${styles[pedido.statusClass]}`}>
+        {pedido.status}
+      </span>,
+      pedido.valorTotal,
+      pedido.pagadorFrete,
+      pedido.precoFrete,
+      pedido.precoImposto,
+      pedido.precoProdutos,
+      pedido.quantidade,
+      pedido.dataEntrega,
+      pedido.dataPrevista,
+      pedido.dataPedido,
+      pedido.usuarioCriador,
+    ];
+  });
 
   const campoBuscaAtivo = camposBusca.find(
     ([valor]) => valor === campoBusca,
@@ -276,6 +288,7 @@ function Pedidos() {
   };
 
   return (
+
     <div className={styles.page}>
       <Header />
 
@@ -409,13 +422,13 @@ function Pedidos() {
               >
                 Adicionar
               </Button>
-              <Button
+              {/* <Button
                 estilo="editar"
                 disabled={selecionados.length === 0}
                 onClick={gerarEtiquetaSelecionados}
               >
                 Gerar Etiqueta
-              </Button>
+              </Button> */}
               <select
                 className={styles.statusSelect}
                 aria-label="Alterar status dos pedidos selecionados"
@@ -460,6 +473,7 @@ function Pedidos() {
             rows={carregando ? [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]] : rowsExibidos}
             rowIds={rowIds}
             onSelectionChange={setSelecionados}
+            removerNaOrdenacao="R$"
           />
         </section>
       </main>
