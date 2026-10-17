@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
@@ -8,132 +9,44 @@ import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Contatos.module.css";
 
-const contatosIniciais = {
-  fornecedores: [
-    {
-      id: 1,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria A"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 2,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria B"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 3,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria C"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 4,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria A"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 5,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria B"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 6,
-      empresa: "Nome da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria C"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-  ],
-  clientes: [
-    {
-      id: 1,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria A"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 2,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria B"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 3,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria C"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 4,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria A"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 5,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria B"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-    {
-      id: 6,
-      empresa: "Nome Da Empresa",
-      contato: "Nome do Contato",
-      localizacao: "UF - Cidade",
-      telefone: "(00) 00000-0000",
-      email: "email@empresa.com",
-      categorias: ["Categoria C"],
-      fabricantes: ["Marca X", "Marca Y", "Marca Z"],
-    },
-  ],
+const formatarLocalizacao = (endereco) => {
+  if (!endereco) return "Não informada";
+
+  const uf = endereco.uf || "--";
+  const cidade = endereco.cidade || "Não informada";
+
+  return `${uf} - ${cidade}`;
 };
+
+const extrairNomes = (lista) => {
+  if (!Array.isArray(lista)) return [];
+
+  return lista
+    .map((item) => (typeof item === "string" ? item : item?.nome))
+    .filter(Boolean);
+};
+
+const normalizarFornecedor = (fornecedor) => ({
+  id: fornecedor.id,
+  empresa: fornecedor.nomeEmpresa || "Não informado",
+  contato: fornecedor.nomeContato || "Não informado",
+  localizacao: formatarLocalizacao(fornecedor.endereco),
+  telefone: fornecedor.telefone || "Não informado",
+  email: fornecedor.email || "Não informado",
+  categorias: extrairNomes(fornecedor.categoria),
+  fabricantes: extrairNomes(fornecedor.marcas),
+});
+
+const normalizarCliente = (cliente) => ({
+  id: cliente.id,
+  empresa: cliente.nomeEmpresa || "Não informado",
+  contato: cliente.nomeContato || "Não informado",
+  localizacao: formatarLocalizacao(cliente.endereco),
+  telefone: cliente.telefone || "Não informado",
+  email: cliente.email || "Não informado",
+  categorias: [],
+  fabricantes: [],
+});
 
 const camposBuscaFornecedores = [
   ["todos", "Todos os campos"],
@@ -165,18 +78,15 @@ function Contatos() {
   );
   const isCliente = tipoAtivo === "clientes";
   const rotaDetalhes = isCliente ? "/verMaisCliente" : "/verMaisFornecedor";
-  const novoContato = isCliente
-    ? location.state?.novoCliente
-    : location.state?.novoFornecedor;
 
-  const [contatosPorTipo, setContatosPorTipo] = useState(contatosIniciais);
+  const [contatosPorTipo, setContatosPorTipo] = useState({
+    fornecedores: [],
+    clientes: [],
+  });
 
   const contatosAtivos = useMemo(
-    () =>
-      novoContato
-        ? [novoContato, ...contatosPorTipo[tipoAtivo]]
-        : contatosPorTipo[tipoAtivo],
-    [novoContato, contatosPorTipo, tipoAtivo],
+    () => contatosPorTipo[tipoAtivo] || [],
+    [contatosPorTipo, tipoAtivo],
   );
 
   const [busca, setBusca] = useState("");
@@ -184,6 +94,45 @@ function Contatos() {
   const [selecionados, setSelecionados] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+  const [fornecedoresCarregados, setFornecedoresCarregados] = useState([]);
+  const [clientesCarregados, setClientesCarregados] = useState([]);
+
+  useEffect(() => {
+    const contatosFornecedoresCarregados = async () => {
+      try {
+        const responseFornecedores = await api.get("/fornecedores");
+        const fornecedoresNormalizados = (responseFornecedores.data || []).map(
+          normalizarFornecedor,
+        );
+        setFornecedoresCarregados(fornecedoresNormalizados);
+        setContatosPorTipo((dadosAtuais) => ({
+          ...dadosAtuais,
+          fornecedores: fornecedoresNormalizados,
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar fornecedores:", error);
+      }
+    };
+
+    const contatosClientesCarregados = async () => {
+      try {
+        const responseClientes = await api.get("/clientes");
+        const clientesNormalizados = (responseClientes.data?.conteudo || []).map(
+          normalizarCliente,
+        );
+        setClientesCarregados(clientesNormalizados);
+        setContatosPorTipo((dadosAtuais) => ({
+          ...dadosAtuais,
+          clientes: clientesNormalizados,
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+      }
+    };
+
+    contatosFornecedoresCarregados();
+    contatosClientesCarregados();
+  }, []);
 
   const camposBuscaAtual = isCliente
     ? camposBuscaClientes
