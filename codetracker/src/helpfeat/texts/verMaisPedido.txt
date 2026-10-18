@@ -1,0 +1,9 @@
+Esta tela apresenta os detalhes do pedido escolhido na listagem. Confira a identificação, o tipo e as informações disponíveis antes de consultar seus itens.
+
+A área de informações gerais reúne os dados da movimentação retornados pelo sistema. A tabela de itens apresenta código interno, preço total, preço unitário e quantidade. Use a busca para localizar uma peça pelo código interno.
+
+O preço total apresentado para cada item é calculado multiplicando a quantidade pelo preço unitário. Esse valor não deve ser confundido com um total geral que inclua impostos e frete.
+
+Use Voltar para Pedidos para retornar à listagem. Para abrir outro pedido, selecione-o na lista; esta página depende do pedido informado pela navegação anterior.
+
+Nesta versão, as ações de edição, adição e algumas outras opções exibidas no cabeçalho ainda não estão implementadas. A janela de exclusão também não conclui uma exclusão no backend; abrir ou confirmar essa janela não comprova a remoção do pedido.

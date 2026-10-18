@@ -1,0 +1,5 @@
+Esta é a tela de acesso ao CodeTracker. Informe o e-mail e a senha de uma conta cadastrada e clique em Entrar.
+
+Se o acesso falhar, confira os dados e a mensagem apresentada. O login depende de uma conta válida e da disponibilidade do serviço de autenticação.
+
+Não há usuário ou senha padrão definidos nesta tela. Se você não recebeu credenciais, solicite orientação à pessoa responsável pelo sistema.

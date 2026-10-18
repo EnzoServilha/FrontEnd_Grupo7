@@ -1,0 +1,11 @@
+Esta tela permite cadastrar uma peça no catálogo. O preenchimento está organizado em três etapas: Informações Gerais, Códigos Associados e Assimilar Peças.
+
+Em Informações Gerais, preencha código interno, ano, marca, localização e descrição conforme os dados disponíveis. O código interno é necessário para concluir o cadastro. Use uma identificação que permita reconhecer a peça sem confundi-la com outros itens.
+
+Em Códigos Associados, a interface permite informar códigos usados por clientes ou fornecedores. Selecione o tipo de contato, informe o contato e o código e confira a lista de associações.
+
+Em Assimilar Peças, a interface permite listar códigos de peças consideradas similares. Essa relação serve como referência de consulta e não comprova, por si só, a compatibilidade técnica entre os itens.
+
+Use os controles de avanço e retorno para revisar as etapas. Ao concluir, clique em Cadastrar. A ação de cancelar retorna à tela anterior sem enviar um novo cadastro.
+
+Nesta versão, somente as informações gerais são enviadas no cadastro da peça. As listas de códigos associados e peças similares ainda não são gravadas nessa operação.

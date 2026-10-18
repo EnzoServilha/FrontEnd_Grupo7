@@ -1,0 +1,11 @@
+Esta é a área de pedidos. As abas Todos, Vendas, Compras e Cotações organizam os registros por tipo. Todos reúne os tipos disponíveis; as demais abas mostram apenas a categoria escolhida.
+
+Use a pesquisa para localizar registros e escolha o campo pesquisado quando precisar de uma consulta mais específica. O filtro de status permite restringir a lista à situação desejada.
+
+Confira tipo, status e datas antes de abrir um pedido. Clique no identificador do registro para consultar seus detalhes e os itens relacionados. O botão Editar da listagem também leva aos detalhes do primeiro pedido selecionado.
+
+A ação de adicionar abre o formulário de novo pedido. Embora a listagem tenha uma aba Vendas, o formulário atual oferece os tipos Compra e Cotação.
+
+As caixas de seleção definem os pedidos envolvidos nas ações da barra. Confira a seleção antes de alterar status ou solicitar exclusão. Nesta versão, a alteração de status feita na listagem é local e não é enviada ao backend.
+
+Esta consulta depende dos dados do backend e do período retornado pelo sistema. Se houver erro de carregamento, uma lista vazia não comprova que não existem pedidos.
