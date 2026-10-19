@@ -1,0 +1,11 @@
+Esta tela permite incluir um fornecedor. O cadastro possui duas etapas: Informações Gerais e Endereço.
+
+Em Informações Gerais, preencha os dados de identificação e contato, como nome, documento, telefone, e-mail e pessoa de contato. As observações podem registrar informações úteis para futuras consultas.
+
+Informe também as categorias e as marcas ou fabricantes relacionados ao fornecedor. Adicione cada informação à respectiva lista e remova entradas incorretas antes de concluir.
+
+Na etapa Endereço, preencha CEP, UF, cidade, bairro, logradouro, número e complemento conforme necessário. Use os controles entre etapas para revisar os dados.
+
+Ao concluir, use Cadastrar. Cancelar retorna à tela anterior sem concluir a inclusão. Nesta versão, o formulário não define uma lista explícita de campos obrigatórios.
+
+O novo fornecedor é encaminhado à listagem como um registro local. A gravação permanente no backend ainda não está implementada.

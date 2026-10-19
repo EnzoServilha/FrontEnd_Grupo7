@@ -1,0 +1,7 @@
+Esta tela organiza códigos utilizados por clientes ou fornecedores como referências associadas a uma peça. A associação ajuda a identificar o mesmo item por códigos diferentes.
+
+Selecione se o contato é cliente ou fornecedor, informe a referência do contato e preencha o código. Use a ação de adicionar para incluir a entrada na lista. É necessário informar um código para adicioná-lo.
+
+Confira os códigos e os contatos apresentados. Use a ação de remover na linha correspondente para retirar uma associação incluída incorretamente.
+
+Use Cancelar para retornar à tela anterior. Nesta versão, as inclusões e remoções são locais: a tela ainda não carrega a peça selecionada nem grava essas associações no backend.

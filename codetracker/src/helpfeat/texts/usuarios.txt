@@ -1,0 +1,7 @@
+Esta área é destinada à gestão das contas que acessam o sistema. Ela permite organizar quem pode utilizar a ferramenta, de acordo com as opções disponibilizadas pela administração.
+
+Antes de realizar uma ação, identifique a conta correta pelas informações apresentadas na tela. Pessoas com nomes semelhantes podem possuir contas diferentes.
+
+Use o cadastro para incluir uma nova conta e a edição para revisar uma conta existente, quando essas opções estiverem disponíveis. Confira cuidadosamente as configurações de acesso antes de confirmar uma alteração.
+
+Uma alteração de acesso pode afetar o trabalho de outra pessoa. Realize apenas as mudanças necessárias e confirme que escolheu a conta correta.

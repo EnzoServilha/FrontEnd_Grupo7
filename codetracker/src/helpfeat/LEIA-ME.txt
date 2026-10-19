@@ -1,0 +1,63 @@
+TEXTOS DE AJUDA — CODETRACKER
+
+INSTALAÇÃO
+Copie somente a pasta texts deste pacote para src/helpfeat/texts.
+Este pacote não altera o projeto e não conecta os textos ao popup automaticamente.
+Os 23 arquivos estão em UTF-8, sem marcação Markdown, com no máximo seis parágrafos cada.
+Cada arquivo contém apenas o corpo da explicação. O título do popup poderá ficar no mapa de ajuda.
+
+MAPA DAS ROTAS EXISTENTES
+/ → login.txt
+/inativa → contaInativa.txt
+/dashboard → dashboard.txt
+/pecas → pecas.txt
+/entradasESaidas → entradasESaidas.txt
+/cadastrarPeca → cadastrarPeca.txt
+/verMaisPeca → verMaisPeca.txt
+/associarCodigo → associarCodigo.txt
+/assimilarPecas → assimilarPecas.txt
+/contatos → contatos.txt
+/cadastrarCliente → cadastrarCliente.txt
+/cadastrarFornecedor → cadastrarFornecedor.txt
+/verMaisCliente → verMaisCliente.txt
+/verMaisFornecedor → verMaisFornecedor.txt
+/pedidos → pedidos.txt
+/cadastrarPedido → cadastrarPedido.txt
+/verMaisPedido → verMaisPedido.txt
+/periodo → periodo.txt
+
+CONTEXTOS DENTRO DE /periodo
+Modal Adicionar Período aberto → cadastrarPeriodo.txt
+Modal de consulta aberto → verMaisPeriodo.txt
+Sem esses modais abertos → periodo.txt
+Esses contextos exigirão uma informação adicional do componente da página;
+a URL sozinha não distingue os modais. Ainda não há integração neste pacote.
+
+TEXTOS PROVISÓRIOS — TELAS DE USUÁRIOS
+usuarios.txt, cadastrarUsuario.txt e editarUsuario.txt são rascunhos para telas futuras.
+Não existem componentes ou rotas correspondentes no frontend recebido.
+O screenshot mencionado não está disponível nesta conversa; os textos não foram baseados nele.
+O acesso pelo menu do ícone de usuário foi informado pelo solicitante, mas esse menu não está implementado no ZIP.
+Não foram inventados campos obrigatórios, perfis, regras de senha ou nomes de botões.
+Valide os textos quando houver layout e regras definidos. Não os conecte a rotas fictícias.
+
+CADASTRO, CONSULTA E EDIÇÃO
+Cliente e fornecedor possuem cadastros diferentes, portanto recebem textos separados.
+Cadastro e detalhes também recebem textos diferentes, pois são operações distintas.
+Não foram criados textos de edição de peças, contatos ou pedidos: os formulários de edição ainda não existem.
+Nas listagens, os botões Editar abrem detalhes. Vários botões nos detalhes não têm implementação.
+Quando a edição existir, crie editarPeca.txt, editarCliente.txt, editarFornecedor.txt e editarPedido.txt,
+com orientações específicas sobre alterar e salvar um registro existente.
+Para usuários, o texto editarUsuario.txt já foi reservado a pedido do solicitante.
+Não há texto de edição de período, pois essa operação não está prevista na versão analisada.
+A janela de detalhes do período existe no código, mas ainda não possui um controle que a abra; verMaisPeriodo.txt fica preparado para essa conexão futura.
+
+ESCOPO E REVISÃO
+Conteúdo baseado no código do FrontEnd_Grupo7.zip recebido, não em testes completos com o backend.
+As limitações atuais aparecem nos textos para não orientar ações que ainda não funcionam.
+Dashboard, contatos, períodos e entradas/saídas contêm dados de demonstração ou estado local.
+Detalhes de cliente e fornecedor usam conteúdo fixo, sem carregar o registro selecionado.
+O cadastro da peça envia listas vazias para códigos associados e itens similares.
+O cadastro de pedidos oferece Compra e Cotação, embora a listagem também tenha Vendas.
+Após novas integrações, revise os avisos nos textos antes de removê-los.
+Login e conta inativa são extras opcionais; podem ficar fora da primeira integração da ajuda.

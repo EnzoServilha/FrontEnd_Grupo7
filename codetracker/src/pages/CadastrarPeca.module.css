@@ -305,6 +305,11 @@
   grid-template-columns: 28px 1fr;
 }
 
+.helpAction {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 @media (min-width: 900px) {
   .header > h1 {
     font-size: 22px;

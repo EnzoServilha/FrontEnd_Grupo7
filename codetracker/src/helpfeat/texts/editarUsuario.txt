@@ -1,0 +1,7 @@
+Esta tela é destinada à alteração de uma conta de acesso existente. Antes de começar, confira a identificação da conta para garantir que está editando o usuário correto.
+
+Revise os dados apresentados e altere somente o que for necessário. Se houver configurações de acesso, avalie como a mudança afetará as atividades dessa pessoa no sistema.
+
+Se a tela oferecer alteração de senha, siga as regras informadas pelo formulário. Não presuma que é necessário trocar a senha para alterar outros dados da conta.
+
+Confira as mudanças antes de confirmar. Use a opção de cancelar se quiser sair sem concluir a edição.

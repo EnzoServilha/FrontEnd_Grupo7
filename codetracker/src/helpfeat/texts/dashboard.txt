@@ -1,0 +1,9 @@
+Esta é a visão geral do CodeTracker. Use este painel para consultar indicadores de cotações e comparar os valores de compras, vendas e lucro apresentados no gráfico.
+
+Os cartões mostram cotações que viraram pedidos, cotações concluídas completamente e cotações concluídas parcialmente. Leia cada percentual junto dos números exibidos no próprio cartão: eles ajudam a entender a proporção apresentada.
+
+O gráfico organiza compras, vendas e lucro por mês. Consulte a legenda para identificar cada série e passe o ponteiro sobre os pontos para visualizar os valores.
+
+Use o menu superior para acessar Peças, Contatos, Pedidos e Período. Essas áreas permitem consultar os registros relacionados à operação do estoque.
+
+Nesta versão de demonstração, os indicadores e o gráfico usam valores de exemplo. Eles não representam um resumo atualizado das operações registradas.

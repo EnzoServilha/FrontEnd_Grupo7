@@ -1,0 +1,7 @@
+Esta tela organiza referências de peças similares. O objetivo é facilitar a consulta de itens relacionados a uma peça do catálogo.
+
+Informe o código interno da peça que deseja relacionar e use a ação de adicionar. É necessário preencher a referência para incluí-la na lista.
+
+Confira os itens adicionados e remova referências incorretas pela ação disponível em cada linha. Relacionar peças como similares não comprova que elas possam ser substituídas em qualquer aplicação; confirme a compatibilidade técnica antes do uso.
+
+Use Cancelar para retornar à tela anterior. Nesta versão, a lista é local: a tela ainda não valida as referências no catálogo nem grava as relações no backend.

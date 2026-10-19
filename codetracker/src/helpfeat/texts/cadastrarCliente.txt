@@ -1,0 +1,9 @@
+Esta tela permite incluir um cliente, que pode ser uma empresa ou uma pessoa. O cadastro possui duas etapas: Informações Gerais e Endereço.
+
+Em Informações Gerais, selecione o tipo de cliente e preencha os dados de identificação e contato apresentados no formulário, como nome, documento, telefone, e-mail e pessoa de contato. Use as observações para registrar informações úteis ao atendimento.
+
+Na etapa Endereço, preencha CEP, UF, cidade, bairro, logradouro, número e complemento conforme necessário. Confira os dados antes de concluir para facilitar a localização e o contato com o cliente.
+
+Use os controles entre etapas para avançar ou voltar e revisar o preenchimento. Ao concluir, use Cadastrar. Cancelar retorna à tela anterior sem concluir a inclusão.
+
+Nesta versão, o formulário não define uma lista explícita de campos obrigatórios. O novo cliente é encaminhado à listagem como um registro local; a gravação permanente no backend ainda não está implementada.

@@ -6,6 +6,7 @@ import Input from "../components/Input";
 import Logo from "../components/Logo";
 import ProgressoCadastro from "../components/ProgressoCadastro";
 import styles from "./CadastrarPedido.module.css";
+import HelpButton from "../helpfeat/HelpButton";
 
 const formularioInicial = {
   tipo: "compra",
@@ -208,6 +209,10 @@ function CadastrarPedido() {
       <header className={styles.header}>
         <Logo />
         <h1>Novo Pedido</h1>
+
+        <div className={styles.helpAction}>
+          <HelpButton />
+        </div>
       </header>
 
       <main className={styles.content}>

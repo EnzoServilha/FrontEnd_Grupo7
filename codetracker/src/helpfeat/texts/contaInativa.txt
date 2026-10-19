@@ -1,0 +1,3 @@
+Esta tela informa que a conta está inativa. Entre em contato com a pessoa responsável pela administração do sistema para verificar a situação do seu acesso.
+
+Voltar à tela de login não ativa a conta. Aguarde a orientação sobre a liberação antes de tentar entrar novamente.

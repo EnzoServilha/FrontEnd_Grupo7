@@ -1,0 +1,11 @@
+Esta é a área de peças. Ela possui duas visões: Catálogo e Entradas e Saídas. O Catálogo reúne os itens cadastrados; Entradas e Saídas apresenta os registros de movimentação.
+
+Na aba Catálogo, consulte código interno, quantidade em estoque, localização, preços médios, marca e data de cadastro. Use essas informações para identificar a peça antes de abrir seus detalhes ou realizar uma ação.
+
+Use a pesquisa para localizar registros. O seletor ao lado da busca permite escolher o campo pesquisado. Consulte também os filtros disponíveis para restringir os resultados.
+
+Para incluir um item, use a ação de adicionar. Para consultar uma peça, clique no código interno. O botão Editar da listagem também abre os detalhes do primeiro registro selecionado; ele ainda não abre um formulário de edição.
+
+As caixas de seleção indicam quais registros receberão as ações da barra. Confira a seleção antes de excluir ou desativar itens e leia a confirmação apresentada pelo sistema.
+
+Para consultar os movimentos em vez dos cadastros, escolha Entradas e Saídas. Mudar de aba altera a visão consultada; não significa cadastrar ou editar uma peça.

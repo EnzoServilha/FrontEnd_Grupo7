@@ -1,0 +1,11 @@
+Esta é a área de períodos. Ela organiza registros de referência do estoque, apresentados com número, data de cadastro, total de peças e anotações.
+
+Use a pesquisa para localizar um período pelo número, pela data, pelo total de peças ou pelas anotações. O filtro de ano permite reduzir a lista aos registros daquele ano.
+
+Para incluir um registro, use a ação de adicionar. O formulário é aberto em uma janela sobre esta mesma página, sem mudar o endereço no navegador.
+
+Nesta versão, você pode incluir e excluir períodos, mas não editar seus dados. A janela de consulta de detalhes já está esboçada no código, porém ainda não há um controle conectado para abri-la.
+
+Antes de excluir, confira os registros selecionados e a confirmação do sistema. A quantidade informada no cadastro do período não realiza, por si só, uma contagem automática das peças.
+
+Nesta versão, a tela utiliza dados de exemplo e alterações locais. Os períodos criados aqui ainda não são enviados ao backend nem garantem o período exigido pelo cadastro de pedidos.

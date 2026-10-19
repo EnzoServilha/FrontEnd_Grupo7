@@ -1,0 +1,9 @@
+Esta janela permite adicionar um período à listagem. O número do novo período é atribuído automaticamente ao concluir a inclusão.
+
+Data de cadastro e Total de peças são obrigatórios. A data começa preenchida com o dia atual e pode ser ajustada. Informe um total de peças igual ou maior que zero.
+
+Use Anotações para registrar uma descrição ou observação sobre o período. Esse campo é opcional.
+
+Confira o preenchimento e clique em Adicionar. Para desistir, clique em Cancelar. Não há edição de período nesta versão, por isso revise os dados antes de concluir.
+
+A inclusão acontece somente na lista local desta tela. Ela ainda não salva um período no backend nem atualiza automaticamente as quantidades do estoque.

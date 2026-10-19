@@ -1,0 +1,11 @@
+Esta tela permite registrar um novo pedido. O preenchimento possui duas etapas: Informações Gerais e Peças. Os tipos disponíveis nesta versão são Compra e Cotação.
+
+Em Informações Gerais, selecione o tipo e preencha os dados disponíveis, como número da nota fiscal, impostos, frete, data do pedido, previsão de entrega e observações. Confira os valores e as datas antes de avançar.
+
+Em Peças, localize um item pelo código interno ou pelo identificador aceito pelo sistema. Informe quantidade e preço unitário e use a ação de adicionar para incluí-lo na lista. A peça precisa existir entre os itens carregados.
+
+A quantidade deve ser maior que zero e o preço unitário não pode ser negativo. Se você adicionar novamente a mesma peça, a quantidade e o preço anteriores serão substituídos pelos novos valores, em vez de somados.
+
+Para concluir, é necessário ter pelo menos uma peça na lista e um período válido carregado pelo sistema. Revise os itens e use Cadastrar. As mensagens de erro orientam sobre problemas de preenchimento ou de envio.
+
+O cadastro depende da comunicação com o backend. Se ocorrer uma falha ao concluir, confira a listagem antes de repetir a operação, pois parte do pedido pode já ter sido registrada.
