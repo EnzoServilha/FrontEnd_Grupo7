@@ -159,20 +159,59 @@ function Contatos() {
     navigate(rotaDetalhes, { state: { contato } });
   };
 
-  const excluirSelecionados = () => {
-    setContatosPorTipo((dadosAtuais) => ({
-      ...dadosAtuais,
-      [tipoAtivo]: dadosAtuais[tipoAtivo].filter(
-        (contato) => !selecionados.includes(contato.id),
-      ),
-    }));
-    setSelecionados([]);
-    setModalExcluirAberto(false);
+  const excluirSelecionados = async () => {
+    if (selecionados.length === 0) {
+      setModalExcluirAberto(false);
+      return;
+    }
+
+    try {
+      const rota = isCliente ? "/clientes" : "/fornecedores";
+
+      await Promise.all(
+        selecionados.map((id) => api.patch(`${rota}/${id}/desativacao`)),
+      );
+
+      const idsSelecionados = new Set(selecionados);
+
+      setContatosPorTipo((dadosAtuais) => ({
+        ...dadosAtuais,
+        [tipoAtivo]: (dadosAtuais[tipoAtivo] || []).filter(
+          (contato) => !idsSelecionados.has(contato.id),
+        ),
+      }));
+
+      setSelecionados([]);
+    } catch (error) {
+      console.error("Erro ao desativar contatos:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Não foi possível desativar o(s) contato(s) selecionado(s).",
+      );
+    } finally {
+      setModalExcluirAberto(false);
+    }
   };
 
   const editarSelecionado = () => {
     const contato = contatosAtivos.find((item) => item.id === selecionados[0]);
-    if (contato) abrirDetalhes(contato);
+
+    if (!contato) return;
+
+    if (isCliente) {
+      navigate("/cadastrarCliente", {
+        state: {
+          clienteId: contato.id,
+        },
+      });
+      return;
+    }
+
+    navigate("/cadastrarFornecedor", {
+      state: {
+        fornecedorId: contato.id,
+      },
+    });
   };
 
   const columns = [
