@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
+import HelpButton from "../helpfeat/HelpButton";
 
 function Header() {
   const location = useLocation();
@@ -49,6 +50,7 @@ function Header() {
         </nav>
 
         <div className={styles.headerUser}>
+          <HelpButton />
           <svg
             className={styles.userIcon}
             viewBox="0 0 24 24"

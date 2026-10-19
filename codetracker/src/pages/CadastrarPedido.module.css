@@ -255,6 +255,11 @@
   gap: 16px;
 }
 
+.helpAction {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 @media (max-width: 760px) {
   .generalGrid,
   .inlineInputs {

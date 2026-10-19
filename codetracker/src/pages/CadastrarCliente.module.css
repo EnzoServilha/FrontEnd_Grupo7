@@ -230,6 +230,11 @@
   cursor: not-allowed;
 }
 
+.helpAction {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 @media (min-width: 900px) {
   .progressWrapper {
     width: min(100%, 440px);

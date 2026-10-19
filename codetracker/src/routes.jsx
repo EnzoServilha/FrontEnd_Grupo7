@@ -1,5 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
-import Login from "./pages/Login";
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import HelpPopup from "./helpfeat/HelpPopup";import Login from "./pages/Login";
 import ContaInativa from "./pages/ContaInativa";
 import Dashboard from "./pages/Dashboard";
 import Pecas from "./pages/Pecas";
@@ -18,7 +18,7 @@ import CadastrarPeca from "./pages/CadastrarPeca";
 import CadastrarPedido from "./pages/CadastrarPedido";
 import EntradasESaidas from "./pages/EntradasESaidas";
 
-export const routes = createBrowserRouter([
+const pageRoutes = [
   {
     path: "/",
     element: <Login />,
@@ -98,5 +98,17 @@ export const routes = createBrowserRouter([
   {
     path: "*",
     element: <div>Erro 404: Página não encontrada</div>,
+  },
+];
+
+export const routes = createBrowserRouter([
+  {
+    element: (
+      <>
+        <Outlet />
+        <HelpPopup />
+      </>
+    ),
+    children: pageRoutes,
   },
 ]);
