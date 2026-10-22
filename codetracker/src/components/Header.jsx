@@ -60,21 +60,24 @@ function Header() {
         </nav>
 
         <div className={styles.headerUser}>
-          <svg
-            className={styles.userIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span className={styles.userName}>
-            {usuario?.nome ?? "Usuário Conectado"}
-          </span>
+          <button onClick={() => navigate("/usuarios")}>
+            <svg
+              className={styles.userIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span className={styles.userName}>
+              {usuario?.nome ?? "Usuário Conectado"}
+
+            </span>
+          </button>
         </div>
       </div>
     </header>

@@ -74,7 +74,6 @@ function Periodo() {
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
-  const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
   const [periodoConsultado, setPeriodoConsultado] = useState(null);
   const [novoPeriodo, setNovoPeriodo] = useState({
     anotacoes: "",
@@ -140,7 +139,6 @@ function Periodo() {
       setNovoPeriodo({
         anotacoes: "",
       });
-      setModalAdicionarAberto(false);
     } catch (error) {
       console.error("Erro ao adicionar período:", error);
       setErroAdicionar(
@@ -286,7 +284,7 @@ function Periodo() {
           <div className={styles.actionButtons}>
             <Button
               icone="adicionar"
-              onClick={() => setModalAdicionarAberto(true)}
+              onClick={() => navigate("/cadastrarPeriodo")}
             >
               Adicionar
             </Button>
@@ -312,54 +310,6 @@ function Periodo() {
         onClose={() => setModalExcluirAberto(false)}
         onConfirm={excluirSelecionados}
       />
-
-      {modalAdicionarAberto && (
-        <div
-          className={styles.modalOverlay}
-          onMouseDown={() => setModalAdicionarAberto(false)}
-        >
-          <form
-            className={styles.modalCard}
-            onSubmit={adicionarPeriodo}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h2>Adicionar Período</h2>
-
-            <label htmlFor="anotacoes-periodo">
-              Anotações
-              <textarea
-                id="anotacoes-periodo"
-                value={novoPeriodo.anotacoes}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    anotacoes: event.target.value,
-                  }))
-                }
-                placeholder="Digite as anotações do período"
-              />
-            </label>
-            {erroAdicionar && (
-              <ServerResponse
-                type="error"
-                title="Falha ao adicionar"
-                message={erroAdicionar}
-              />
-            )}
-
-            <div className={styles.modalActions}>
-              <Button
-                type="button"
-                estilo="editar"
-                onClick={() => setModalAdicionarAberto(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit">Adicionar</Button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {periodoConsultado && (
         <div

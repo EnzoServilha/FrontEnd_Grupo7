@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
 import Button from "../components/Button";
@@ -6,16 +6,135 @@ import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
-import Table from "../components/Table";
+import TablePaginada from "../components/TablePaginada";
 import styles from "./Pecas.module.css";
 
 const camposBusca = [
-  ["todos", "Todos os campos"],
-  ["codigoInterno", "Código interno"],
+  ["codigo", "Código interno/associado"],
   ["localizacao", "Localização"],
-  ["marca", "Marca"],
-  ["anoFabricacao", "Ano de fabricação"],
 ];
+
+const TAMANHO_CARGA = 1000;
+const ITENS_POR_PAGINA = 10;
+const OPCOES_ITENS_POR_PAGINA = [10, 25, 50, 100];
+const ATRASO_BUSCA_MS = 400;
+
+const FILTROS_VAZIOS = {
+  marcas: [],
+  dataModo: "qualquer", // "qualquer" | "especifica" | "periodo"
+  dataInicial: "",
+  dataFinal: "",
+  anoModo: "qualquer", // "qualquer" | "especifica" | "periodo"
+  anoInicial: "",
+  anoFinal: "",
+};
+
+const filtrosAtivos = (f) =>
+  f.marcas.length > 0 || f.dataModo !== "qualquer" || f.anoModo !== "qualquer";
+
+const filtrosValidos = (f) => {
+  const dataOk =
+    f.dataModo === "qualquer" ||
+    (f.dataModo === "especifica" && Boolean(f.dataInicial)) ||
+    (f.dataModo === "periodo" &&
+      Boolean(f.dataInicial) &&
+      Boolean(f.dataFinal) &&
+      f.dataInicial <= f.dataFinal);
+
+  const anoOk =
+    f.anoModo === "qualquer" ||
+    (f.anoModo === "especifica" && f.anoInicial !== "") ||
+    (f.anoModo === "periodo" &&
+      f.anoInicial !== "" &&
+      f.anoFinal !== "" &&
+      Number(f.anoInicial) <= Number(f.anoFinal));
+
+  return dataOk && anoOk;
+};
+
+const isoParaBr = (iso) => iso.split("-").reverse().join("/");
+
+const resumoFiltros = (f) => {
+  const partes = [];
+  if (f.marcas.length) partes.push(`Marca: ${f.marcas.join(", ")}`);
+  if (f.dataModo === "especifica") partes.push(`Cadastro em ${isoParaBr(f.dataInicial)}`);
+  if (f.dataModo === "periodo")
+    partes.push(`Cadastro de ${isoParaBr(f.dataInicial)} a ${isoParaBr(f.dataFinal)}`);
+  if (f.anoModo === "especifica") partes.push(`Ano ${f.anoInicial}`);
+  if (f.anoModo === "periodo") partes.push(`Ano de ${f.anoInicial} a ${f.anoFinal}`);
+  return partes.join(" · ");
+};
+
+// URLSearchParams repete a chave (marca=a&marca=b), que é o que o Spring espera
+// para List<String>. O axios sozinho enviaria marca[]=a.
+const montarParametrosBusca = (filtros, extras = {}) => {
+  const params = new URLSearchParams();
+
+  filtros.marcas.forEach((marca) => params.append("marca", marca));
+
+  if (filtros.dataModo !== "qualquer") {
+    params.append("dataCadastroInicial", filtros.dataInicial);
+    params.append(
+      "dataCadastroFinal",
+      filtros.dataModo === "especifica" ? filtros.dataInicial : filtros.dataFinal,
+    );
+  }
+
+  if (filtros.anoModo !== "qualquer") {
+    params.append("anoCadastroInicial", filtros.anoInicial);
+    params.append(
+      "anoCadastroFinal",
+      filtros.anoModo === "especifica" ? filtros.anoInicial : filtros.anoFinal,
+    );
+  }
+
+  Object.entries(extras).forEach(([chave, valor]) => params.append(chave, valor));
+  return params;
+};
+
+// Aceita Page (content) ou lista simples
+const extrairLista = (resposta) =>
+  Array.isArray(resposta.data)
+    ? resposta.data
+    : Array.isArray(resposta.data?.content)
+      ? resposta.data.content
+      : [];
+
+async function buscarItens({ termo, campoBusca, filtros, ordenacao }) {
+  // Sem busca e sem filtro: lista paginada do back, já ordenada por ele
+  if (!termo && !filtrosAtivos(filtros)) {
+    const params = { page: 0, size: TAMANHO_CARGA };
+    if (ordenacao) params.sort = `${ordenacao.campo},${ordenacao.direcao}`;
+    return extrairLista(await api.get("/itens", { params }));
+  }
+
+  const buscar = async (extras) =>
+    extrairLista(
+      await api.get("/itens/buscar", {
+        params: montarParametrosBusca(filtros, extras),
+      }),
+    );
+
+  if (!termo) return buscar({});
+
+  if (campoBusca === "localizacao") return buscar({ localizacao: termo });
+
+  // Código interno OU associado: duas consultas, unidas por id
+  const resultados = await Promise.allSettled([
+    buscar({ codigoInterno: termo }),
+    buscar({ codigoAssociado: termo }),
+  ]);
+
+  const listas = resultados
+    .filter((resultado) => resultado.status === "fulfilled")
+    .map((resultado) => resultado.value);
+
+  if (listas.length === 0) throw resultados[0].reason;
+
+  const unicos = new Map();
+  listas.flat().forEach((item) => unicos.set(item.id, item));
+  return [...unicos.values()];
+}
 
 const valorPadrao = (valor, fallback = "---") => {
   if (valor === null || valor === undefined || valor === "") return fallback;
@@ -59,30 +178,55 @@ const normalizarPeca = (item, quantidadeMovimentacao = null) => {
 function Pecas() {
   const navigate = useNavigate();
   const [pecas, setPecas] = useState([]);
+  const [marcasDisponiveis, setMarcasDisponiveis] = useState([]);
   const [busca, setBusca] = useState("");
-  const [campoBusca, setCampoBusca] = useState("todos");
-  const [marcaFiltrada, setMarcaFiltrada] = useState("todas");
+  const [buscaAplicada, setBuscaAplicada] = useState("");
+  const [campoBusca, setCampoBusca] = useState("codigo");
+  const [filtros, setFiltros] = useState(FILTROS_VAZIOS);
+  const [rascunhoFiltros, setRascunhoFiltros] = useState(FILTROS_VAZIOS);
   const [selecionadas, setSelecionadas] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+  const [ordenacao, setOrdenacao] = useState(null); // { campo, direcao }
+  // Guarda a quantidade por id para não refazer as N requisições a cada consulta
+  const quantidadesRef = useRef(new Map());
+
+  // Espera o usuário parar de digitar antes de consultar o back
+  useEffect(() => {
+    const temporizador = setTimeout(() => setBuscaAplicada(busca), ATRASO_BUSCA_MS);
+    return () => clearTimeout(temporizador);
+  }, [busca]);
 
   useEffect(() => {
+    let cancelado = false;
+
     const carregarPecas = async () => {
       try {
-        const resposta = await api.get("/itens");
-        const itens = Array.isArray(resposta.data) ? resposta.data : [];
+        const termo = buscaAplicada.trim();
+        const semFiltro = !termo && !filtrosAtivos(filtros);
+
+        const itens = await buscarItens({ termo, campoBusca, filtros, ordenacao });
 
         const itensComQuantidade = await Promise.all(
           itens.map(async (item) => {
+            if (quantidadesRef.current.has(item.id)) {
+              return normalizarPeca(item, quantidadesRef.current.get(item.id));
+            }
+
             try {
-              const respostaMovimentacao = await api.get(`/itensNaMovimentacao/item/${item.id}`);
-              const ocorrencias = Array.isArray(respostaMovimentacao.data) ? respostaMovimentacao.data : [];
+              const respostaMovimentacao = await api.get(
+                `/itensNaMovimentacao/item/${item.id}`,
+              );
+              const ocorrencias = Array.isArray(respostaMovimentacao.data)
+                ? respostaMovimentacao.data
+                : [];
               const quantidade = ocorrencias.reduce((soma, ocorrencia) => {
                 const qtd = Number(ocorrencia?.qtd ?? 0);
                 return Number.isFinite(qtd) ? soma + qtd : soma;
               }, 0);
 
+              quantidadesRef.current.set(item.id, quantidade);
               return normalizarPeca(item, quantidade);
             } catch {
               return normalizarPeca(item, null);
@@ -90,48 +234,76 @@ function Pecas() {
           }),
         );
 
+        // Ignora respostas antigas se a consulta mudou no meio do caminho
+        if (cancelado) return;
+
         setPecas(itensComQuantidade);
+
+        // A lista de marcas do filtro vem da carga completa (sem busca/filtro),
+        // senão ela encolheria junto com o resultado.
+        if (semFiltro) {
+          setMarcasDisponiveis(
+            [
+              ...new Set(
+                itensComQuantidade
+                  .map((peca) => peca.marca)
+                  .filter((marca) => marca && marca !== "---"),
+              ),
+            ].sort((a, b) => a.localeCompare(b, "pt-BR")),
+          );
+        }
       } catch (error) {
         console.error("Erro ao buscar itens:", error);
-        setPecas([]);
+        if (!cancelado) setPecas([]);
       }
     };
 
     carregarPecas();
-  }, []);
 
-  const marcasDisponiveis = useMemo(
-    () => ["todas", ...new Set(pecas.map((peca) => peca.marca).filter(Boolean))],
-    [pecas],
-  );
+    return () => {
+      cancelado = true;
+    };
+  }, [ordenacao, buscaAplicada, campoBusca, filtros]);
 
-  const pecasFiltradas = useMemo(() => {
-    const termo = busca.trim().toLocaleLowerCase("pt-BR");
+  const ordenarNoBack = (campo, direcao) => setOrdenacao({ campo, direcao });
 
-    return pecas.filter((peca) => {
-      if (marcaFiltrada !== "todas" && peca.marca !== marcaFiltrada) {
-        return false;
-      }
+  // O /itens/buscar não recebe sort: com busca ou filtro ativos a ordenação
+  // das colunas volta a ser feita no front.
+  const ordenaNoBack = !buscaAplicada.trim() && !filtrosAtivos(filtros);
+  const campoOrdenacao = (nome) => (ordenaNoBack ? nome : undefined);
 
-      if (!termo) return true;
-
-      const valores =
-        campoBusca === "todos"
-          ? [
-            peca.codigoInterno,
-            peca.localizacao,
-            peca.marca,
-            peca.anoFabricacao,
-          ]
-          : [peca[campoBusca]];
-
-      return valores.some((valor) =>
-        String(valor ?? "")
-          .toLocaleLowerCase("pt-BR")
-          .includes(termo),
-      );
+  const alternarFiltro = () => {
+    setFiltroAberto((aberto) => {
+      if (!aberto) setRascunhoFiltros(filtros);
+      return !aberto;
     });
-  }, [busca, campoBusca, marcaFiltrada, pecas]);
+    setMenuBuscaAberto(false);
+  };
+
+  const atualizarRascunho = (alteracao) =>
+    setRascunhoFiltros((atual) => ({ ...atual, ...alteracao }));
+
+  const alternarMarca = (marca) =>
+    setRascunhoFiltros((atual) => ({
+      ...atual,
+      marcas: atual.marcas.includes(marca)
+        ? atual.marcas.filter((item) => item !== marca)
+        : [...atual.marcas, marca],
+    }));
+
+  const aplicarFiltros = () => {
+    if (!filtrosValidos(rascunhoFiltros)) return;
+    setFiltros(rascunhoFiltros);
+    setSelecionadas([]);
+    setFiltroAberto(false);
+  };
+
+  const limparFiltros = () => {
+    setFiltros(FILTROS_VAZIOS);
+    setRascunhoFiltros(FILTROS_VAZIOS);
+    setSelecionadas([]);
+    setFiltroAberto(false);
+  };
 
   const abrirDetalhes = (peca) => {
     navigate(`/verMaisPeca?id=${peca.id}`, { state: { peca } });
@@ -167,16 +339,16 @@ function Pecas() {
 
   const columns = [
     { name: "Código Interno", ordena: false, tipo: "string" },
-    { name: "Quantidade em Estoque", ordena: true, tipo: "number" },
+    { name: "Quantidade em Estoque", ordena: true, tipo: "number" }, // sempre local
     { name: "Localização", ordena: false, tipo: "string" },
-    { name: "Preço Médio de Compra", ordena: true, tipo: "number" },
-    { name: "Preço Médio de Venda", ordena: true, tipo: "number" },
+    { name: "Preço Médio de Compra", ordena: true, tipo: "number", campoOrdenacao: campoOrdenacao("precoCompra") },
+    { name: "Preço Médio de Venda", ordena: true, tipo: "number", campoOrdenacao: campoOrdenacao("precoVenda") },
     { name: "Marca", ordena: false, tipo: "string" },
-    { name: "Data de Cadastro", ordena: true, tipo: "date" },
-    { name: "Ano de Fabricação", ordena: true, tipo: "number" },
+    { name: "Data de Cadastro", ordena: true, tipo: "date", campoOrdenacao: campoOrdenacao("dataCadastro") },
+    { name: "Ano de Fabricação", ordena: true, tipo: "number", campoOrdenacao: campoOrdenacao("ano") },
   ];
 
-  const rows = pecasFiltradas.map((peca) => {
+  const rows = pecas.map((peca) => {
     const rotuloCodigos =
       peca.codigosAssociados === 1
         ? "1 Código associado vinculado"
@@ -210,7 +382,6 @@ function Pecas() {
     ([valor]) => valor === campoBusca,
   )?.[1];
 
-  console.log("rows:", rows);
   return (
     <div className={styles.page}>
       <Header />
@@ -284,6 +455,7 @@ function Pecas() {
 
             <div className={styles.searchWrapper}>
               <SearchBar
+                campo={campoBuscaAtivo}
                 placeholder="Digite para buscar..."
                 value={busca}
                 onChange={(event) => setBusca(event.target.value)}
@@ -292,36 +464,147 @@ function Pecas() {
             </div>
 
             <div className={styles.menuContainer}>
-              <Filtro
-                ariaLabel="Filtrar peças por marca"
-                onClick={() => {
-                  setFiltroAberto((aberto) => !aberto);
-                  setMenuBuscaAberto(false);
-                }}
-              />
+              <Filtro ariaLabel="Filtrar peças" onClick={alternarFiltro} />
 
               {filtroAberto && (
                 <div
-                  className={`${styles.popover} ${styles.filterPopover}`}
-                  role="menu"
+                  className={`${styles.popover} ${styles.filterPopover} ${styles.filterPanel}`}
+                  role="dialog"
+                  aria-label="Filtros do catálogo"
                 >
-                  {marcasDisponiveis.map((marca) => (
+                  <fieldset className={styles.filterGroup}>
+                    <legend>Marca</legend>
+                    <div className={styles.brandList}>
+                      {marcasDisponiveis.length === 0 && (
+                        <span className={styles.filterHint}>
+                          Nenhuma marca disponível
+                        </span>
+                      )}
+                      {marcasDisponiveis.map((marca) => (
+                        <label key={marca} className={styles.checkOption}>
+                          <input
+                            type="checkbox"
+                            checked={rascunhoFiltros.marcas.includes(marca)}
+                            onChange={() => alternarMarca(marca)}
+                          />
+                          {marca}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <fieldset className={styles.filterGroup}>
+                    <legend>Data de cadastro</legend>
+                    <select
+                      value={rascunhoFiltros.dataModo}
+                      onChange={(event) =>
+                        atualizarRascunho({ dataModo: event.target.value })
+                      }
+                    >
+                      <option value="qualquer">Qualquer data</option>
+                      <option value="especifica">Data específica</option>
+                      <option value="periodo">Entre duas datas</option>
+                    </select>
+
+                    {rascunhoFiltros.dataModo !== "qualquer" && (
+                      <div className={styles.rangeRow}>
+                        <input
+                          type="date"
+                          aria-label={
+                            rascunhoFiltros.dataModo === "periodo"
+                              ? "Data inicial"
+                              : "Data de cadastro"
+                          }
+                          value={rascunhoFiltros.dataInicial}
+                          onChange={(event) =>
+                            atualizarRascunho({ dataInicial: event.target.value })
+                          }
+                        />
+                        {rascunhoFiltros.dataModo === "periodo" && (
+                          <>
+                            <span>até</span>
+                            <input
+                              type="date"
+                              aria-label="Data final"
+                              value={rascunhoFiltros.dataFinal}
+                              min={rascunhoFiltros.dataInicial || undefined}
+                              onChange={(event) =>
+                                atualizarRascunho({ dataFinal: event.target.value })
+                              }
+                            />
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </fieldset>
+
+                  <fieldset className={styles.filterGroup}>
+                    <legend>Ano de fabricação</legend>
+                    <select
+                      value={rascunhoFiltros.anoModo}
+                      onChange={(event) =>
+                        atualizarRascunho({ anoModo: event.target.value })
+                      }
+                    >
+                      <option value="qualquer">Qualquer ano</option>
+                      <option value="especifica">Ano específico</option>
+                      <option value="periodo">Entre dois anos</option>
+                    </select>
+
+                    {rascunhoFiltros.anoModo !== "qualquer" && (
+                      <div className={styles.rangeRow}>
+                        <input
+                          type="number"
+                          min="1900"
+                          max="2100"
+                          placeholder="Ex.: 2018"
+                          aria-label={
+                            rascunhoFiltros.anoModo === "periodo"
+                              ? "Ano inicial"
+                              : "Ano de fabricação"
+                          }
+                          value={rascunhoFiltros.anoInicial}
+                          onChange={(event) =>
+                            atualizarRascunho({ anoInicial: event.target.value })
+                          }
+                        />
+                        {rascunhoFiltros.anoModo === "periodo" && (
+                          <>
+                            <span>até</span>
+                            <input
+                              type="number"
+                              min="1900"
+                              max="2100"
+                              placeholder="Ex.: 2024"
+                              aria-label="Ano final"
+                              value={rascunhoFiltros.anoFinal}
+                              onChange={(event) =>
+                                atualizarRascunho({ anoFinal: event.target.value })
+                              }
+                            />
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </fieldset>
+
+                  <div className={styles.filterActions}>
                     <button
                       type="button"
-                      role="menuitem"
-                      key={marca}
-                      className={
-                        marcaFiltrada === marca ? styles.selectedOption : ""
-                      }
-                      onClick={() => {
-                        setMarcaFiltrada(marca);
-                        setFiltroAberto(false);
-                        setSelecionadas([]);
-                      }}
+                      className={styles.clearButton}
+                      onClick={limparFiltros}
                     >
-                      {marca === "todas" ? "Todas as marcas" : marca}
+                      Limpar
                     </button>
-                  ))}
+                    <button
+                      type="button"
+                      className={styles.applyButton}
+                      disabled={!filtrosValidos(rascunhoFiltros)}
+                      onClick={aplicarFiltros}
+                    >
+                      Aplicar
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -355,13 +638,23 @@ function Pecas() {
           </div>
         </section>
 
+        {filtrosAtivos(filtros) && (
+          <div className={styles.activeFilters}>
+            <span>{resumoFiltros(filtros)}</span>
+            <button type="button" onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          </div>
+        )}
+
         <section className={styles.tableSection} aria-label="Catálogo de peças">
-          <Table
-            key={`${busca}-${campoBusca}-${marcaFiltrada}`}
+          <TablePaginada
             columns={columns}
             rows={rows}
-            getRowId={(row) => row.id}
-            selectedRows={selecionadas}
+            removerNaOrdenacao={["unidades", "R$"]}
+            itensPorPagina={ITENS_POR_PAGINA}
+            opcoesItensPorPagina={OPCOES_ITENS_POR_PAGINA}
+            onSortChange={ordenarNoBack}
             onSelectionChange={setSelecionadas}
           />
         </section>

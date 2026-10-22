@@ -5,25 +5,30 @@ import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
-import SearchBar from "../components/SearchBar";
-import Table from "../components/Table";
+import TablePaginada from "../components/TablePaginada";
 import styles from "./Pedidos.module.css";
 
 const placeholder = "---";
+const ITENS_POR_PAGINA = 10;
+const OPCOES_ITENS_POR_PAGINA = [10, 25, 50, 100];
 
 const tabs = [
   ["todos", "Todos"],
-  ["vendas", "Vendas"],
-  ["compras", "Compras"],
+  ["saida", "Saídas"],
+  ["entrada", "Entradas"],
   ["cotacoes", "Cotações"],
 ];
 
-const camposBusca = [
-  ["todos", "Todos os campos"],
-  ["tipo", "Tipo"],
-  ["status", "Status"],
-  ["dataPedido", "Data do pedido"],
-];
+const FILTROS_VAZIOS = {
+  tipo: "", // valor bruto do back ("" = qualquer)
+  status: "", // valor bruto do back ("" = qualquer)
+  dataEntrega: "", // yyyy-mm-dd
+  dataPrevista: "", // yyyy-mm-dd
+  dataPedido: "", // yyyy-mm-dd (enviada como dataMovimentacao)
+  pagadorFrete: "", // "" | "true" | "false"
+};
+
+const filtrosAtivos = (f) => Object.values(f).some((valor) => valor !== "");
 
 const normalizarTexto = (valor) => {
   if (valor === null || valor === undefined || valor === "") return placeholder;
@@ -31,7 +36,57 @@ const normalizarTexto = (valor) => {
   return String(valor);
 };
 
+const isoParaBr = (iso) => iso.split("-").reverse().join("/");
 
+const resumoFiltros = (f) => {
+  const partes = [];
+  if (f.tipo) partes.push(`Tipo: ${normalizarTexto(f.tipo)}`);
+  if (f.status) partes.push(`Status: ${normalizarTexto(f.status)}`);
+  if (f.dataEntrega) partes.push(`Entrega em ${isoParaBr(f.dataEntrega)}`);
+  if (f.dataPrevista) partes.push(`Prevista para ${isoParaBr(f.dataPrevista)}`);
+  if (f.dataPedido) partes.push(`Pedido em ${isoParaBr(f.dataPedido)}`);
+  if (f.pagadorFrete) {
+    partes.push(`Pagador do frete: ${f.pagadorFrete === "true" ? "Sim" : "Não"}`);
+  }
+  return partes.join(" · ");
+};
+
+// Nome vindo do back: pode ser objeto ({ nome }) ou texto simples
+const nomeBruto = (valor) => valor?.nome ?? valor ?? "";
+
+const nomesUnicos = (lista, campo) =>
+  [...new Set(lista.map((item) => nomeBruto(item?.[campo])).filter(Boolean))].sort(
+    (a, b) => a.localeCompare(b, "pt-BR"),
+  );
+
+const montarParametrosBusca = (f) => {
+  const params = {};
+  if (f.tipo) params.tipo = f.tipo;
+  if (f.status) params.status = f.status;
+  if (f.dataEntrega) params.dataEntrega = f.dataEntrega;
+  if (f.dataPrevista) params.dataPrevista = f.dataPrevista;
+  if (f.dataPedido) params.dataMovimentacao = f.dataPedido;
+  if (f.pagadorFrete) params.pagadorFrete = f.pagadorFrete;
+  return params;
+};
+
+async function buscarMovimentacoes(filtros) {
+  // Com filtro: endpoint de busca do back
+  if (filtrosAtivos(filtros)) {
+    const resposta = await api.get("/movimentacoes/buscar", {
+      params: montarParametrosBusca(filtros),
+    });
+    return Array.isArray(resposta.data) ? resposta.data : [];
+  }
+
+  // Sem filtro: movimentações do período atual
+  const respostaPeriodo = await api.get("/periodos/ultimo");
+  const periodoAtual = respostaPeriodo.data ?? null;
+  if (!periodoAtual?.id) return [];
+
+  const resposta = await api.get(`/movimentacoes/periodo/${periodoAtual.id}`);
+  return Array.isArray(resposta.data) ? resposta.data : [];
+}
 
 const formatarData = (valor) => {
   if (!valor) return placeholder;
@@ -57,8 +112,8 @@ const formatarMoeda = (valor) => {
 const obterCategoria = (tipo = "") => {
   const texto = String(tipo).trim().toLowerCase();
 
-  if (texto.includes("venda")) return "vendas";
-  if (texto.includes("compra")) return "compras";
+  if (texto.includes("saída")) return "saida";
+  if (texto.includes("entrada")) return "entrada";
   if (texto.includes("cot")) return "cotacoes";
 
   return "todos";
@@ -75,10 +130,6 @@ const obterStatusClass = (status = "") => {
 
   return "";
 };
-
-
-
-
 
 const normalizarPedido = (movimentacao) => {
   const tipo = normalizarTexto(movimentacao?.tipo?.nome ?? movimentacao?.tipo ?? "");
@@ -113,10 +164,10 @@ function Pedidos() {
   const [pedidosOriginais, setPedidosOriginais] = useState([]);
   const [selecionados, setSelecionados] = useState([]);
   const [tabAtiva, setTabAtiva] = useState("todos");
-  const [busca, setBusca] = useState("");
-  const [campoBusca, setCampoBusca] = useState("todos");
-  const [statusFiltrado, setStatusFiltrado] = useState("todos");
-  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [filtros, setFiltros] = useState(FILTROS_VAZIOS);
+  const [rascunhoFiltros, setRascunhoFiltros] = useState(FILTROS_VAZIOS);
+  const [tiposDisponiveis, setTiposDisponiveis] = useState([]);
+  const [statusDisponiveis, setStatusDisponiveis] = useState([]);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
@@ -139,81 +190,87 @@ function Pedidos() {
     );
     event.target.value = "";
   };
+
   const editarSelecionado = () => {
     const pedidoOriginal = pedidosOriginais.find((item) => item.id === selecionados[0]);
     if (pedidoOriginal) navigate("/verMaisPedido", { state: { pedido: pedidoOriginal } });
   };
 
   useEffect(() => {
+    let cancelado = false;
+
     const carregarPedidos = async () => {
       try {
         setCarregando(true);
 
-        const respostaPeriodo = await api.get("/periodos/ultimo");
-        const periodoAtual = respostaPeriodo.data ?? null;
+        const lista = await buscarMovimentacoes(filtros);
 
-        let lista = [];
-
-        if (periodoAtual?.id) {
-          const respostaMovimentacoes = await api.get(`/movimentacoes/periodo/${periodoAtual.id}`);
-          lista = Array.isArray(respostaMovimentacoes.data) ? respostaMovimentacoes.data : [];
-        }
+        // Ignora respostas antigas se os filtros mudaram no meio do caminho
+        if (cancelado) return;
 
         setPedidosOriginais(lista);
         setPedidos(lista.map(normalizarPedido));
+
+        // As opções de tipo e status vêm da carga sem filtro,
+        // senão elas encolheriam junto com o resultado.
+        if (!filtrosAtivos(filtros)) {
+          setTiposDisponiveis(nomesUnicos(lista, "tipo"));
+          setStatusDisponiveis(nomesUnicos(lista, "status"));
+        }
       } catch (error) {
         console.error("Erro ao buscar pedidos:", error);
-        setPedidos([]);
+        if (!cancelado) {
+          setPedidosOriginais([]);
+          setPedidos([]);
+        }
       } finally {
-        setCarregando(false);
+        if (!cancelado) setCarregando(false);
       }
     };
 
     carregarPedidos();
-  }, []);
 
-  const statusDisponiveis = useMemo(
-    () => [
-      ["todos", "Todos os status"],
-      ...Array.from(new Set(pedidos.map((pedido) => pedido.status).filter(Boolean))).map((status) => [status, status]),
-    ],
-    [pedidos],
+    return () => {
+      cancelado = true;
+    };
+  }, [filtros]);
+
+  const alternarFiltro = () => {
+    setFiltroAberto((aberto) => {
+      if (!aberto) setRascunhoFiltros(filtros);
+      return !aberto;
+    });
+  };
+
+  const atualizarRascunho = (alteracao) =>
+    setRascunhoFiltros((atual) => ({ ...atual, ...alteracao }));
+
+  const aplicarFiltros = () => {
+    setFiltros(rascunhoFiltros);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
+
+  const limparFiltros = () => {
+    setFiltros(FILTROS_VAZIOS);
+    setRascunhoFiltros(FILTROS_VAZIOS);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
+
+  // As abas filtram no front, sobre o que o back devolveu
+  const pedidosFiltrados = useMemo(
+    () =>
+      pedidos.filter(
+        (pedido) => tabAtiva === "todos" || pedido.categoria === tabAtiva,
+      ),
+    [pedidos, tabAtiva],
   );
 
-  const pedidosFiltrados = useMemo(() => {
-    const termo = busca.trim().toLocaleLowerCase("pt-BR");
-
-    return pedidos.filter((pedido) => {
-      const correspondeATab =
-        tabAtiva === "todos" || pedido.categoria === tabAtiva;
-      const correspondeAoStatus =
-        statusFiltrado === "todos" || pedido.status.toLowerCase().includes(statusFiltrado.toLowerCase());
-
-      if (!correspondeATab || !correspondeAoStatus) return false;
-      if (!termo) return true;
-
-      const valores =
-        campoBusca === "todos"
-          ? [
-            pedido.tipo,
-            pedido.status,
-            pedido.valorTotal,
-            pedido.pagadorFrete,
-            pedido.precoFrete,
-            pedido.precoImposto,
-            pedido.precoProdutos,
-            pedido.quantidade,
-            pedido.dataEntrega,
-            pedido.dataPrevista,
-            pedido.dataPedido,
-          ]
-          : [pedido[campoBusca]];
-
-      return valores.some((valor) =>
-        String(valor ?? "").toLocaleLowerCase("pt-BR").includes(termo),
-      );
-    });
-  }, [busca, campoBusca, pedidos, statusFiltrado, tabAtiva]);
+  const originaisPorId = useMemo(
+    () => new Map(pedidosOriginais.map((original) => [original.id, original])),
+    [pedidosOriginais],
+  );
 
   const columns = [
     { name: "Tipo", ordena: false, tipo: "string" },
@@ -233,7 +290,7 @@ function Pedidos() {
   const rowIds = pedidosFiltrados.map((pedido) => pedido.id);
 
   const rows = pedidosFiltrados.map((pedido) => {
-    const original = pedidosOriginais.find((o) => o.id === pedido.id);
+    const original = originaisPorId.get(pedido.id);
     return [
       <button
         type="button"
@@ -257,12 +314,6 @@ function Pedidos() {
       pedido.usuarioCriador,
     ];
   });
-
-  const campoBuscaAtivo = camposBusca.find(
-    ([valor]) => valor === campoBusca,
-  )?.[1];
-
-  const rowsExibidos = rows.length ? rows : [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]];
 
   const cancelarSelecionados = async () => {
     if (selecionados.length === 0) {
@@ -288,7 +339,6 @@ function Pedidos() {
   };
 
   return (
-
     <div className={styles.page}>
       <Header />
 
@@ -314,88 +364,113 @@ function Pedidos() {
         <section className={styles.toolbar} aria-label="Ações dos pedidos">
           <div className={styles.searchActions}>
             <div className={styles.menuContainer}>
-              <button
-                type="button"
-                className={styles.optionsButton}
-                aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
-                aria-expanded={menuBuscaAberto}
-                aria-controls="campos-busca-pedidos"
-                title={`Pesquisar por: ${campoBuscaAtivo}`}
-                onClick={() => {
-                  setMenuBuscaAberto((aberto) => !aberto);
-                  setFiltroAberto(false);
-                }}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="m7 10 5 5 5-5" />
-                </svg>
-              </button>
-
-              {menuBuscaAberto && (
-                <div
-                  id="campos-busca-pedidos"
-                  className={styles.popover}
-                  role="menu"
-                >
-                  {camposBusca.map(([valor, label]) => (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      key={valor}
-                      className={
-                        campoBusca === valor ? styles.selectedOption : ""
-                      }
-                      onClick={() => {
-                        setCampoBusca(valor);
-                        setMenuBuscaAberto(false);
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className={styles.searchWrapper}>
-              <SearchBar
-                placeholder="Buscar nos pedidos..."
-                value={busca}
-                onChange={(event) => setBusca(event.target.value)}
-                ariaLabel="Buscar nos pedidos"
-              />
-            </div>
-
-            <div className={styles.menuContainer}>
-              <Filtro
-                ariaLabel="Filtrar pedidos por status"
-                onClick={() => {
-                  setFiltroAberto((aberto) => !aberto);
-                  setMenuBuscaAberto(false);
-                }}
-              />
+              <Filtro ariaLabel="Filtrar pedidos" onClick={alternarFiltro} />
 
               {filtroAberto && (
                 <div
-                  className={`${styles.popover} ${styles.filterPopover}`}
-                  role="menu"
+                  className={`${styles.popover} ${styles.filterPanel}`}
+                  role="dialog"
+                  aria-label="Filtros dos pedidos"
                 >
-                  {statusDisponiveis.map(([valor, label]) => (
+                  <div className={styles.filterGrid}>
+                    <label className={styles.filterField}>
+                      <span>Tipo</span>
+                      <select
+                        value={rascunhoFiltros.tipo}
+                        onChange={(event) =>
+                          atualizarRascunho({ tipo: event.target.value })
+                        }
+                      >
+                        <option value="">Qualquer tipo</option>
+                        {tiposDisponiveis.map((tipo) => (
+                          <option key={tipo} value={tipo}>
+                            {normalizarTexto(tipo)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={styles.filterField}>
+                      <span>Status</span>
+                      <select
+                        value={rascunhoFiltros.status}
+                        onChange={(event) =>
+                          atualizarRascunho({ status: event.target.value })
+                        }
+                      >
+                        <option value="">Qualquer status</option>
+                        {statusDisponiveis.map((status) => (
+                          <option key={status} value={status}>
+                            {normalizarTexto(status)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={styles.filterField}>
+                      <span>Data de entrega</span>
+                      <input
+                        type="date"
+                        value={rascunhoFiltros.dataEntrega}
+                        onChange={(event) =>
+                          atualizarRascunho({ dataEntrega: event.target.value })
+                        }
+                      />
+                    </label>
+
+                    <label className={styles.filterField}>
+                      <span>Data prevista</span>
+                      <input
+                        type="date"
+                        value={rascunhoFiltros.dataPrevista}
+                        onChange={(event) =>
+                          atualizarRascunho({ dataPrevista: event.target.value })
+                        }
+                      />
+                    </label>
+
+                    <label className={styles.filterField}>
+                      <span>Data do pedido</span>
+                      <input
+                        type="date"
+                        value={rascunhoFiltros.dataPedido}
+                        onChange={(event) =>
+                          atualizarRascunho({ dataPedido: event.target.value })
+                        }
+                      />
+                    </label>
+
+                    <label className={styles.filterField}>
+                      <span>Pagador do frete</span>
+                      <select
+                        value={rascunhoFiltros.pagadorFrete}
+                        onChange={(event) =>
+                          atualizarRascunho({ pagadorFrete: event.target.value })
+                        }
+                      >
+                        <option value="">Qualquer</option>
+                        <option value="true">Sim</option>
+                        <option value="false">Não</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div className={styles.filterActions}>
                     <button
                       type="button"
-                      role="menuitem"
-                      key={valor}
-                      className={
-                        statusFiltrado === valor ? styles.selectedOption : ""
-                      }
-                      onClick={() => {
-                        setStatusFiltrado(valor);
-                        setFiltroAberto(false);
-                      }}
+                      className={styles.clearButton}
+                      onClick={limparFiltros}
                     >
-                      {label}
+                      Limpar
                     </button>
-                  ))}
+                    <button
+                      type="button"
+                      className={styles.applyButton}
+                      onClick={aplicarFiltros}
+                    >
+                      Aplicar
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -410,9 +485,9 @@ function Pedidos() {
               <option value="" disabled>
                 Alterar Status
               </option>
-              <option>Em Andamento</option>
-              <option>Concluída</option>
-              <option>Cancelada</option>
+              <option value="2">Concluído</option>
+              <option value="3">Concluído Parcialmente</option>
+              <option value="4">Cancelado</option>
             </select>
 
             <div className={styles.actionButtons}>
@@ -429,20 +504,6 @@ function Pedidos() {
               >
                 Gerar Etiqueta
               </Button> */}
-              <select
-                className={styles.statusSelect}
-                aria-label="Alterar status dos pedidos selecionados"
-                defaultValue=""
-                disabled={selecionados.length === 0}
-                onChange={alterarStatusSelecionados}
-              >
-                <option value="" disabled>
-                  Alterar Status
-                </option>
-                <option>Em Andamento</option>
-                <option>Concluída</option>
-                <option>Cancelada</option>
-              </select>
 
               <Button
                 icone="editar"
@@ -466,15 +527,33 @@ function Pedidos() {
           </div>
         </section>
 
+        {filtrosAtivos(filtros) && (
+          <div className={styles.activeFilters}>
+            <span>{resumoFiltros(filtros)}</span>
+            <button type="button" onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          </div>
+        )}
+
         <section className={styles.tableSection} aria-label="Lista de pedidos">
-          <Table
-            key={`${tabAtiva}-${busca}-${campoBusca}-${statusFiltrado}`}
+          <TablePaginada
+            key={tabAtiva}
             columns={columns}
-            rows={carregando ? [[placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder, placeholder]] : rowsExibidos}
+            rows={rows}
             rowIds={rowIds}
-            onSelectionChange={setSelecionados}
             removerNaOrdenacao="R$"
+            itensPorPagina={ITENS_POR_PAGINA}
+            opcoesItensPorPagina={OPCOES_ITENS_POR_PAGINA}
+            onSelectionChange={setSelecionados}
           />
+
+          {carregando && (
+            <p className={styles.tableMessage}>Carregando pedidos...</p>
+          )}
+          {!carregando && rows.length === 0 && (
+            <p className={styles.tableMessage}>Nenhum pedido encontrado.</p>
+          )}
         </section>
       </main>
 

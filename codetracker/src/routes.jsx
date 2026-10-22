@@ -18,6 +18,8 @@ import CadastrarPeca from "./pages/CadastrarPeca";
 import CadastrarPedido from "./pages/CadastrarPedido";
 import EntradasESaidas from "./pages/EntradasESaidas";
 import VerMaisPeriodo from "./pages/VerMaisPeriodo";
+import CadastrarPeriodo from "./pages/CadastrarPeriodo";
+import Usuarios from "./pages/Usuarios";
 
 export const routes = createBrowserRouter([
   {
@@ -99,6 +101,14 @@ export const routes = createBrowserRouter([
   {
     path: "/verMaisPeriodo",
     element: <VerMaisPeriodo />,
+  },
+  {
+    path: "/cadastrarPeriodo",
+    element: <CadastrarPeriodo />,
+  },
+  {
+    path: "/usuarios",
+    element: <Usuarios />,
   },
   {
     path: "*",

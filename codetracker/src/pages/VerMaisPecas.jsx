@@ -340,6 +340,7 @@ function VerMaisPecas() {
                 <ButtonMenor icone="deletar" estilo="deletar">
                   Deletar
                 </ButtonMenor>
+                <SearchBar></SearchBar>
               </div>
               <div className={styles.tableWrapper}>
                 <Table columns={columnsCodigos} rows={rowsCodigos.length ? rowsCodigos : [[placeholder, placeholder]]} />
