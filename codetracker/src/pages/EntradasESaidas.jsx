@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
@@ -7,30 +8,61 @@ import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./EntradasESaidas.module.css";
 
-const movimentacoesIniciais = [
-    {
-        id: 1,
-        Tipo: "Entrada",
-        Data: "01/01/2026",
-        quantidade: 200,
-        Contato: "Galpão A - Prateleira 4",
-        NotaFiscal: "NF-94822",
-        CodigoInterno: "CT-1053Y",
-        Total: "R$4320,00",
-        Unitario: "R$ 145,20",
-    },
-    {
-        id: 2,
-        Tipo: "Saída",
-        Data: "15/02/2026",
-        quantidade: 420,
-        Contato: "Galpão B - Prateleira 2",
-        NotaFiscal: "NF-10531",
-        CodigoInterno: "CT-1053Y",
-        Total: "R$8058,00",
-        Unitario: "R$ 18,90",
-    },
-];
+// PONTOS A REVISAR
+
+/**
+ * Pelo comportamento, o campo de preço total esta juntando a soma de todos os produtos da movimentação
+ */
+
+const formatarData = (valor) => {
+    if (!valor) return "---";
+
+    const data = new Date(valor);
+    if (Number.isNaN(data.getTime())) return String(valor);
+
+    return data.toLocaleDateString("pt-BR");
+};
+
+const formatarMoeda = (valor) => {
+    const numero = Number(valor ?? 0);
+    if (Number.isNaN(numero)) return "---";
+
+    return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }).format(numero);
+};
+
+const normalizarMovimentacao = (registro) => {
+    const movimentacao = registro?.movimentacaoEstoque ?? {};
+    const item = registro?.item ?? {};
+    const tipo = String(movimentacao?.tipo?.nome ?? "").trim();
+    const tipoFormatado = tipo === "ENTRADA" ? "Entrada" : tipo === "SAIDA" ? "Saída" : "---";
+
+    const quantidade = Number(registro?.qtd ?? 0);
+    const unitario = Number(registro?.precoUnitario ?? movimentacao?.precoProdutos ?? 0);
+    const total = Number(movimentacao?.valorTotal ?? quantidade * unitario ?? 0);
+
+    const contato =
+        movimentacao?.fornecedor?.nomeEmpresa ||
+        movimentacao?.fornecedor?.nomeContato ||
+        movimentacao?.cliente?.nome ||
+        movimentacao?.cliente?.nomeContato ||
+        "Sem contato";
+
+    return {
+        id: registro?.id ?? null,
+        Tipo: tipoFormatado,
+        Data: formatarData(movimentacao?.dataMovimentacao ?? movimentacao?.dataEntrega ?? movimentacao?.dataEntregaPrevista),
+        quantidade,
+        Contato: contato,
+        NotaFiscal: movimentacao?.numeroNotaFiscal || "---",
+        CodigoInterno: item?.codigoInterno || "---",
+        Total: formatarMoeda(total),
+        Unitario: formatarMoeda(unitario),
+        _tipoOriginal: tipo,
+    };
+};
 
 const camposBusca = [
     ["todos", "Todos os campos"],
@@ -43,7 +75,7 @@ const camposBusca = [
 
 function EntradasESaidas() {
     const navigate = useNavigate();
-    const [movimentacoes, setMovimentacoes] = useState(movimentacoesIniciais);
+    const [movimentacoes, setMovimentacoes] = useState([]);
     const [busca, setBusca] = useState("");
     const [campoBusca, setCampoBusca] = useState("todos");
     const [tipoFiltrado, setTipoFiltrado] = useState("todos");
@@ -52,8 +84,32 @@ function EntradasESaidas() {
     const [filtroAberto, setFiltroAberto] = useState(false);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
+    useEffect(() => {
+        const carregarMovimentacoes = async () => {
+            try {
+                const respostaPeriodo = await api.get("/periodos/ultimo");
+                const periodoAtual = respostaPeriodo?.data ?? null;
+
+                if (!periodoAtual?.id) {
+                    setMovimentacoes([]);
+                    return;
+                }
+
+                const respostaItens = await api.get(`/itensNaMovimentacao/item/periodo/${periodoAtual.id}`);
+                const lista = Array.isArray(respostaItens.data) ? respostaItens.data : [];
+
+                setMovimentacoes(lista.map(normalizarMovimentacao));
+            } catch (error) {
+                console.error("Erro ao buscar movimentações do período atual:", error);
+                setMovimentacoes([]);
+            }
+        };
+
+        carregarMovimentacoes();
+    }, []);
+
     const tiposDisponiveis = useMemo(
-        () => ["todos", ...new Set(movimentacoes.map((item) => item.Tipo))],
+        () => ["todos", ...new Set(movimentacoes.map((item) => item.Tipo).filter(Boolean))],
         [movimentacoes],
     );
 
@@ -99,7 +155,7 @@ function EntradasESaidas() {
     const rows = dadosFiltrados.map((item) => ({
         id: item.id,
         cells: [
-            <span className={`${styles.badge} ${styles[item.Tipo.toLowerCase()]}`}>
+            <span className={`${styles.badge} ${styles[(item._tipoOriginal || item.Tipo).toLowerCase()]}`}>
                 {item.Tipo}
             </span>,
             item.Data,
