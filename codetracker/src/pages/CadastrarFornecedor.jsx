@@ -291,6 +291,16 @@ function CadastrarFornecedor() {
   const cadastrarFornecedor = async (event) => {
     event.preventDefault();
 
+    if (!formulario.nome?.trim()) {
+      alert("O campo Nome é obrigatório.");
+      return;
+    }
+
+    if (!formulario.cnpj?.trim()) {
+      alert("O campo CNPJ é obrigatório.");
+      return;
+    }
+
     try {
       const dadosEndereco = {
         cep: formulario.cep?.trim(),
@@ -427,13 +437,15 @@ function CadastrarFornecedor() {
                       onChange={atualizarCampo("nomeContato")}
                       placeholder="Digite o contato do fornecedor"
                     />
-                    <Input
-                      id="cnpj-fornecedor"
-                      label="Cnpj:"
-                      value={formulario.cnpj}
-                      onChange={atualizarCampo("cnpj")}
-                      placeholder="Digite o Cnpj do fornecedor"
-                    />
+                    <div className={styles.requiredField}>
+                      <Input
+                        id="cnpj-fornecedor"
+                        label="Cnpj:"
+                        value={formulario.cnpj}
+                        onChange={atualizarCampo("cnpj")}
+                        placeholder="Digite o Cnpj do fornecedor"
+                      />
+                    </div>
                     <label
                       className={baseStyles.textareaField}
                       htmlFor="razao-social-fornecedor"

@@ -162,7 +162,11 @@ function Pecas() {
 
   const editarSelecionada = () => {
     const peca = pecas.find((item) => item.id === selecionadas[0]);
-    if (peca) abrirDetalhes(peca);
+    if (peca) {
+      navigate("/cadastrarPeca", {
+        state: { item: peca, modoEdicao: true },
+      });
+    }
   };
 
   const columns = [
@@ -210,7 +214,6 @@ function Pecas() {
     ([valor]) => valor === campoBusca,
   )?.[1];
 
-  console.log("rows:", rows);
   return (
     <div className={styles.page}>
       <Header />

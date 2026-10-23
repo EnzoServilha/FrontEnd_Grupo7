@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
 import ProgressoCadastro from "../components/ProgressoCadastro";
+import ServerResponse from "../components/ServerResponse";
 import baseStyles from "./CadastrarCliente.module.css";
 import styles from "./CadastrarPeca.module.css";
 
@@ -62,6 +63,55 @@ const normalizarContato = (contato, tipo) => {
   };
 };
 
+const normalizarItemEdicao = (item) => {
+  if (!item || typeof item !== "object") return null;
+
+  const codigosAssociados = Array.isArray(item.codigosAssociados)
+    ? item.codigosAssociados.map((codigo) => {
+        const cliente = codigo?.cliente;
+        const fornecedor = codigo?.fornecedor;
+        const nomeEmpresa =
+          cliente?.nome ??
+          cliente?.razaoSocial ??
+          fornecedor?.razaoSocial ??
+          fornecedor?.nome ??
+          "Contato";
+        const nomeContato =
+          cliente?.nomeContato ??
+          cliente?.contato ??
+          fornecedor?.nomeContato ??
+          fornecedor?.contato ??
+          "Sem contato";
+
+        return {
+          id: codigo?.id ?? Date.now() + Math.random(),
+          dbId: codigo?.id ?? null,
+          codigo: codigo?.codigo ?? "",
+          contato: `${nomeEmpresa} • ${nomeContato}`,
+        };
+      })
+    : [];
+
+  const pecasAssimiladas = Array.isArray(item.itensSimilares)
+    ? item.itensSimilares.map((peca) => ({
+        id: peca?.id ?? null,
+        codigo: peca?.codigoInterno ?? peca?.codigo ?? "",
+      }))
+    : [];
+
+  return {
+    formulario: {
+      ano: item.ano ?? "",
+      marca: item.marca ?? "",
+      codigoInterno: item.codigoInterno ?? "",
+      localizacao: item.localizacao ?? "",
+      descricao: item.descricao ?? "",
+    },
+    codigosAssociados,
+    pecasAssimiladas,
+  };
+};
+
 function CampoBusca({ id, value, onChange, placeholder }) {
   return (
     <div className={styles.searchField}>
@@ -82,6 +132,7 @@ function CampoBusca({ id, value, onChange, placeholder }) {
 
 function CadastrarPeca() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [etapa, setEtapa] = useState(1);
   const [formulario, setFormulario] = useState(formularioInicial);
   const [buscaContato, setBuscaContato] = useState("");
@@ -92,6 +143,10 @@ function CadastrarPeca() {
   const [buscaPeca, setBuscaPeca] = useState("");
   const [pecasSugeridas, setPecasSugeridas] = useState([]);
   const [pecasAssimiladas, setPecasAssimiladas] = useState([]);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [itemIdEdicao, setItemIdEdicao] = useState(null);
+  const [dataCadastroOriginal, setDataCadastroOriginal] = useState(null);
+  const [erroCadastro, setErroCadastro] = useState("");
 
   useEffect(() => {
     const termo = buscaContato.trim();
@@ -149,6 +204,52 @@ function CadastrarPeca() {
       clearTimeout(timer);
     };
   }, [buscaContato]);
+
+  useEffect(() => {
+    const itemSelecionado = location.state?.item ?? null;
+    const itemId =
+      Number(itemSelecionado?.id ?? location.state?.id ?? new URLSearchParams(location.search).get("id"));
+
+    const modoAtivo = Boolean(location.state?.modoEdicao || itemSelecionado || Number.isFinite(itemId));
+
+    setModoEdicao(modoAtivo && Number.isFinite(itemId));
+    setItemIdEdicao(Number.isFinite(itemId) ? itemId : null);
+
+    if (!modoAtivo) {
+      setFormulario(formularioInicial);
+      setCodigosAssociados([]);
+      setPecasAssimiladas([]);
+      return undefined;
+    }
+
+    const carregarItemEdicao = async () => {
+      try {
+        const idParaBuscar = Number(itemSelecionado?.id ?? itemId);
+        if (!Number.isFinite(idParaBuscar)) {
+          return;
+        }
+
+        const resposta = await api.get(`/itens/${idParaBuscar}`);
+        const item = resposta?.data ?? null;
+        const dadosEdicao = normalizarItemEdicao(item);
+
+        if (!dadosEdicao) {
+          return;
+        }
+
+        setFormulario(dadosEdicao.formulario);
+        setCodigosAssociados(dadosEdicao.codigosAssociados);
+        setPecasAssimiladas(dadosEdicao.pecasAssimiladas);
+        setDataCadastroOriginal(item?.dataCadastro ?? null);
+      } catch (error) {
+        console.error("Erro ao carregar peça para edição:", error);
+        setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+      }
+    };
+
+    carregarItemEdicao();
+    return undefined;
+  }, [location.key, location.search, location.state]);
 
   useEffect(() => {
     const termo = buscaPeca.trim();
@@ -288,9 +389,10 @@ function CadastrarPeca() {
 
   const cadastrarPeca = async (event) => {
     event.preventDefault();
+    setErroCadastro("");
 
     if (!formulario.codigoInterno.trim()) {
-      alert("Informe o código interno da peça.");
+      setErroCadastro("Informe o código interno da peça.");
       return;
     }
 
@@ -300,7 +402,7 @@ function CadastrarPeca() {
       ano: formulario.ano === "" ? null : Number(formulario.ano),
       descricao: formulario.descricao.trim() || null,
       localizacao: formulario.localizacao.trim() || null,
-      dataCadastro: new Date().toISOString(),
+      dataCadastro: dataCadastroOriginal ?? new Date().toISOString(),
       codigosAssociadosIds: [...new Set(
         codigosAssociados
           .map((item) => item.dbId ?? item.id)
@@ -314,14 +416,20 @@ function CadastrarPeca() {
     };
 
     try {
-      await api.post("/itens", payload);
+      if (modoEdicao && itemIdEdicao) {
+        await api.put(`/itens/${itemIdEdicao}`, payload);
+      } else {
+        await api.post("/itens", payload);
+      }
       navigate(-1);
     } catch (error) {
       console.error("Erro ao cadastrar peça:", error);
-      alert(
+      const mensagem =
         error?.response?.data?.message ||
-          "Não foi possível cadastrar a peça com os códigos e itens relacionados.",
-      );
+        error?.response?.data?.error ||
+        "Não foi possível salvar a peça com os códigos e itens relacionados.";
+
+      setErroCadastro(mensagem);
     }
   };
 
@@ -347,7 +455,7 @@ function CadastrarPeca() {
     <div className={baseStyles.page}>
       <header className={`${baseStyles.header} ${styles.header}`}>
         <Logo />
-        <h1>Cadastrar Peça</h1>
+        <h1>{modoEdicao ? "Editar Peça" : "Cadastrar Peça"}</h1>
       </header>
 
       <main className={baseStyles.content}>
@@ -589,12 +697,16 @@ function CadastrarPeca() {
                   </div>
 
                   {pecasSugeridas.length > 0 && (
-                    <div className={styles.itemsList}>
+                    <div
+                      className={styles.suggestionDropdown}
+                      role="listbox"
+                      aria-label="Peças sugeridas"
+                    >
                       {pecasSugeridas.map((peca) => (
                         <button
                           key={peca.id}
                           type="button"
-                          className={styles.partItem}
+                          className={styles.suggestionOption}
                           onClick={() => {
                             setPecasAssimiladas((itensAtuais) =>
                               itensAtuais.some((item) => item.id === peca.id)
@@ -608,8 +720,12 @@ function CadastrarPeca() {
                             setPecasSugeridas([]);
                           }}
                         >
-                          {peca.codigoInterno}
-                          {peca.marca ? ` • ${peca.marca}` : ""}
+                          <span className={styles.suggestionCode}>
+                            {peca.codigoInterno}
+                          </span>
+                          <span className={styles.suggestionMeta}>
+                            {peca.marca || "Sem marca"}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -658,9 +774,24 @@ function CadastrarPeca() {
             <Button type="button" estilo="editar" onClick={() => navigate(-1)}>
               Cancelar
             </Button>
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit">{modoEdicao ? "Salvar" : "Cadastrar"}</Button>
           </footer>
         </form>
+
+        {erroCadastro && (
+          <div className={styles.errorOverlay} onClick={() => setErroCadastro("")}>
+            <div
+              className={styles.errorPopup}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <ServerResponse
+                type="error"
+                title={modoEdicao ? "Falha ao atualizar a peça" : "Falha ao cadastrar a peça"}
+                message={erroCadastro}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
