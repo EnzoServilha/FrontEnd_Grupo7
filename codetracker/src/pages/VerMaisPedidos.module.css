@@ -94,6 +94,12 @@
   font-weight: 700;
 }
 
+.copyContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .tableSection {
   display: flex;
   flex-direction: column;

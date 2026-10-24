@@ -45,6 +45,10 @@ function VerMaisPecas() {
   const [carregando, setCarregando] = useState(true);
   const [campoBusca, setCampoBusca] = useState("todos");
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const gerarEtiquetaSelecionados = () => {
+    location.state?.peca ?? location.state?.item ?? null;
+    // TODO: integrar geração de etiqueta para os pedidos selecionados
+  };
 
   const camposBusca = [
     ["todos", "Todos os campos"],
@@ -264,6 +268,12 @@ function VerMaisPecas() {
           </div>
 
           <div className={styles.actionButtons}>
+            <Button
+              estilo="editar"
+              onClick={gerarEtiquetaSelecionados}
+            >
+              Gerar Etiqueta
+            </Button>
             <Button icone="editar" estilo="editar">
               Editar
             </Button>
@@ -340,6 +350,7 @@ function VerMaisPecas() {
                 <ButtonMenor icone="deletar" estilo="deletar">
                   Deletar
                 </ButtonMenor>
+                <SearchBar></SearchBar>
               </div>
               <div className={styles.tableWrapper}>
                 <Table columns={columnsCodigos} rows={rowsCodigos.length ? rowsCodigos : [[placeholder, placeholder]]} />
