@@ -43,6 +43,9 @@ function VerMaisPecas() {
   const [peca, setPeca] = useState(null);
   const [historico, setHistorico] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(true);
+  const [erroPeca, setErroPeca] = useState("");
+  const [erroHistorico, setErroHistorico] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const gerarEtiquetaSelecionados = () => {
@@ -64,20 +67,30 @@ function VerMaisPecas() {
     const itemId = Number(itemIdFromState ?? new URLSearchParams(location.search).get("id"));
 
     if (!Number.isFinite(itemId) || itemId <= 0) {
+      setPeca(null);
+      setHistorico([]);
+      setErroPeca("Selecione uma peça válida para visualizar os detalhes.");
       setCarregando(false);
+      setCarregandoHistorico(false);
       return;
     }
 
+    let cancelado = false;
+    setPeca(null);
+    setHistorico([]);
+    setErroPeca("");
+    setErroHistorico("");
+    setCarregando(true);
+    setCarregandoHistorico(true);
+
     const carregarDetalhes = async () => {
       try {
-        setCarregando(true);
-
-        const [respostaItem, respostaHistorico] = await Promise.all([
-          api.get(`/itens/${itemId}`),
-          api.get(`/itensNaMovimentacao/item/${itemId}`),
-        ]);
-
-        const item = respostaItem.data ?? {};
+        const respostaItem = await api.get(`/itens/${itemId}`);
+        const item = respostaItem.data;
+        if (!item || Number(item.id) !== itemId) {
+          throw new Error("Resposta inválida ao consultar a peça.");
+        }
+        if (cancelado) return;
         const detalhado = {
           id: item.id ?? itemId,
           codigoInterno: normalizarTexto(item.codigoInterno),
@@ -92,28 +105,32 @@ function VerMaisPecas() {
         };
 
         setPeca(detalhado);
-        setHistorico(Array.isArray(respostaHistorico.data) ? respostaHistorico.data : []);
       } catch (error) {
         console.error("Erro ao buscar detalhes da peça:", error);
-        setPeca({
-          id: itemId,
-          codigoInterno: placeholder,
-          marca: placeholder,
-          anoFabricacao: placeholder,
-          localizacao: placeholder,
-          quantidade: placeholder,
-          dataCadastro: placeholder,
-          descricao: placeholder,
-          codigosAssociados: [],
-          itensSimilares: [],
-        });
-        setHistorico([]);
+        if (!cancelado) setErroPeca("Não foi possível carregar os detalhes e vínculos da peça.");
       } finally {
-        setCarregando(false);
+        if (!cancelado) setCarregando(false);
+      }
+    };
+
+    const carregarHistorico = async () => {
+      try {
+        const resposta = await api.get(`/itensNaMovimentacao/item/${itemId}`);
+        if (resposta.status !== 204 && !Array.isArray(resposta.data)) {
+          throw new Error("Resposta inválida ao consultar o histórico da peça.");
+        }
+        if (!cancelado) setHistorico(resposta.status === 204 ? [] : resposta.data);
+      } catch (error) {
+        console.error("Erro ao buscar histórico da peça:", error);
+        if (!cancelado) setErroHistorico("Não foi possível carregar o histórico da peça.");
+      } finally {
+        if (!cancelado) setCarregandoHistorico(false);
       }
     };
 
     carregarDetalhes();
+    carregarHistorico();
+    return () => { cancelado = true; };
   }, [location.search, location.state]);
 
   const columnsCodigos = useMemo(
@@ -127,8 +144,9 @@ function VerMaisPecas() {
   const rowsCodigos = useMemo(
     () =>
       (peca?.codigosAssociados ?? []).map((codigo) => {
-        const nome = codigo?.fornecedor?.razaoSocial ?? codigo?.cliente?.nome ?? placeholder;
-        return [normalizarTexto(codigo?.codigo), nome];
+        const nome = codigo?.fornecedor?.nomeEmpresa ?? codigo?.fornecedor?.razaoSocial ??
+          codigo?.cliente?.nomeEmpresa ?? codigo?.cliente?.nome ?? placeholder;
+        return { id: codigo.id, cells: [normalizarTexto(codigo?.codigo), nome] };
       }),
     [peca],
   );
@@ -229,17 +247,20 @@ function VerMaisPecas() {
   const columnsSimilares = useMemo(
     () => [
       { name: "Código Interno Item", ordena: true, tipo: "string" },
-      { name: "Descrição", ordena: true, tipo: "string" },
+      { name: "Marca", ordena: true, tipo: "string" },
     ],
     [],
   );
 
   const rowsSimilares = useMemo(
     () =>
-      (peca?.itensSimilares ?? []).map((similar) => [
-        normalizarTexto(similar?.codigoInterno),
-        normalizarTexto(similar?.marca ?? similar?.descricao ?? "Peça similar"),
-      ]),
+      (peca?.itensSimilares ?? []).map((similar) => ({
+        id: similar.id,
+        cells: [
+          normalizarTexto(similar?.codigoInterno),
+          normalizarTexto(similar?.marca),
+        ],
+      })),
     [peca],
   );
 
@@ -288,6 +309,8 @@ function VerMaisPecas() {
             <section className={styles.cardInfo}>
               {carregando ? (
                 <p>Carregando peça...</p>
+              ) : erroPeca ? (
+                <p role="alert">{erroPeca}</p>
               ) : (
                 <>
                   <div className={styles.infoGrid}>
@@ -353,7 +376,11 @@ function VerMaisPecas() {
                 <SearchBar></SearchBar>
               </div>
               <div className={styles.tableWrapper}>
-                <Table columns={columnsCodigos} rows={rowsCodigos.length ? rowsCodigos : [[placeholder, placeholder]]} />
+                {carregando ? <p role="status">Carregando códigos associados...</p> : erroPeca ? (
+                  <p role="alert">Códigos associados indisponíveis: falha ao carregar a peça.</p>
+                ) : rowsCodigos.length ? (
+                  <Table columns={columnsCodigos} rows={rowsCodigos} />
+                ) : <p className={styles.emptyState}>Nenhum código associado a esta peça.</p>}
               </div>
             </section>
           </div>
@@ -470,7 +497,11 @@ function VerMaisPecas() {
                 <Filtro />
               </div>
             </div>
-            {rowsHistorico.length > 0 ? (
+            {carregandoHistorico ? (
+              <p role="status">Carregando histórico...</p>
+            ) : erroHistorico ? (
+              <p role="alert">{erroHistorico}</p>
+            ) : rowsHistorico.length > 0 ? (
               <Table
                 columns={columnsHistorico}
                 rows={rowsHistorico}
@@ -537,10 +568,11 @@ function VerMaisPecas() {
                 </ButtonMenor>
               </div>
             </div>
-            <Table
-              columns={columnsSimilares}
-              rows={rowsSimilares.length ? rowsSimilares : [[placeholder, placeholder]]}
-            />
+            {carregando ? <p role="status">Carregando peças similares...</p> : erroPeca ? (
+              <p role="alert">Peças similares indisponíveis: falha ao carregar a peça.</p>
+            ) : rowsSimilares.length ? (
+              <Table columns={columnsSimilares} rows={rowsSimilares} />
+            ) : <p className={styles.emptyState}>Nenhuma peça similar vinculada.</p>}
           </section>
         </div>
       </main>

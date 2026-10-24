@@ -73,7 +73,11 @@ function TablePaginada(props) {
     const computarChave = () =>
         (props.rows ?? []).map((row, idx) => resolverId(row, idx)).join("|");
 
-    const [linhas, setLinhas] = useState(buildLinhas);
+    const [ordenacaoAtiva, setOrdenacaoAtiva] = useState(null);
+    const linhas = buildLinhas();
+    if (ordenacaoAtiva) {
+        ordenarLinhas(linhas, ordenacaoAtiva.tipo, ordenacaoAtiva.index, ordenacaoAtiva.crescente);
+    }
     const [novaDirecao, setNovaDirecao] = useState(true);
     const [selecionadas, setSelecionadas] = useState([]);
     const [paginaInterna, setPaginaInterna] = useState(0);
@@ -86,7 +90,6 @@ function TablePaginada(props) {
         const proximaChave = computarChave();
 
         if (proximaChave !== chaveLinhasRef.current) {
-            setLinhas(buildLinhas());
             setSelecionadas([]);
             if (!modoServidor) setPaginaInterna(0);
 
@@ -181,6 +184,7 @@ function TablePaginada(props) {
         if (column.campoOrdenacao && props.onSortChange) {
             const direcao = novaDirecao ? "asc" : "desc";
 
+            setOrdenacaoAtiva(null);
             setNovaDirecao(!novaDirecao);
             setSelecionadas([]);
             notificarSelecao([]);
@@ -190,36 +194,36 @@ function TablePaginada(props) {
             return;
         }
 
-        // Colunas sem campo no back continuam ordenando localmente.
-        const listaOrdenada = [...linhas];
+        setOrdenacaoAtiva({ tipo, index, crescente: novaDirecao });
+        setNovaDirecao(!novaDirecao);
+        setSelecionadas([]);
+        notificarSelecao([]);
+        if (!modoServidor) setPaginaInterna(0);
+    }
 
+    function ordenarLinhas(listaOrdenada, tipo, index, crescente) {
         if (tipo === "number") {
             listaOrdenada.sort((a, b) => {
                 const numA = paraNumero(a.cells[index], props.removerNaOrdenacao);
                 const numB = paraNumero(b.cells[index], props.removerNaOrdenacao);
-                return novaDirecao ? numA - numB : numB - numA;
+                return crescente ? numA - numB : numB - numA;
             });
         } else if (tipo === "date") {
             listaOrdenada.sort((a, b) => {
                 const dataA = new Date(formatarData(textoDaCelula(a.cells[index]))).getTime() || 0;
                 const dataB = new Date(formatarData(textoDaCelula(b.cells[index]))).getTime() || 0;
-                return novaDirecao ? dataA - dataB : dataB - dataA;
+                return crescente ? dataA - dataB : dataB - dataA;
             });
         } else {
             listaOrdenada.sort((a, b) => {
                 const strA = textoDaCelula(a.cells[index]).toLowerCase();
                 const strB = textoDaCelula(b.cells[index]).toLowerCase();
-                return novaDirecao
+                return crescente
                     ? strA.localeCompare(strB)
                     : strB.localeCompare(strA);
             });
         }
 
-        setNovaDirecao(!novaDirecao);
-        setLinhas(listaOrdenada);
-        setSelecionadas([]);
-        notificarSelecao([]);
-        if (!modoServidor) setPaginaInterna(0);
     }
 
     return (
