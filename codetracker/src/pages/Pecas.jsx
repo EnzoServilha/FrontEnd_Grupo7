@@ -339,7 +339,11 @@ function Pecas() {
 
   const editarSelecionada = () => {
     const peca = pecas.find((item) => item.id === selecionadas[0]);
-    if (peca) abrirDetalhes(peca);
+    if (peca) {
+      navigate("/cadastrarPeca", {
+        state: { item: peca, modoEdicao: true },
+      });
+    }
   };
 
   const columns = [
