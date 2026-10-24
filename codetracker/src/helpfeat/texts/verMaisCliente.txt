@@ -1,0 +1,7 @@
+Esta tela apresenta a organização visual dos detalhes de um cliente, com informações de identificação, contato, observações e localização.
+
+A seção Histórico de Vendas foi organizada para facilitar a consulta de operações relacionadas ao cliente. Confira as informações do registro antes de utilizá-las em uma negociação ou atendimento.
+
+Use a ação de voltar para retornar à área de contatos.
+
+Nesta versão, esta página ainda utiliza conteúdo fixo de demonstração e não carrega os dados do cliente selecionado. Os botões de editar, excluir e consultar vendas ainda não executam essas operações.

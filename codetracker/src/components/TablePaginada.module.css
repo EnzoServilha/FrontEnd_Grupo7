@@ -1,0 +1,236 @@
+/* ---------- Estrutura ---------- */
+.table-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.table-container {
+    /* Altura de ~10 linhas + cabeçalho. Acima disso, aparece a barra lateral. */
+    --altura-maxima-tabela: 720px;
+
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: var(--altura-maxima-tabela);
+}
+
+/* Barra de rolagem discreta (opcional) */
+.table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 8px;
+    border: 2px solid #ffffff;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+}
+
+/* ---------- Tabela (original) ---------- */
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid #8a8a8a;
+    border-radius: 4px;
+    background-color: #ffffff;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 14px;
+}
+
+.custom-checkbox:hover {
+    border-color: #555555;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    font-size: 14px;
+    color: #1e293b;
+    table-layout: auto;
+}
+
+.custom-table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px;
+    border-bottom: 2px solid #e2e8f0;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    background-color: #fff;
+    white-space: nowrap;
+}
+
+.selected-row td {
+    background-color: #e9f2fc !important;
+}
+
+.custom-table tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+.badge-stock {
+    background-color: #e6f7ed;
+    color: #1e7e34;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.text-link {
+    color: #0056b3;
+    font-size: 12px;
+    display: block;
+    margin-top: 4px;
+    text-decoration: none;
+}
+
+.text-bold {
+    font-weight: 700;
+}
+
+.th-elements {
+    flex-direction: row;
+    display: flex;
+}
+
+/* ---------- Paginação ---------- */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 18px 8px;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    font-size: 14px;
+    color: #475569;
+}
+
+.pagination-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-size-select {
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #1e293b;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.page-size-select:focus-visible {
+    outline: 2px solid #0056b3;
+    outline-offset: 1px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.page-button {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #1e293b;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-button:hover:not(:disabled):not(.page-button-active) {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.page-button:focus-visible {
+    outline: 2px solid #0056b3;
+    outline-offset: 1px;
+}
+
+.page-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-button-active {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.page-ellipsis {
+    min-width: 24px;
+    text-align: center;
+    color: #94a3b8;
+}

@@ -1,0 +1,11 @@
+Esta tela reúne os detalhes da peça aberta a partir do catálogo. Confira o código interno e os dados de identificação para ter certeza de que está consultando o item desejado.
+
+Consulte as informações gerais e a seção Códigos Associados. Os códigos ajudam a relacionar a identificação interna da peça às referências utilizadas por outros contatos.
+
+O Histórico de Vendas e Compras permite consultar registros relacionados ao item. Use a pesquisa disponível na seção para localizar informações específicas.
+
+A seção Peças Similares apresenta referências relacionadas à peça. A semelhança cadastrada não substitui a verificação técnica de aplicação, medidas e compatibilidade.
+
+As ações de adicionar código e assimilar peças abrem telas específicas. Use a ação de voltar para retornar à consulta anterior.
+
+Nesta versão, alguns controles de edição e exclusão ainda não possuem ação implementada. Os dados e históricos disponíveis dependem das integrações concluídas; não considere uma alteração salva apenas por ter preenchido um controle.

@@ -1,0 +1,9 @@
+Você está na visão Entradas e Saídas da área de peças. A aba Catálogo mostra os cadastros; esta visão apresenta movimentações identificadas como entrada ou saída.
+
+A tabela exibe tipo de movimento, data, quantidade, contato, número da nota fiscal, código interno e preços total e unitário. Confira o tipo e a quantidade para distinguir a entrada de itens da saída de itens.
+
+Use a pesquisa por todos os campos ou escolha tipo, data, contato, nota fiscal ou código interno. O filtro de tipo permite restringir a consulta às entradas ou às saídas.
+
+Para voltar à consulta das peças cadastradas, selecione Catálogo no início da página.
+
+Nesta versão, os movimentos exibidos são exemplos locais. Eles ainda não constituem um histórico conectado às operações do backend.

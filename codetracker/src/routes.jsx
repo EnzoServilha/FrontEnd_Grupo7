@@ -1,5 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
-import Login from "./pages/Login";
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import HelpPopup from "./helpfeat/HelpPopup";import Login from "./pages/Login";
 import ContaInativa from "./pages/ContaInativa";
 import Dashboard from "./pages/Dashboard";
 import Pecas from "./pages/Pecas";
@@ -17,8 +17,11 @@ import CadastrarFornecedor from "./pages/CadastrarFornecedor";
 import CadastrarPeca from "./pages/CadastrarPeca";
 import CadastrarPedido from "./pages/CadastrarPedido";
 import EntradasESaidas from "./pages/EntradasESaidas";
+import VerMaisPeriodo from "./pages/VerMaisPeriodo";
+import CadastrarPeriodo from "./pages/CadastrarPeriodo";
+import Usuarios from "./pages/Usuarios";
 
-export const routes = createBrowserRouter([
+const pageRoutes = [
   {
     path: "/",
     element: <Login />,
@@ -96,7 +99,31 @@ export const routes = createBrowserRouter([
     element: <VerMaisPedidos />,
   },
   {
+    path: "/verMaisPeriodo",
+    element: <VerMaisPeriodo />,
+  },
+  {
+    path: "/cadastrarPeriodo",
+    element: <CadastrarPeriodo />,
+  },
+  {
+    path: "/usuarios",
+    element: <Usuarios />,
+  },
+  {
     path: "*",
     element: <div>Erro 404: Página não encontrada</div>,
+  },
+];
+
+export const routes = createBrowserRouter([
+  {
+    element: (
+      <>
+        <Outlet />
+        <HelpPopup />
+      </>
+    ),
+    children: pageRoutes,
   },
 ]);
