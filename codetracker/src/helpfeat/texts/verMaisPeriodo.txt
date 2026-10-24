@@ -1,0 +1,5 @@
+Esta janela apresenta os dados do período escolhido: data de cadastro, total de peças e anotações. Use-a para consultar o registro sem alterar suas informações.
+
+O total de peças corresponde ao valor informado no cadastro do período. Ele não comprova uma contagem automática ou atualizada do estoque.
+
+Clique em Fechar para retornar à lista. Esta janela não oferece edição; nesta versão, os dados de períodos são mantidos localmente.

@@ -1,0 +1,7 @@
+Esta tela é destinada à criação de uma conta de acesso ao sistema. Uma conta de usuário representa uma pessoa que poderá utilizar a ferramenta, e não um cliente ou fornecedor do cadastro de contatos.
+
+Preencha os dados solicitados pelo formulário. Confira a identificação e o e-mail informado para evitar a criação de uma conta para a pessoa errada.
+
+Se o formulário apresentar configurações de acesso, escolha somente as opções necessárias para as atividades da pessoa. Os campos obrigatórios e as regras de senha devem seguir as orientações exibidas na própria tela.
+
+Revise o preenchimento antes de confirmar a criação. Se decidir desistir, utilize a opção de cancelar disponibilizada pelo formulário.

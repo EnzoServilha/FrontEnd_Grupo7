@@ -5,6 +5,7 @@ import Input from "../components/Input";
 import Logo from "../components/Logo";
 import ProgressoCadastro from "../components/ProgressoCadastro";
 import styles from "./CadastrarCliente.module.css";
+import HelpButton from "../helpfeat/HelpButton";
 
 const formularioInicial = {
   tipo: "empresa",
@@ -78,6 +79,10 @@ function CadastrarCliente() {
       <header className={styles.header}>
         <Logo />
         <h1>Cadastrar Cliente</h1>
+
+        <div className={styles.helpAction}>
+          <HelpButton />
+        </div>
       </header>
 
       <main className={styles.content}>

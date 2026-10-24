@@ -6,6 +6,7 @@ import Logo from "../components/Logo";
 import ProgressoCadastro from "../components/ProgressoCadastro";
 import baseStyles from "./CadastrarCliente.module.css";
 import styles from "./CadastrarFornecedor.module.css";
+import HelpButton from "../helpfeat/HelpButton";
 
 const formularioInicial = {
   nome: "",
@@ -147,6 +148,10 @@ function CadastrarFornecedor() {
       <header className={`${baseStyles.header} ${styles.header}`}>
         <Logo />
         <h1>Cadastrar Fornecedor</h1>
+
+        <div className={styles.helpAction}>
+          <HelpButton />
+        </div>
       </header>
 
       <main className={baseStyles.content}>

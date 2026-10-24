@@ -1,0 +1,11 @@
+Esta é a área de contatos, organizada nas abas Fornecedores e Clientes. Escolha primeiro a aba correspondente ao tipo de contato que deseja consultar ou cadastrar.
+
+Fornecedores são os contatos relacionados ao fornecimento de peças. Clientes são os contatos relacionados às vendas. As duas abas possuem listas distintas; confira qual está selecionada antes de executar uma ação.
+
+A tabela apresenta empresa, pessoa de contato, telefone, e-mail e localização. Na visão de fornecedores, também aparecem categorias e fabricantes, que ajudam a identificar os produtos relacionados a cada contato.
+
+Use a pesquisa e os filtros disponíveis para localizar o registro desejado. A ação de adicionar abre o cadastro de cliente ou fornecedor conforme a aba ativa.
+
+Clique no nome da empresa para abrir os detalhes. O botão Editar da listagem também abre os detalhes do primeiro contato selecionado; o formulário de edição ainda não está implementado. Confira as caixas de seleção antes de solicitar uma exclusão.
+
+Nesta versão, a área utiliza dados de exemplo e alterações locais. Um cadastro aparecer na lista não significa que tenha sido salvo permanentemente no banco de dados.

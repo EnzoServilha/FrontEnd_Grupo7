@@ -1,0 +1,4 @@
+.git
+node_modules
+codetracker/node_modules
+codetracker/dist
