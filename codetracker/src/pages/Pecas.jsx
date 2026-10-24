@@ -192,6 +192,11 @@ function Pecas() {
   // Guarda a quantidade por id para não refazer as N requisições a cada consulta
   const quantidadesRef = useRef(new Map());
 
+  const gerarEtiquetaSelecionados = async () => {
+    if (selecionadas.length === 0) return;
+    await api.get("/etiquetas/{itemId}/pdf", { params })
+  };
+
   // Espera o usuário parar de digitar antes de consultar o back
   useEffect(() => {
     const temporizador = setTimeout(() => setBuscaAplicada(busca), ATRASO_BUSCA_MS);
@@ -608,9 +613,17 @@ function Pecas() {
                 </div>
               )}
             </div>
+
           </div>
 
           <div className={styles.actionButtons}>
+            <Button
+              estilo="editar"
+              disabled={selecionadas.length === 0}
+              onClick={gerarEtiquetaSelecionados}
+            >
+              Gerar Etiqueta
+            </Button>
             <Button
               icone="adicionar"
               onClick={() => navigate("/cadastrarPeca")}

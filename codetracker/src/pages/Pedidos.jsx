@@ -172,10 +172,6 @@ function Pedidos() {
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
 
-  // const gerarEtiquetaSelecionados = () => {
-  //   if (selecionados.length === 0) return;
-  //   // TODO: integrar geração de etiqueta para os pedidos selecionados
-  // };
 
   const alterarStatusSelecionados = (event) => {
     const novoStatus = event.target.value;
@@ -497,13 +493,6 @@ function Pedidos() {
               >
                 Adicionar
               </Button>
-              {/* <Button
-                estilo="editar"
-                disabled={selecionados.length === 0}
-                onClick={gerarEtiquetaSelecionados}
-              >
-                Gerar Etiqueta
-              </Button> */}
 
               <Button
                 icone="editar"
