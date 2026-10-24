@@ -134,6 +134,13 @@ function CampoBusca({ id, value, onChange, placeholder }) {
 function CadastrarPeca() {
   const navigate = useNavigate();
   const location = useLocation();
+  const itemId = Number(
+    location.state?.item?.id ??
+    location.state?.id ??
+    new URLSearchParams(location.search).get("id"),
+  );
+  const itemIdEdicao = Number.isInteger(itemId) && itemId > 0 ? itemId : null;
+  const modoEdicao = itemIdEdicao !== null;
   const [etapa, setEtapa] = useState(1);
   const [formulario, setFormulario] = useState(formularioInicial);
   const [buscaContato, setBuscaContato] = useState("");
@@ -144,8 +151,6 @@ function CadastrarPeca() {
   const [buscaPeca, setBuscaPeca] = useState("");
   const [pecasSugeridas, setPecasSugeridas] = useState([]);
   const [pecasAssimiladas, setPecasAssimiladas] = useState([]);
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [itemIdEdicao, setItemIdEdicao] = useState(null);
   const [dataCadastroOriginal, setDataCadastroOriginal] = useState(null);
   const [erroCadastro, setErroCadastro] = useState("");
 
@@ -207,30 +212,23 @@ function CadastrarPeca() {
   }, [buscaContato]);
 
   useEffect(() => {
-    const itemSelecionado = location.state?.item ?? null;
-    const itemId =
-      Number(itemSelecionado?.id ?? location.state?.id ?? new URLSearchParams(location.search).get("id"));
+    setErroCadastro("");
+    setEtapa(1);
+    setDataCadastroOriginal(null);
 
-    const modoAtivo = Boolean(location.state?.modoEdicao || itemSelecionado || Number.isFinite(itemId));
-
-    setModoEdicao(modoAtivo && Number.isFinite(itemId));
-    setItemIdEdicao(Number.isFinite(itemId) ? itemId : null);
-
-    if (!modoAtivo) {
+    if (!modoEdicao) {
       setFormulario(formularioInicial);
       setCodigosAssociados([]);
       setPecasAssimiladas([]);
       return undefined;
     }
 
+    let cancelado = false;
+
     const carregarItemEdicao = async () => {
       try {
-        const idParaBuscar = Number(itemSelecionado?.id ?? itemId);
-        if (!Number.isFinite(idParaBuscar)) {
-          return;
-        }
-
-        const resposta = await api.get(`/itens/${idParaBuscar}`);
+        const resposta = await api.get(`/itens/${itemIdEdicao}`);
+        if (cancelado) return;
         const item = resposta?.data ?? null;
         const dadosEdicao = normalizarItemEdicao(item);
 
@@ -244,13 +242,17 @@ function CadastrarPeca() {
         setDataCadastroOriginal(item?.dataCadastro ?? null);
       } catch (error) {
         console.error("Erro ao carregar peça para edição:", error);
-        setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+        if (!cancelado) {
+          setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+        }
       }
     };
 
     carregarItemEdicao();
-    return undefined;
-  }, [location.key, location.search, location.state]);
+    return () => {
+      cancelado = true;
+    };
+  }, [location.key, itemIdEdicao, modoEdicao]);
 
   useEffect(() => {
     const termo = buscaPeca.trim();
@@ -457,7 +459,6 @@ function CadastrarPeca() {
       <header className={`${baseStyles.header} ${styles.header}`}>
         <Logo />
         <h1>{modoEdicao ? "Editar Peça" : "Cadastrar Peça"}</h1>
-        <h1>Cadastrar Peça</h1>
 
         <div className={styles.helpAction}>
           <HelpButton />
