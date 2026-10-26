@@ -10,6 +10,7 @@ import styles from "./VerMaisPecas.module.css";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
 import { api } from "../provider/api";
+import { solicitarEtiquetas } from "../provider/etiquetas";
 
 const placeholder = "---";
 
@@ -45,6 +46,8 @@ function VerMaisPecas() {
   const [carregando, setCarregando] = useState(true);
   const [campoBusca, setCampoBusca] = useState("todos");
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [solicitandoEtiqueta, setSolicitandoEtiqueta] = useState(false);
+  const [feedbackEtiqueta, setFeedbackEtiqueta] = useState(null);
 
   const camposBusca = [
     ["todos", "Todos os campos"],
@@ -241,6 +244,19 @@ function VerMaisPecas() {
 
   const voltar = () => navigate(-1);
 
+  const gerarEtiqueta = async () => {
+    if (!peca?.id || solicitandoEtiqueta) return;
+
+    setSolicitandoEtiqueta(true);
+    setFeedbackEtiqueta(null);
+
+    try {
+      setFeedbackEtiqueta(await solicitarEtiquetas([peca.id]));
+    } finally {
+      setSolicitandoEtiqueta(false);
+    }
+  };
+
   return (
     <div className={styles.pageContainer}>
       <Header />
@@ -264,6 +280,13 @@ function VerMaisPecas() {
           </div>
 
           <div className={styles.actionButtons}>
+            <Button
+              estilo="editar"
+              disabled={carregando || solicitandoEtiqueta || !peca?.id}
+              onClick={gerarEtiqueta}
+            >
+              {solicitandoEtiqueta ? "Enviando..." : "Gerar Etiqueta"}
+            </Button>
             <Button icone="editar" estilo="editar">
               Editar
             </Button>
@@ -272,6 +295,19 @@ function VerMaisPecas() {
             </Button>
           </div>
         </div>
+
+        {feedbackEtiqueta && (
+          <p
+            role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
+            className={`${styles.feedback} ${
+              feedbackEtiqueta.tipo === "erro"
+                ? styles.feedbackErro
+                : styles.feedbackSucesso
+            }`}
+          >
+            {feedbackEtiqueta.mensagem}
+          </p>
+        )}
 
         <div className={styles.topGrid}>
           <div className={styles.leftTopColumn}>

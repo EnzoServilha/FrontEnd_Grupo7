@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
+import { solicitarEtiquetas } from "../provider/etiquetas";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
@@ -66,12 +67,19 @@ function Pecas() {
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+  const [solicitandoEtiqueta, setSolicitandoEtiqueta] = useState(false);
+  const [feedbackEtiqueta, setFeedbackEtiqueta] = useState(null);
 
   useEffect(() => {
     const carregarPecas = async () => {
       try {
-        const resposta = await api.get("/itens");
-        const itens = Array.isArray(resposta.data) ? resposta.data : [];
+        // O backend devolve uma página (Page); size alto para listar todo o catálogo
+        const resposta = await api.get("/itens", { params: { size: 1000 } });
+        const itens = Array.isArray(resposta.data)
+          ? resposta.data
+          : Array.isArray(resposta.data?.content)
+            ? resposta.data.content
+            : [];
 
         const itensComQuantidade = await Promise.all(
           itens.map(async (item) => {
@@ -163,6 +171,19 @@ function Pecas() {
   const editarSelecionada = () => {
     const peca = pecas.find((item) => item.id === selecionadas[0]);
     if (peca) abrirDetalhes(peca);
+  };
+
+  const gerarEtiquetaSelecionados = async () => {
+    if (selecionadas.length === 0 || solicitandoEtiqueta) return;
+
+    setSolicitandoEtiqueta(true);
+    setFeedbackEtiqueta(null);
+
+    try {
+      setFeedbackEtiqueta(await solicitarEtiquetas(selecionadas));
+    } finally {
+      setSolicitandoEtiqueta(false);
+    }
   };
 
   const columns = [
@@ -329,6 +350,13 @@ function Pecas() {
 
           <div className={styles.actionButtons}>
             <Button
+              estilo="editar"
+              disabled={selecionadas.length === 0 || solicitandoEtiqueta}
+              onClick={gerarEtiquetaSelecionados}
+            >
+              {solicitandoEtiqueta ? "Enviando..." : "Gerar Etiqueta"}
+            </Button>
+            <Button
               icone="adicionar"
               onClick={() => navigate("/cadastrarPeca")}
             >
@@ -354,6 +382,19 @@ function Pecas() {
             </Button>
           </div>
         </section>
+
+        {feedbackEtiqueta && (
+          <p
+            role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
+            className={`${styles.feedback} ${
+              feedbackEtiqueta.tipo === "erro"
+                ? styles.feedbackErro
+                : styles.feedbackSucesso
+            }`}
+          >
+            {feedbackEtiqueta.mensagem}
+          </p>
+        )}
 
         <section className={styles.tableSection} aria-label="Catálogo de peças">
           <Table

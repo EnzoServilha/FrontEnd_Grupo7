@@ -17,6 +17,7 @@ npm run preview  # Preview production build
 - **Routing**: `src/routes.jsx` - 18 routes including Login, Dashboard, Pecas, Pedidos, Contatos, CRUD pages
 - **Pages**: `src/pages/` - Page components with co-located CSS modules
 - **Components**: `src/components/` - Reusable UI (Button, Table, Modal, CardGraficoPecas, etc.)
+- **Etiquetas**: `src/provider/etiquetas.js` (`solicitarEtiquetas(itemIds)`) chama `POST /etiquetas/{id}/fila`; o backend responde `202` (solicitação aceita) e o PDF é gerado e enviado por e-mail depois, via RabbitMQ. Usado pelos botões "Gerar Etiqueta" de `Pecas` e `VerMaisPecas`
 - **State**: No global state library; uses React Context/props
 
 ## Stack

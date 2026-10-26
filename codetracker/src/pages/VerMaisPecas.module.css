@@ -39,6 +39,36 @@
   gap: 12px;
 }
 
+.actionButtons > button:disabled {
+  color: #8b96a7;
+  background: #edf1f6;
+  border-color: #d7dee8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.feedback {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.feedbackSucesso {
+  color: #17733b;
+  background: #dcf7e7;
+  border-color: #b7ebcb;
+}
+
+.feedbackErro {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
 .topGrid {
   display: grid;
   grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.1fr);
