@@ -3,21 +3,18 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import styles from "./Dashboard.module.css";
 
-// Registrar os componentes necessários do Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -25,50 +22,25 @@ ChartJS.register(
 
 function Dashboard() {
   const chartData = {
-    labels: [
-      "Jan",
-      "Fev",
-      "Mar",
-      "Abr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Set",
-      "Out",
-      "Nov",
-      "Dez",
-    ],
+    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
     datasets: [
       {
         label: "Compras",
-        data: [
-          10000, 22000, 35000, 48000, 55000, 62000, 70000, 50000, 38000, 48000,
-          58000, 54000,
-        ],
-        borderColor: "#0052cc",
+        data: [10000, 22000, 35000, 48000, 55000, 62000],
         backgroundColor: "#0052cc",
-        tension: 0.4, // Suaviza as curvas das linhas igual ao print
+        borderRadius: 0,
       },
       {
         label: "Vendas",
-        data: [
-          25000, 28000, 32000, 40000, 44000, 45000, 46000, 47000, 43000, 40000,
-          48000, 55000,
-        ],
-        borderColor: "#ff9f1c",
+        data: [25000, 28000, 32000, 40000, 44000, 45000],
         backgroundColor: "#ff9f1c",
-        tension: 0.4,
+        borderRadius: 0,
       },
       {
         label: "Lucro",
-        data: [
-          45000, 48000, 52000, 58000, 56000, 54000, 52000, 46000, 42000, 40000,
-          38000, 36000,
-        ],
-        borderColor: "#10b981",
+        data: [45000, 48000, 52000, 58000, 56000, 54000],
         backgroundColor: "#10b981",
-        tension: 0.4,
+        borderRadius: 0,
       },
     ],
   };
@@ -79,35 +51,50 @@ function Dashboard() {
     plugins: {
       legend: {
         position: "top",
+        align: "center",
         labels: {
-          usePointStyle: true, // Transforma a legenda em quadradinho/círculo
+          usePointStyle: true,
           pointStyle: "rect",
           boxWidth: 12,
           boxHeight: 12,
-          font: { family: "sans-serif", size: 13, weight: "500" },
           color: "#64748b",
+          font: {
+            family: "sans-serif",
+            size: 13,
+            weight: "500",
+          },
         },
       },
       tooltip: {
         backgroundColor: "#1e293b",
         padding: 12,
+        callbacks: {
+          label: (context) => `R$ ${context.parsed.y.toLocaleString("pt-BR")}`,
+        },
       },
     },
     scales: {
       y: {
-        min: 10000,
-        max: 70000,
+        min: 0,
+        max: 80000,
         ticks: {
           stepSize: 10000,
-          callback: (value) => `R$ ${value / 1000}k`, // Formata para R$ 10k, R$ 20k...
+          callback: (value) => `R$ ${value / 1000}k`,
           color: "#94a3b8",
           font: { size: 11 },
         },
-        grid: { color: "#f1f5f9" },
+        grid: {
+          color: "#f1f5f9",
+        },
       },
       x: {
-        ticks: { color: "#94a3b8", font: { size: 11 } },
-        grid: { display: false }, // Remove linhas verticais de grade
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#94a3b8",
+          font: { size: 11 },
+        },
       },
     },
   };
@@ -116,14 +103,10 @@ function Dashboard() {
     <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.dashboardWrapper}>
-        {/* Grid de Cards Superiores */}
         <div className={styles.cardsGrid}>
-          {/* Card 1 */}
           <div className={`${styles.card} ${styles.blueBorder}`}>
             <div className={styles.cardHeader}>
-              <span className={styles.cardTitle}>
-                Cotações que viraram Pedidos
-              </span>
+              <span className={styles.cardTitle}>Cotações que viraram Pedidos</span>
             </div>
             <div className={styles.cardBody}>
               <h2 className={styles.cardValue}>27,1%</h2>
@@ -131,12 +114,9 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Card 2 */}
           <div className={`${styles.card} ${styles.greenBorder}`}>
             <div className={styles.cardHeader}>
-              <span className={styles.cardTitle}>
-                Cotações Concluídas Completamente
-              </span>
+              <span className={styles.cardTitle}>Cotações Concluídas Completamente</span>
             </div>
             <div className={styles.cardBody}>
               <h2 className={styles.cardValue}>18,0%</h2>
@@ -144,12 +124,9 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Card 3 */}
           <div className={`${styles.card} ${styles.orangeBorder}`}>
             <div className={styles.cardHeader}>
-              <span className={styles.cardTitle}>
-                Cotações Concluídas Parcialmente
-              </span>
+              <span className={styles.cardTitle}>Cotações Concluídas Parcialmente</span>
             </div>
             <div className={styles.cardBody}>
               <h2 className={styles.cardValue}>50,0%</h2>
@@ -158,13 +135,10 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Seção Principal do Gráfico */}
         <div className={styles.chartSection}>
-          <h3 className={styles.chartSectionTitle}>
-            Compras, Vendas e Lucro por Mês
-          </h3>
+          <h3 className={styles.chartSectionTitle}>Compras, Vendas e Lucro por Mês</h3>
           <div className={styles.chartContainer}>
-            <Line data={chartData} options={chartOptions} />
+            <Bar data={chartData} options={chartOptions} />
           </div>
         </div>
       </div>
