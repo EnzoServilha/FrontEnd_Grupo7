@@ -1,0 +1,53 @@
+/* Duas classes juntas para ganhar do height/min-height fixos do card base */
+.card.card {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 24px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+}
+
+.erroCampo {
+    color: #b4232b;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.dica {
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.permissaoLinha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.permissaoLinha>span {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+@media (min-width: 900px) {
+    .card.card {
+        min-height: 0;
+        padding: 18px 34px 28px;
+    }
+
+    .erroCampo,
+    .dica {
+        font-size: 12px;
+    }
+
+    .permissaoLinha>span {
+        font-size: 14px;
+    }
+}

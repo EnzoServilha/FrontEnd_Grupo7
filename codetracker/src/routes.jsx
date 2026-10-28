@@ -1,5 +1,5 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
-import HelpPopup from "./helpfeat/HelpPopup";import Login from "./pages/Login";
+import HelpPopup from "./helpfeat/HelpPopup"; import Login from "./pages/Login";
 import ContaInativa from "./pages/ContaInativa";
 import Dashboard from "./pages/Dashboard";
 import Pecas from "./pages/Pecas";
@@ -18,6 +18,7 @@ import CadastrarPeca from "./pages/CadastrarPeca";
 import CadastrarPedido from "./pages/CadastrarPedido";
 import EntradasESaidas from "./pages/EntradasESaidas";
 import VerMaisPeriodo from "./pages/VerMaisPeriodo";
+import CadastrarUsuario from "./pages/CadastrarUsuario";
 import CadastrarPeriodo from "./pages/CadastrarPeriodo";
 import Usuarios from "./pages/Usuarios";
 
@@ -109,6 +110,10 @@ const pageRoutes = [
   {
     path: "/usuarios",
     element: <Usuarios />,
+  },
+  {
+    path: "/cadastrarUsuario",
+    element: <CadastrarUsuario />,
   },
   {
     path: "*",
