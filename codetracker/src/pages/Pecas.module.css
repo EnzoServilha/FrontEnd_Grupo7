@@ -65,11 +65,12 @@
 }
 
 .searchWrapper {
-  width: 320px;
+  width: 520px;
   max-width: 100%;
 }
 
-.searchWrapper > div {
+
+.searchWrapper>div {
   padding: 0;
 }
 
@@ -104,14 +105,14 @@
   stroke-linejoin: round;
 }
 
-.searchActions > .menuContainer:last-child > button {
+.searchActions>.menuContainer:last-child>button {
   width: 44px;
   height: 44px;
   border-width: 2px;
   border-radius: 10px;
 }
 
-.searchActions > .menuContainer:last-child svg {
+.searchActions>.menuContainer:last-child svg {
   width: 22px;
   height: 22px;
 }
@@ -154,7 +155,7 @@
   flex-shrink: 0;
 }
 
-.actionButtons > button {
+.actionButtons>button {
   height: 44px;
   padding: 0 16px;
   border-radius: 6px;
@@ -166,7 +167,7 @@
   height: 18px;
 }
 
-.actionButtons > button:disabled {
+.actionButtons>button:disabled {
   color: #8b96a7;
   background: #edf1f6;
   border-color: #d7dee8;
@@ -175,7 +176,7 @@
   opacity: 0.75;
 }
 
-.actionButtons > button:disabled svg {
+.actionButtons>button:disabled svg {
   fill: currentColor;
 }
 
@@ -286,7 +287,7 @@
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 40px;
     height: 40px;
     border-width: 2px;
@@ -294,12 +295,12 @@
   }
 
   .optionsButton svg,
-  .searchActions > .menuContainer:last-child svg {
+  .searchActions>.menuContainer:last-child svg {
     width: 18px;
     height: 18px;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     height: 40px;
     gap: 4px;
     padding: 0 12px;
@@ -345,7 +346,7 @@
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 40px;
     height: 40px;
   }
@@ -356,7 +357,7 @@
     justify-content: flex-end;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     min-width: 0;
     height: 40px;
     flex: 1;
@@ -367,4 +368,133 @@
   .actionButtons span {
     display: none;
   }
+}
+
+/* ---------- Painel de filtros ---------- */
+.filterPanel {
+  min-width: 320px;
+  max-width: calc(100vw - 32px);
+  gap: 14px;
+  padding: 14px;
+}
+
+.filterGroup {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filterGroup legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filterGroup select,
+.filterGroup input[type="date"],
+.filterGroup input[type="number"] {
+  height: 36px;
+  padding: 0 10px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.brandList {
+  display: grid;
+  gap: 2px;
+  max-height: 150px;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.checkOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  color: #334155;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeRow input {
+  flex: 1;
+  min-width: 0;
+}
+
+.rangeRow span,
+.filterHint {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.filterPanel .filterActions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.filterPanel .clearButton {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.filterPanel .applyButton {
+  color: #ffffff;
+  background: #0056b3;
+}
+
+.filterPanel .applyButton:hover {
+  color: #ffffff;
+  background: #004a99;
+}
+
+.filterPanel .applyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Resumo dos filtros ativos ---------- */
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: -6px 0 14px;
+  padding: 8px 12px;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.activeFilters button {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: underline;
 }

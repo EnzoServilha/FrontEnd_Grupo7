@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
 import ProgressoCadastro from "../components/ProgressoCadastro";
+import ServerResponse from "../components/ServerResponse";
+import AssociarCodigoForm, { montarPayloadCodigo } from "../components/AssociarCodigoForm";
+import AssimilarPecasForm from "../components/AssimilarPecasForm";
 import baseStyles from "./CadastrarCliente.module.css";
 import styles from "./CadastrarPeca.module.css";
 import HelpButton from "../helpfeat/HelpButton";
@@ -17,38 +20,110 @@ const formularioInicial = {
   descricao: "",
 };
 
-function CampoBusca({ id, value, onChange, placeholder }) {
-  return (
-    <div className={styles.searchField}>
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="11" r="7" />
-        <path d="m20 20-4-4" />
-      </svg>
-      <input
-        id={id}
-        type="text"
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-      />
-    </div>
-  );
-}
+const normalizarItemEdicao = (item) => {
+  if (!item || typeof item !== "object") return null;
+
+  const codigosAssociados = Array.isArray(item.codigosAssociados)
+    ? item.codigosAssociados.map((codigo) => {
+      const cliente = codigo?.cliente;
+      const fornecedor = codigo?.fornecedor;
+      const nomeEmpresa =
+        cliente?.nome ??
+        cliente?.razaoSocial ??
+        fornecedor?.razaoSocial ??
+        fornecedor?.nome ??
+        "Contato";
+      const nomeContato =
+        cliente?.nomeContato ??
+        cliente?.contato ??
+        fornecedor?.nomeContato ??
+        fornecedor?.contato ??
+        "Sem contato";
+
+      return {
+        id: codigo?.id ?? Date.now() + Math.random(),
+        dbId: codigo?.id ?? null,
+        codigo: codigo?.codigo ?? "",
+        contato: `${nomeEmpresa} • ${nomeContato}`,
+      };
+    })
+    : [];
+
+  const pecasAssimiladas = Array.isArray(item.itensSimilares)
+    ? item.itensSimilares.map((peca) => ({
+      id: peca?.id ?? null,
+      codigo: peca?.codigoInterno ?? peca?.codigo ?? "",
+    }))
+    : [];
+
+  return {
+    formulario: {
+      ano: item.ano ?? "",
+      marca: item.marca ?? "",
+      codigoInterno: item.codigoInterno ?? "",
+      localizacao: item.localizacao ?? "",
+      descricao: item.descricao ?? "",
+    },
+    codigosAssociados,
+    pecasAssimiladas,
+  };
+};
 
 function CadastrarPeca() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [etapa, setEtapa] = useState(1);
   const [formulario, setFormulario] = useState(formularioInicial);
-  const [tipoContato, setTipoContato] = useState("cliente");
-  const [buscaContato, setBuscaContato] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [codigosAssociados, setCodigosAssociados] = useState([
-    { id: 1, codigo: "Código", contato: "Cliente/Fornecedor" },
-  ]);
-  const [buscaPeca, setBuscaPeca] = useState("");
-  const [pecasAssimiladas, setPecasAssimiladas] = useState([
-    { id: 1, codigo: "Código Interno" },
-  ]);
+  const [codigosAssociados, setCodigosAssociados] = useState([]);
+  const [pecasAssimiladas, setPecasAssimiladas] = useState([]);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [itemIdEdicao, setItemIdEdicao] = useState(null);
+  const [dataCadastroOriginal, setDataCadastroOriginal] = useState(null);
+  const [erroCadastro, setErroCadastro] = useState("");
+
+  useEffect(() => {
+    const itemSelecionado = location.state?.item ?? null;
+    const idBruto =
+      itemSelecionado?.id ?? location.state?.id ?? new URLSearchParams(location.search).get("id");
+    const itemId = idBruto === null || idBruto === undefined || idBruto === "" ? NaN : Number(idBruto);
+    const idValido = Number.isFinite(itemId) && itemId > 0;
+
+    const modoAtivo = Boolean(location.state?.modoEdicao || itemSelecionado || idValido);
+
+    setModoEdicao(modoAtivo && idValido);
+    setItemIdEdicao(idValido ? itemId : null);
+
+    if (!modoAtivo) {
+      setFormulario(formularioInicial);
+      setCodigosAssociados([]);
+      setPecasAssimiladas([]);
+      return undefined;
+    }
+
+    const carregarItemEdicao = async () => {
+      try {
+        const idParaBuscar = Number(itemSelecionado?.id ?? itemId);
+        if (!Number.isFinite(idParaBuscar) || idParaBuscar <= 0) return;
+
+        const resposta = await api.get(`/itens/${idParaBuscar}`);
+        const item = resposta?.data ?? null;
+        const dadosEdicao = normalizarItemEdicao(item);
+
+        if (!dadosEdicao) return;
+
+        setFormulario(dadosEdicao.formulario);
+        setCodigosAssociados(dadosEdicao.codigosAssociados);
+        setPecasAssimiladas(dadosEdicao.pecasAssimiladas);
+        setDataCadastroOriginal(item?.dataCadastro ?? null);
+      } catch (error) {
+        console.error("Erro ao carregar peça para edição:", error);
+        setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+      }
+    };
+
+    carregarItemEdicao();
+    return undefined;
+  }, [location.key, location.search, location.state]);
 
   const atualizarCampo = (campo) => (event) => {
     setFormulario((dadosAtuais) => ({
@@ -57,35 +132,53 @@ function CadastrarPeca() {
     }));
   };
 
-  const adicionarCodigo = () => {
-    const codigoInformado = codigo.trim();
-    if (!codigoInformado) return;
+  // Cria o código no back já na hora; o vínculo com a peça vai no salvar.
+  // Devolve um texto de erro (mostrado no formulário) ou nada em caso de sucesso.
+  const adicionarCodigo = async ({ codigo, contato }) => {
+    if (codigosAssociados.some((item) => item.codigo === codigo)) {
+      return "Esse código já foi adicionado.";
+    }
+
+    const resposta = await api.post("/codigos-associados", montarPayloadCodigo(codigo, contato));
+    const codigoCriado = resposta.data;
 
     setCodigosAssociados((itensAtuais) => [
       ...itensAtuais,
       {
-        id: Date.now(),
-        codigo: codigoInformado,
-        contato: buscaContato.trim() ||
-          (tipoContato === "cliente" ? "Cliente" : "Fornecedor"),
+        id: codigoCriado?.id || Date.now(),
+        dbId: codigoCriado?.id,
+        codigo: codigoCriado?.codigo || codigo,
+        contato: contato.label,
       },
     ]);
-    setCodigo("");
+
+    return undefined;
   };
 
-  const adicionarPeca = () => {
-    const pecaInformada = buscaPeca.trim();
-    if (!pecaInformada) return;
+  const removerCodigo = (id) =>
+    setCodigosAssociados((itensAtuais) => itensAtuais.filter((item) => item.id !== id));
 
-    setPecasAssimiladas((itensAtuais) => [
-      ...itensAtuais,
-      { id: Date.now(), codigo: pecaInformada },
-    ]);
-    setBuscaPeca("");
-  };
+  const adicionarPeca = (peca) =>
+    setPecasAssimiladas((itensAtuais) =>
+      itensAtuais.some((item) => item.id === peca.id)
+        ? itensAtuais
+        : [...itensAtuais, { id: peca.id, codigo: peca.codigoInterno }],
+    );
+
+  const removerPeca = (id) =>
+    setPecasAssimiladas((itensAtuais) => itensAtuais.filter((item) => item.id !== id));
+
+  const cadastrarContato = (tipo) =>
+    navigate(tipo === "cliente" ? "/cadastrarCliente" : "/cadastrarFornecedor");
 
   const cadastrarPeca = async (event) => {
     event.preventDefault();
+    setErroCadastro("");
+
+    if (!formulario.codigoInterno.trim()) {
+      setErroCadastro("Informe o código interno da peça.");
+      return;
+    }
 
     const payload = {
       codigoInterno: formulario.codigoInterno.trim(),
@@ -93,20 +186,34 @@ function CadastrarPeca() {
       ano: formulario.ano === "" ? null : Number(formulario.ano),
       descricao: formulario.descricao.trim() || null,
       localizacao: formulario.localizacao.trim() || null,
-      dataCadastro: new Date().toISOString(),
-      codigosAssociadosIds: [],
-      itensSimilaresIds: [],
+      dataCadastro: dataCadastroOriginal ?? new Date().toISOString(),
+      codigosAssociadosIds: [...new Set(
+        codigosAssociados
+          .map((item) => item.dbId ?? item.id)
+          .filter((id) => id != null),
+      )],
+      itensSimilaresIds: [...new Set(
+        pecasAssimiladas
+          .map((item) => item.id)
+          .filter((id) => id != null),
+      )],
     };
 
-    if (!payload.codigoInterno) {
-      return;
-    }
-
     try {
-      await api.post("/itens", payload);
+      if (modoEdicao && itemIdEdicao) {
+        await api.put(`/itens/${itemIdEdicao}`, payload);
+      } else {
+        await api.post("/itens", payload);
+      }
       navigate(-1);
     } catch (error) {
       console.error("Erro ao cadastrar peça:", error);
+      const mensagem =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Não foi possível salvar a peça com os códigos e itens relacionados.";
+
+      setErroCadastro(mensagem);
     }
   };
 
@@ -132,7 +239,7 @@ function CadastrarPeca() {
     <div className={baseStyles.page}>
       <header className={`${baseStyles.header} ${styles.header}`}>
         <Logo />
-        <h1>Cadastrar Peça</h1>
+        <h1>{modoEdicao ? "Editar Peça" : "Cadastrar Peça"}</h1>
 
         <div className={styles.helpAction}>
           <HelpButton />
@@ -157,9 +264,8 @@ function CadastrarPeca() {
 
         <form className={baseStyles.form} onSubmit={cadastrarPeca}>
           <section
-            className={`${baseStyles.card} ${styles.card} ${
-              etapa > 1 ? styles.listCard : ""
-            }`}
+            className={`${baseStyles.card} ${styles.card} ${etapa > 1 ? styles.listCard : ""
+              }`}
             aria-labelledby={`titulo-etapa-${etapa}`}
           >
             {etapa === 1 && (
@@ -234,101 +340,12 @@ function CadastrarPeca() {
               <>
                 <h2 id="titulo-etapa-2">Códigos Associados</h2>
 
-                <div className={styles.associationContent}>
-                  <fieldset className={styles.contactType}>
-                    <legend>Tipo de contato</legend>
-                    <label>
-                      <input
-                        type="radio"
-                        name="tipo-contato-peca"
-                        value="cliente"
-                        checked={tipoContato === "cliente"}
-                        onChange={(event) => setTipoContato(event.target.value)}
-                      />
-                      Cliente
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="tipo-contato-peca"
-                        value="fornecedor"
-                        checked={tipoContato === "fornecedor"}
-                        onChange={(event) => setTipoContato(event.target.value)}
-                      />
-                      Fornecedor
-                    </label>
-                  </fieldset>
-
-                  <CampoBusca
-                    id="buscar-contato-codigo"
-                    value={buscaContato}
-                    onChange={(event) => setBuscaContato(event.target.value)}
-                    placeholder="Digite o código que deseja associar ou o cliente/fornecedor do código"
-                  />
-
-                  <div className={styles.codeRow}>
-                    <label htmlFor="codigo-associado">Código</label>
-                    <input
-                      id="codigo-associado"
-                      type="text"
-                      value={codigo}
-                      onChange={(event) => setCodigo(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.preventDefault();
-                          adicionarCodigo();
-                        }
-                      }}
-                    />
-                    <div className={styles.addButton}>
-                      <Button
-                        type="button"
-                        estilo="editar"
-                        onClick={adicionarCodigo}
-                      >
-                        Adicionar
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className={styles.unregisteredContact}>
-                    <span>Contato não cadastrado?</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(
-                          tipoContato === "cliente"
-                            ? "/cadastrarCliente"
-                            : "/cadastrarFornecedor",
-                        )
-                      }
-                    >
-                      Cadastrar
-                    </button>
-                  </div>
-
-                  <div className={styles.itemsList}>
-                    {codigosAssociados.map((item) => (
-                      <div className={styles.codeItem} key={item.id}>
-                        <button
-                          type="button"
-                          aria-label={`Remover código ${item.codigo}`}
-                          onClick={() =>
-                            setCodigosAssociados((itensAtuais) =>
-                              itensAtuais.filter(
-                                (itemAtual) => itemAtual.id !== item.id,
-                              ),
-                            )
-                          }
-                        >
-                          X
-                        </button>
-                        <span>{item.codigo}</span>
-                        <span>{item.contato}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <AssociarCodigoForm
+                  itens={codigosAssociados}
+                  onAdicionar={adicionarCodigo}
+                  onRemover={removerCodigo}
+                  onCadastrarContato={cadastrarContato}
+                />
 
                 <div
                   className={`${baseStyles.cardActionsLeft} ${styles.cardAction}`}
@@ -359,47 +376,12 @@ function CadastrarPeca() {
               <>
                 <h2 id="titulo-etapa-3">Assimilar Peças</h2>
 
-                <div className={styles.similarityContent}>
-                  <label htmlFor="buscar-peca">Pesquisar por peça:</label>
-                  <div className={styles.searchRow}>
-                    <CampoBusca
-                      id="buscar-peca"
-                      value={buscaPeca}
-                      onChange={(event) => setBuscaPeca(event.target.value)}
-                      placeholder="Digite a Peça a assimilar"
-                    />
-                    <div className={styles.addButton}>
-                      <Button
-                        type="button"
-                        estilo="editar"
-                        onClick={adicionarPeca}
-                      >
-                        Adicionar
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className={styles.itemsList}>
-                    {pecasAssimiladas.map((item) => (
-                      <div className={styles.partItem} key={item.id}>
-                        <button
-                          type="button"
-                          aria-label={`Remover peça ${item.codigo}`}
-                          onClick={() =>
-                            setPecasAssimiladas((itensAtuais) =>
-                              itensAtuais.filter(
-                                (itemAtual) => itemAtual.id !== item.id,
-                              ),
-                            )
-                          }
-                        >
-                          X
-                        </button>
-                        <span>{item.codigo}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <AssimilarPecasForm
+                  itens={pecasAssimiladas}
+                  idsExcluidos={[itemIdEdicao, ...pecasAssimiladas.map((peca) => peca.id)]}
+                  onAdicionar={adicionarPeca}
+                  onRemover={removerPeca}
+                />
 
                 <div
                   className={`${baseStyles.cardActionsLeft} ${styles.cardAction}`}
@@ -422,11 +404,24 @@ function CadastrarPeca() {
             <Button type="button" estilo="editar" onClick={() => navigate(-1)}>
               Cancelar
             </Button>
-            <Button type="submit">
-              Cadastrar
-            </Button>
+            <Button type="submit">{modoEdicao ? "Salvar" : "Cadastrar"}</Button>
           </footer>
         </form>
+
+        {erroCadastro && (
+          <div className={styles.errorOverlay} onClick={() => setErroCadastro("")}>
+            <div
+              className={styles.errorPopup}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <ServerResponse
+                type="error"
+                title={modoEdicao ? "Falha ao atualizar a peça" : "Falha ao cadastrar a peça"}
+                message={erroCadastro}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { api } from "../provider/api";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
@@ -26,8 +27,56 @@ const formularioInicial = {
 
 function CadastrarCliente() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const clienteId = location.state?.clienteId ?? null;
+  const modoEdicao = Boolean(clienteId);
   const [etapa, setEtapa] = useState(1);
   const [formulario, setFormulario] = useState(formularioInicial);
+  const [clienteAtual, setClienteAtual] = useState(null);
+
+  useEffect(() => {
+    const carregarClienteParaEdicao = async () => {
+      if (!modoEdicao) return;
+
+      try {
+        const resposta = await api.get("/clientes?pagina=0&tamanho=1000");
+        const itens = resposta.data?.conteudo || [];
+        const clienteEncontrado = itens.find(
+          (item) => Number(item.id) === Number(clienteId),
+        );
+
+        const dadosCliente = clienteEncontrado || resposta.data || {};
+
+        setClienteAtual(dadosCliente);
+        setFormulario({
+          ...formularioInicial,
+          tipo: "empresa",
+          nome: dadosCliente.nomeEmpresa || "",
+          cnpj: dadosCliente.cpfCnpj || "",
+          telefone: dadosCliente.telefone || "",
+          email: dadosCliente.email || "",
+          observacoes: dadosCliente.observacoes || "",
+          nomeContato: dadosCliente.nomeContato || "",
+          cep: dadosCliente.endereco?.cep || "",
+          uf: dadosCliente.endereco?.uf || "",
+          cidade: dadosCliente.endereco?.cidade || "",
+          bairro: dadosCliente.endereco?.bairro || "",
+          logradouro: dadosCliente.endereco?.logradouro || "",
+          numero: dadosCliente.endereco?.numero || "",
+          complemento: dadosCliente.endereco?.complemento || "",
+        });
+      } catch (error) {
+        console.error("Erro ao carregar cliente para edição:", error);
+        alert(
+          error?.response?.data?.message ||
+            "Não foi possível carregar os dados do cliente para edição.",
+        );
+        voltarParaClientes();
+      }
+    };
+
+    carregarClienteParaEdicao();
+  }, [clienteId, modoEdicao]);
 
   const atualizarCampo = (campo) => (event) => {
     setFormulario((dadosAtuais) => ({
@@ -45,20 +94,71 @@ function CadastrarCliente() {
     });
   };
 
-  const cadastrarCliente = (event) => {
+  const cadastrarCliente = async (event) => {
     event.preventDefault();
 
-    voltarParaClientes({
-      id: Date.now(),
-      empresa: formulario.nome || "Novo Cliente",
-      contato: formulario.nomeContato || "Não informado",
-      localizacao:
-        formulario.uf || formulario.cidade
-          ? `${formulario.uf || "--"} - ${formulario.cidade || "Não informada"}`
-          : "Não informada",
-      telefone: formulario.telefone || "Não informado",
-      email: formulario.email || "Não informado",
-    });
+    try {
+      const dadosEndereco = {
+        cep: formulario.cep?.trim(),
+        uf: formulario.uf?.trim(),
+        cidade: formulario.cidade?.trim(),
+        bairro: formulario.bairro?.trim(),
+        logradouro: formulario.logradouro?.trim(),
+        numero: formulario.numero?.trim(),
+        complemento: formulario.complemento?.trim(),
+      };
+
+      const temDadosEndereco = Object.values(dadosEndereco).some(
+        (valor) => Boolean(valor),
+      );
+
+      let enderecoId = modoEdicao && clienteAtual?.endereco?.id
+        ? clienteAtual.endereco.id
+        : null;
+
+      if (temDadosEndereco) {
+        if (modoEdicao && clienteAtual?.endereco?.id) {
+          await api.put(`/enderecos/${clienteAtual.endereco.id}`, dadosEndereco);
+        } else {
+          const responseEndereco = await api.post("/enderecos", dadosEndereco);
+          enderecoId = responseEndereco.data?.id ?? null;
+        }
+      }
+
+      const payloadCliente = {
+        nomeEmpresa: formulario.nome || "Cliente sem nome",
+        nomeContato: formulario.nomeContato || null,
+        cpfCnpj: formulario.cnpj || null,
+        telefone: formulario.telefone || null,
+        email: formulario.email || null,
+        observacoes: formulario.observacoes || null,
+        enderecoId,
+      };
+
+      if (modoEdicao) {
+        await api.put(`/clientes/${clienteId}`, payloadCliente);
+      } else {
+        await api.post("/clientes", payloadCliente);
+      }
+
+      voltarParaClientes({
+        id: Date.now(),
+        empresa: formulario.nome || "Novo Cliente",
+        contato: formulario.nomeContato || "Não informado",
+        localizacao:
+          formulario.uf || formulario.cidade
+            ? `${formulario.uf || "--"} - ${formulario.cidade || "Não informada"}`
+            : "Não informada",
+        telefone: formulario.telefone || "Não informado",
+        email: formulario.email || "Não informado",
+      });
+    } catch (error) {
+      console.error("Erro ao salvar cliente:", error);
+      alert(
+        error?.response?.data?.message ||
+          `Não foi possível ${modoEdicao ? "atualizar" : "cadastrar"} o cliente. Verifique os dados e tente novamente.`,
+      );
+    }
   };
 
   const passos = [
@@ -78,6 +178,7 @@ function CadastrarCliente() {
     <div className={styles.page}>
       <header className={styles.header}>
         <Logo />
+        <h1>{modoEdicao ? "Editar Cliente" : "Cadastrar Cliente"}</h1>
         <h1>Cadastrar Cliente</h1>
 
         <div className={styles.helpAction}>
@@ -275,8 +376,8 @@ function CadastrarCliente() {
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={etapa !== 2}>
-              Cadastrar
+            <Button type="submit">
+              {modoEdicao ? "Salvar Alterações" : "Cadastrar"}
             </Button>
           </footer>
         </form>

@@ -73,7 +73,8 @@
   display: grid;
   grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.1fr);
   gap: 20px;
-  align-items: stretch; /* Alinha o início e término vertical das colunas */
+  align-items: stretch;
+  /* Alinha o início e término vertical das colunas */
   width: 100%;
   margin-bottom: 24px;
 }
@@ -92,13 +93,12 @@
   flex-direction: column;
   gap: 16px;
   min-height: 0;
-  max-height: 78vh;
 }
 
 .cardInfo {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 15px;
+  padding: 12px 15px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -124,13 +124,14 @@
   color: #334155;
 }
 
-/* Preços Médios */
 .kpiPricesRow {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 8px;
+  zoom: 0.75;
 }
 
-.kpiPricesRow > div {
+.kpiPricesRow>div {
   flex: 1;
 }
 
@@ -143,7 +144,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 0;
+  min-height: 460px;
   overflow: hidden;
 }
 
@@ -164,8 +165,10 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  max-height: 380px;
   overflow-x: hidden;
 }
+
 .suppliersCard {
   background-color: #ffffff;
   border-radius: 12px;
@@ -177,8 +180,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: 78vh;
 }
+
 .searchHeader {
   display: flex;
   justify-content: flex-start;
@@ -186,10 +189,12 @@
   margin-bottom: 15px;
   margin-top: 4px;
 }
+
 .suppliersGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px; /* Espaçamento menor entre os dois cards para aproveitamento máximo */
+  gap: 12px;
+  /* Espaçamento menor entre os dois cards para aproveitamento máximo */
   width: 100%;
   box-sizing: border-box;
   max-height: 650px;
@@ -197,6 +202,7 @@
   overflow-x: hidden;
   padding-right: 4px;
 }
+
 .suppliersGrid::-webkit-scrollbar {
   width: 6px;
 }
@@ -258,7 +264,7 @@
   margin-bottom: 10px;
 }
 
-.miniKpis > div {
+.miniKpis>div {
   flex: 1;
   padding: 8px;
 }
@@ -272,6 +278,7 @@
   min-width: 0;
   box-sizing: border-box;
 }
+
 .chartWrapper h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
@@ -397,8 +404,46 @@
   width: 160px;
 }
 
+.searchLinha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.historicoScroll {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.similaresScroll {
+  flex: 1;
+  min-height: 0;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.tableLink {
+  padding: 0;
+  color: #0f172a;
+  font-size: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tableLink:hover:not(:disabled) {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.tableLink:disabled {
+  cursor: default;
+}
+
 /* Responsividade */
 @media (max-width: 1100px) {
+
   .topGrid,
   .bottomGrid {
     grid-template-columns: 1fr;

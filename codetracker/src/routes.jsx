@@ -17,6 +17,9 @@ import CadastrarFornecedor from "./pages/CadastrarFornecedor";
 import CadastrarPeca from "./pages/CadastrarPeca";
 import CadastrarPedido from "./pages/CadastrarPedido";
 import EntradasESaidas from "./pages/EntradasESaidas";
+import VerMaisPeriodo from "./pages/VerMaisPeriodo";
+import CadastrarPeriodo from "./pages/CadastrarPeriodo";
+import Usuarios from "./pages/Usuarios";
 
 const pageRoutes = [
   {
@@ -94,6 +97,18 @@ const pageRoutes = [
   {
     path: "/verMaisPedido",
     element: <VerMaisPedidos />,
+  },
+  {
+    path: "/verMaisPeriodo",
+    element: <VerMaisPeriodo />,
+  },
+  {
+    path: "/cadastrarPeriodo",
+    element: <CadastrarPeriodo />,
+  },
+  {
+    path: "/usuarios",
+    element: <Usuarios />,
   },
   {
     path: "*",
