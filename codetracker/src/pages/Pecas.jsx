@@ -195,10 +195,10 @@ function Pecas() {
   // Guarda a quantidade por id para não refazer as N requisições a cada consulta
   const quantidadesRef = useRef(new Map());
 
-  const gerarEtiquetaSelecionados = async () => {
-    if (selecionadas.length === 0) return;
-    await api.get("/etiquetas/{itemId}/pdf", { params })
-  };
+  // const gerarEtiquetaSelecionados = async () => {
+  //   if (selecionadas.length === 0) return;
+  //   await api.get("/etiquetas/{itemId}/pdf", { params })
+  // };
 
   // Espera o usuário parar de digitar antes de consultar o back
   useEffect(() => {
@@ -674,14 +674,15 @@ function Pecas() {
         {feedbackEtiqueta && (
           <p
             role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
-            className={`${styles.feedback} ${
-              feedbackEtiqueta.tipo === "erro"
-                ? styles.feedbackErro
-                : styles.feedbackSucesso
-            }`}
+            className={`${styles.feedback} ${feedbackEtiqueta.tipo === "erro"
+              ? styles.feedbackErro
+              : styles.feedbackSucesso
+              }`}
           >
             {feedbackEtiqueta.mensagem}
           </p>
+        )}
+
         {filtrosAtivos(filtros) && (
           <div className={styles.activeFilters}>
             <span>{resumoFiltros(filtros)}</span>

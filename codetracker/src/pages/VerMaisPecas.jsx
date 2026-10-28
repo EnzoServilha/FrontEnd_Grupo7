@@ -10,7 +10,6 @@ import Kpi from "../components/Kpi";
 import Table from "../components/Table";
 import SearchBar from "../components/SearchBar";
 import CardGraficoPecas from "../components/CardGraficoPecas";
-import { api } from "../provider/api";
 import { solicitarEtiquetas } from "../provider/etiquetas";
 import styles from "./VerMaisPecas.module.css";
 
@@ -279,10 +278,6 @@ function VerMaisPecas() {
   const [selCodigos, setSelCodigos] = useState([]);
   const [selSimilares, setSelSimilares] = useState([]);
   const [modalExcluir, setModalExcluir] = useState(null); // "peca" | "codigos" | "similares"
-
-  const gerarEtiqueta = () => {
-    // TODO: integrar geração de etiqueta
-  };
 
   const alternarMenu = (nome) =>
     setMenuAberto((atual) => (atual === nome ? null : nome));
@@ -621,11 +616,10 @@ function VerMaisPecas() {
         {feedbackEtiqueta && (
           <p
             role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
-            className={`${styles.feedback} ${
-              feedbackEtiqueta.tipo === "erro"
+            className={`${styles.feedback} ${feedbackEtiqueta.tipo === "erro"
                 ? styles.feedbackErro
                 : styles.feedbackSucesso
-            }`}
+              }`}
           >
             {feedbackEtiqueta.mensagem}
           </p>
