@@ -26,7 +26,6 @@ function CardGraficoPecas({
   location = "UF - Cidade",
   kpis = {
     onTimeDelivery: "XX%",
-    paidFreight: "XX%",
     medianDeliveryTime: "XXX dias",
   },
   chartData = {
@@ -94,10 +93,6 @@ function CardGraficoPecas({
         <div className={styles.miniKpiCard}>
           <span className={styles.miniKpiTitle}>Entregas no Prazo</span>
           <strong className={styles.miniKpiValue}>{kpis.onTimeDelivery}</strong>
-        </div>
-        <div className={styles.miniKpiCard}>
-          <span className={styles.miniKpiTitle}>Frete Pago</span>
-          <strong className={styles.miniKpiValue}>{kpis.paidFreight}</strong>
         </div>
         <div className={styles.miniKpiCard}>
           <span className={styles.miniKpiTitle}>Mediana de Tempo</span>

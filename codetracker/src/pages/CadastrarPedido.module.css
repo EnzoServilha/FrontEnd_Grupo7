@@ -13,7 +13,7 @@
   min-height: 48px;
 }
 
-.header > :first-child {
+.header> :first-child {
   justify-self: start;
 }
 
@@ -198,7 +198,7 @@
   width: 100%;
 }
 
-.inlineInputs > div {
+.inlineInputs>div {
   width: 100%;
 }
 
@@ -261,6 +261,7 @@
 }
 
 @media (max-width: 760px) {
+
   .generalGrid,
   .inlineInputs {
     grid-template-columns: 1fr;
@@ -273,4 +274,112 @@
   .header {
     padding-inline: 18px;
   }
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.removeButton:hover {
+  text-decoration: underline;
+}
+
+.selectField,
+.readOnlyField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: sans-serif;
+}
+
+.selectField span,
+.readOnlyField span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424141;
+}
+
+.selectField select {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 20px;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-family: sans-serif;
+  font-size: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.selectField select:focus {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(226, 232, 240, 0.5);
+}
+
+.readOnlyField strong {
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.contatoBusca {
+  position: relative;
+  width: 100%;
+}
+
+/* Dê ao campo o mesmo visual do select do .selectField,
+   por exemplo: .selectField select, .contatoInput { ... } */
+.contatoInput {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contatoLista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin-top: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.contatoOpcao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.contatoOpcao:hover {
+  background: #eff6ff;
+}
+
+.contatoOpcao small {
+  color: #64748b;
+}
+
+.contatoVazio {
+  margin: 0;
+  padding: 10px 12px;
+  color: #64748b;
+  font-size: 0.9rem;
 }
