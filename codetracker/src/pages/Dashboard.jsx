@@ -24,6 +24,10 @@ ChartJS.register(
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
+// O gráfico mostra o ano inteiro (Jan a Dez), sem depender do período.
+// Só as KPIs de cotações usam o último período.
+const ANO_GRAFICO = new Date().getFullYear();
+
 function formatPercent(valor) {
   const numero = Number(valor ?? 0);
   return `${numero.toLocaleString("pt-BR", {
@@ -75,22 +79,26 @@ function Dashboard() {
         setCarregando(true);
         setErro("");
 
-        const respostaPeriodo = await api.get("/periodos/ultimo");
-        const periodoId = respostaPeriodo?.data?.id;
+        // Sem período aberto/cadastrado, as KPIs ficam zeradas, mas o gráfico continua funcionando
+        const periodoId = await api
+          .get("/periodos/ultimo")
+          .then((resposta) => resposta?.data?.id ?? null)
+          .catch(() => null);
 
-        if (!periodoId) {
-          setDadosDashboard(null);
-          return;
-        }
-
-        const [respostaCotacoes, respostaMensal] = await Promise.all([
-          api.get(`/movimentacoes/${periodoId}/status-cotacoes`),
-          api.get(`/movimentacoes/${periodoId}/dados-mensais`),
+        const [cotacoes, mensal] = await Promise.all([
+          periodoId
+            ? api
+              .get(`/movimentacoes/${periodoId}/status-cotacoes`)
+              .then((resposta) => resposta?.data ?? {})
+            : Promise.resolve({}),
+          api
+            .get("/movimentacoes/dados-mensais", { params: { ano: ANO_GRAFICO } })
+            .then((resposta) => resposta?.data ?? []),
         ]);
 
         setDadosDashboard({
-          cotacoes: respostaCotacoes?.data ?? {},
-          mensal: montarDadosMensais(respostaMensal?.data ?? []),
+          cotacoes,
+          mensal: montarDadosMensais(Array.isArray(mensal) ? mensal : []),
         });
       } catch (error) {
         const mensagem =
@@ -110,14 +118,6 @@ function Dashboard() {
 
   const chartData = useMemo(() => {
     const dadosMensais = dadosDashboard?.mensal ?? montarDadosMensais();
-
-    const valores = [
-      ...dadosMensais.map((mes) => mes.totalCompras),
-      ...dadosMensais.map((mes) => mes.totalVendas),
-      ...dadosMensais.map((mes) => mes.lucro),
-    ];
-
-    const maiorValor = Math.max(...valores, 1);
 
     return {
       labels: dadosMensais.map((mes) => mes.label),
@@ -174,8 +174,9 @@ function Dashboard() {
     },
     scales: {
       y: {
-        min: 0,
-        max: Math.max(...chartData.datasets.flatMap((dataset) => dataset.data), 1000) * 1.2,
+        // Lucro pode ser negativo (mês com mais compras que vendas), então o eixo não fixa o mínimo em 0
+        suggestedMin: 0,
+        suggestedMax: Math.max(...chartData.datasets.flatMap((dataset) => dataset.data), 1000) * 1.2,
         ticks: {
           callback: (value) => `R$ ${Number(value) / 1000}k`,
           color: "#94a3b8",
@@ -220,9 +221,9 @@ function Dashboard() {
                     {carregando
                       ? "0 / 0"
                       : formataBadge(
-                          cotacoes.totalCotacoesViraramPedidos,
-                          cotacoes.totalCotacoes,
-                        )}
+                        cotacoes.totalCotacoesViraramPedidos,
+                        cotacoes.totalCotacoes,
+                      )}
                   </span>
                 </div>
               </div>
@@ -239,9 +240,9 @@ function Dashboard() {
                     {carregando
                       ? "0 / 0"
                       : formataBadge(
-                          cotacoes.totalCotacoesConcluidasTotalmente,
-                          cotacoes.totalCotacoes,
-                        )}
+                        cotacoes.totalCotacoesConcluidasTotalmente,
+                        cotacoes.totalCotacoes,
+                      )}
                   </span>
                 </div>
               </div>
@@ -258,16 +259,18 @@ function Dashboard() {
                     {carregando
                       ? "0 / 0"
                       : formataBadge(
-                          cotacoes.totalCotacoesConcluidasParcial,
-                          cotacoes.totalCotacoes,
-                        )}
+                        cotacoes.totalCotacoesConcluidasParcial,
+                        cotacoes.totalCotacoes,
+                      )}
                   </span>
                 </div>
               </div>
             </div>
 
             <div className={styles.chartSection}>
-              <h3 className={styles.chartSectionTitle}>Compras, Vendas e Lucro por Mês</h3>
+              <h3 className={styles.chartSectionTitle}>
+                Compras, Vendas e Lucro por Mês ({ANO_GRAFICO})
+              </h3>
               <div className={styles.chartContainer}>
                 {carregando ? <p>Carregando gráfico...</p> : <Bar data={chartData} options={chartOptions} />}
               </div>

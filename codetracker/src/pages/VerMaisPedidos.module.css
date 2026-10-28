@@ -178,3 +178,213 @@
     width: 100%;
   }
 }
+
+/* ---------- Mensagem de aviso/erro da tela ---------- */
+.mensagem {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ---------- Popover "Adicionar Item" (padrão do painel de filtros) ---------- */
+.menuContainer {
+  position: relative;
+}
+
+.itemPanel {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 14px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field span {
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.suggestions {
+  display: grid;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.suggestion {
+  padding: 8px 10px;
+  color: #334155;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion:hover,
+.suggestionSelected {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.panelHint {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.panelError {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.panelActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cancelButton {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.confirmButton {
+  color: #ffffff;
+  background: #0056b3;
+}
+
+.confirmButton:hover {
+  background: #004a99;
+}
+
+.confirmButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .fieldRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Alterar status (mesmo visual da tela de Pedidos) ---------- */
+.statusSelect {
+  height: 44px;
+  padding: 0 34px 0 14px;
+  color: #1e293b;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.statusSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.statusSelect:disabled {
+  color: #8b96a7;
+  background-color: #edf1f6;
+  border-color: #d7dee8;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* Botões da barra de ações com a mesma altura do select (como em Pedidos).
+   O "Adicionar Item" está dentro do .menuContainer, por isso o segundo seletor. */
+.actionButtons>button,
+.menuContainer>button {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actionButtons>button svg,
+.menuContainer>button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.actionButtons>button:disabled,
+.menuContainer>button:disabled {
+  color: #8b96a7;
+  background: #edf1f6;
+  border-color: #d7dee8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.actionButtons>button:disabled svg,
+.menuContainer>button:disabled svg {
+  fill: currentColor;
+}
+
+@media (max-width: 768px) {
+
+  .statusSelect,
+  .actionButtons>button,
+  .menuContainer>button {
+    height: 40px;
+  }
+}

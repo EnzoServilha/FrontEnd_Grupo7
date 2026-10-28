@@ -3,8 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import ButtonMenor from "../components/ButtonMenor";
-import DeleteModal from "../components/DeleteModal";
-import Filtro from "../components/Filtro";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import { api } from "../provider/api";
@@ -43,8 +41,11 @@ const semAcento = (valor) =>
     .toLowerCase();
 
 const ehSaida = (mov) => semAcento(mov?.tipo?.nome).includes("saida");
+const ehEntrada = (mov) => semAcento(mov?.tipo?.nome).includes("entrada");
 const ehCotacao = (mov) => semAcento(mov?.tipo?.nome).includes("cota");
 const estaConcluida = (mov) => semAcento(mov?.status?.nome).includes("conclu");
+const estaPendente = (mov) =>
+  String(mov?.status?.nome ?? "").toUpperCase() === "PENDENTE";
 
 const obterTituloItens = (mov) => {
   if (ehSaida(mov)) return "Itens da Saída";
@@ -81,24 +82,16 @@ const buscarItens = async (id) => {
   }
 };
 
-// ASSUNÇÃO: a saída gerada nasce no mesmo período da cotação, então procuro
-// nas movimentações desse período aquela cuja movimentacaoOriginalId é o id
-// da cotação. Se existir um endpoint dedicado (ex.: /movimentacoes/original/{id}),
-// basta trocar o corpo desta função.
+// A saída gerada pelo fechamento da cotação guarda o id da cotação em
+// movimentacaoOriginalId. Não uso /movimentacoes/periodo/{id}: ele é paginado
+// (10 por padrão) e a saída podia ficar fora da primeira página.
 const buscarSaidaAssociada = async (cotacao) => {
-  const periodoId = cotacao?.periodo?.id;
-  if (!periodoId) return null;
-
   try {
-    const resposta = await api.get(`/movimentacoes/periodo/${periodoId}`);
-    console.log("Movimentações do período:", resposta.data);
+    const resposta = await api.get("/movimentacoes/tipo/SAIDA");
     const lista = Array.isArray(resposta.data) ? resposta.data : [];
-    console.log("Movimentações do período:", lista);
     return (
       lista.find(
-        (mov) =>
-          ehSaida(mov) &&
-          Number(mov.movimentacaoOriginalId) === Number(cotacao.id),
+        (mov) => Number(mov.movimentacaoOriginalId) === Number(cotacao.id),
       ) ?? null
     );
   } catch (error) {
@@ -155,7 +148,6 @@ function TabelaItens({
             onChange={(e) => setBusca(e.target.value)}
             ariaLabel={`Buscar em ${titulo}`}
           />
-          <Filtro ariaLabel={`Filtrar ${titulo}`} onClick={() => { }} />
           {textoBotao && (
             <ButtonMenor estilo="editar" onClick={onClickBotao}>
               {textoBotao}
@@ -194,7 +186,6 @@ export default function VerMaisPedidos() {
   const [relacionada, setRelacionada] = useState(null);
   const [itensRelacionados, setItensRelacionados] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const [versao, setVersao] = useState(0); // força recarregar os detalhes
   const [mensagem, setMensagem] = useState("");
@@ -270,6 +261,12 @@ export default function VerMaisPedidos() {
     return `${tipo} #${movimentacao.id} - ${status}`;
   }, [movimentacao]);
 
+  // Editar: só entradas e cotações, e só enquanto estiverem pendentes (saídas nunca)
+  const podeEditar =
+    Boolean(movimentacao) &&
+    (ehEntrada(movimentacao) || ehCotacao(movimentacao)) &&
+    estaPendente(movimentacao);
+
   const contato = normalizarTexto(
     movimentacao?.cliente?.nomeContato ?? movimentacao?.fornecedor?.nomeContato,
   );
@@ -278,17 +275,9 @@ export default function VerMaisPedidos() {
 
   const handleVoltar = () => navigate("/pedidos");
 
-  // Mesma regra da tela de Pedidos: só pedidos pendentes que não sejam cotação
-  // podem ser editados. A edição acontece no cadastro, em modo edição.
+  // A edição acontece no cadastro, em modo edição
   const handleEditar = () => {
-    if (!movimentacao?.id) return;
-
-    const statusNome = String(movimentacao.status?.nome ?? "").toUpperCase();
-
-    if (ehCotacao(movimentacao) || statusNome !== "PENDENTE") {
-      setMensagem("Somente pedidos pendentes, que não sejam cotações, podem ser editados.");
-      return;
-    }
+    if (!movimentacao?.id || !podeEditar) return;
 
     setMensagem("");
     navigate("/cadastrarPedido", { state: { pedidoId: movimentacao.id } });
@@ -314,24 +303,6 @@ export default function VerMaisPedidos() {
     }
   };
 
-  // "Deletar" cancela o pedido, como na tela de Pedidos (a API não permite apagar)
-  const cancelarPedido = async () => {
-    if (!movimentacao?.id) return setModalExcluirAberto(false);
-
-    try {
-      setMensagem("");
-      await api.patch("/movimentacoes/status", { ids: [movimentacao.id], acao: "CANCELAR" });
-      setVersao((v) => v + 1);
-    } catch (error) {
-      setMensagem(error.response?.data?.message ?? "Não foi possível cancelar o pedido.");
-    } finally {
-      setModalExcluirAberto(false);
-    }
-  };
-
-  const handleAdicionar = () => {
-    // TODO: fluxo de adicionar item ao pedido
-  };
   const handleVerRelacionada = () => {
     if (!relacionada?.id) return;
     navigate("/verMaisPedido", { state: { pedido: { id: relacionada.id } } });
@@ -384,22 +355,15 @@ export default function VerMaisPedidos() {
                 <option value="CONCLUIR">Concluído</option>
                 <option value="CANCELAR">Cancelado</option>
               </select>
-              <Button
-                estilo="editar"
-                icone="editar"
-                disabled={!movimentacao}
-                onClick={handleEditar}
-              >
-                Editar
-              </Button>
-              <Button
-                estilo="deletar"
-                icone="deletar"
-                disabled={!movimentacao}
-                onClick={() => setModalExcluirAberto(true)}
-              >
-                Deletar
-              </Button>
+              {podeEditar && (
+                <Button
+                  estilo="editar"
+                  icone="editar"
+                  onClick={handleEditar}
+                >
+                  Editar
+                </Button>
+              )}
               <Button
                 estilo="editar"
                 disabled={!movimentacao?.numeroNotaFiscal}
@@ -418,9 +382,6 @@ export default function VerMaisPedidos() {
                   </svg>
                   {copiado ? "Copiado!" : "Nota Fiscal"}
                 </span>
-              </Button>
-              <Button icone="adicionar" onClick={handleAdicionar}>
-                Adicionar Item
               </Button>
             </div>
           </div>
@@ -521,12 +482,6 @@ export default function VerMaisPedidos() {
           />
         )}
       </main>
-
-      <DeleteModal
-        isOpen={modalExcluirAberto}
-        onClose={() => setModalExcluirAberto(false)}
-        onConfirm={cancelarPedido}
-      />
     </div>
   );
 }

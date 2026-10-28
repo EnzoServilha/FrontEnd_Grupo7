@@ -30,14 +30,25 @@ const formularioInicial = {
 
 const normalizarTexto = (valor = "") => String(valor).trim().toLowerCase();
 
-const mapearNomesParaIds = (nomes, opcoes) => {
+// Separa os nomes digitados em: IDs de itens já cadastrados e ativos,
+// e nomes novos. O backend busca/reativa/cria os novos e associa ao fornecedor.
+const separarExistentesENovos = (nomes, opcoes) => {
   const mapa = new Map(
-    (opcoes || []).map((opcao) => [normalizarTexto(opcao.nome), opcao.id]),
+    (opcoes || [])
+      .filter((opcao) => opcao.ativo !== false)
+      .map((opcao) => [normalizarTexto(opcao.nome), opcao.id]),
   );
 
-  return (nomes || [])
-    .map((nome) => mapa.get(normalizarTexto(nome)))
-    .filter((id) => id !== undefined && id !== null);
+  const ids = [];
+  const novos = [];
+
+  (nomes || []).forEach((nome) => {
+    const id = mapa.get(normalizarTexto(nome));
+    if (id !== undefined && id !== null) ids.push(id);
+    else novos.push(String(nome).trim());
+  });
+
+  return { ids, novos };
 };
 
 function CampoTags({
@@ -56,17 +67,17 @@ function CampoTags({
   const valorBusca = novoValor.trim().toLowerCase();
   const sugestoes = valorBusca
     ? (opcoesDisponiveis || [])
-        .filter((opcao) => {
-          const nome = String(opcao.nome ?? "").trim().toLowerCase();
-          return (
-            nome.includes(valorBusca) &&
-            !valores.some(
-              (valorExistente) =>
-                String(valorExistente).trim().toLowerCase() === nome,
-            )
-          );
-        })
-        .slice(0, 6)
+      .filter((opcao) => {
+        const nome = String(opcao.nome ?? "").trim().toLowerCase();
+        return (
+          nome.includes(valorBusca) &&
+          !valores.some(
+            (valorExistente) =>
+              String(valorExistente).trim().toLowerCase() === nome,
+          )
+        );
+      })
+      .slice(0, 6)
     : [];
 
   const adicionar = (valorInformado = novoValor) => {
@@ -145,15 +156,25 @@ function CampoTags({
                 </button>
               ))
             ) : valorBusca ? (
-              <div
+              <button
+                type="button"
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  adicionar();
+                }}
                 style={{
+                  width: "100%",
+                  textAlign: "left",
+                  border: "none",
+                  background: "transparent",
                   padding: "10px 12px",
-                  color: "#b91c1c",
+                  cursor: "pointer",
+                  color: "#0056cb",
                   fontSize: "0.85rem",
                 }}
               >
-                {mensagemNaoEncontrada}
-              </div>
+                {mensagemNaoEncontrada} Adicionar "{novoValor.trim()}"
+              </button>
             ) : null}
           </div>
         )}
@@ -236,7 +257,7 @@ function CadastrarFornecedor() {
         console.error("Erro ao carregar fornecedor para edição:", error);
         alert(
           error?.response?.data?.message ||
-            "Não foi possível carregar os dados do fornecedor para edição.",
+          "Não foi possível carregar os dados do fornecedor para edição.",
         );
         voltarParaFornecedores();
       }
@@ -330,21 +351,11 @@ function CadastrarFornecedor() {
         }
       }
 
-      const categoriaIds = mapearNomesParaIds(
+      const categorias = separarExistentesENovos(
         formulario.categorias,
         categoriasDisponiveis,
       );
-      const marcaIds = mapearNomesParaIds(formulario.marcas, marcasDisponiveis);
-
-      if (formulario.categorias.length > 0 && categoriaIds.length !== formulario.categorias.length) {
-        alert("Uma ou mais categorias informadas não foram encontradas no sistema.");
-        return;
-      }
-
-      if (formulario.marcas.length > 0 && marcaIds.length !== formulario.marcas.length) {
-        alert("Uma ou mais marcas informadas não foram encontradas no sistema.");
-        return;
-      }
+      const marcas = separarExistentesENovos(formulario.marcas, marcasDisponiveis);
 
       const payloadFornecedor = {
         razaoSocial: formulario.razaoSocial || null,
@@ -354,8 +365,10 @@ function CadastrarFornecedor() {
         telefone: formulario.telefone || null,
         email: formulario.email || null,
         observacoes: formulario.observacoes || null,
-        categoriaId: categoriaIds,
-        marcaId: marcaIds,
+        categoriaId: categorias.ids,
+        categoriasNovas: categorias.novos,
+        marcaId: marcas.ids,
+        marcasNovas: marcas.novos,
         enderecoId,
       };
 
@@ -370,7 +383,7 @@ function CadastrarFornecedor() {
       console.error("Erro ao salvar fornecedor:", error);
       alert(
         error?.response?.data?.message ||
-          `Não foi possível ${modoEdicao ? "atualizar" : "cadastrar"} o fornecedor. Verifique os dados e tente novamente.`,
+        `Não foi possível ${modoEdicao ? "atualizar" : "cadastrar"} o fornecedor. Verifique os dados e tente novamente.`,
       );
     }
   };
@@ -393,7 +406,6 @@ function CadastrarFornecedor() {
       <header className={`${baseStyles.header} ${styles.header}`}>
         <Logo />
         <h1>{modoEdicao ? "Editar Fornecedor" : "Cadastrar Fornecedor"}</h1>
-        <h1>Cadastrar Fornecedor</h1>
 
         <div className={styles.helpAction}>
           <HelpButton />
@@ -412,9 +424,8 @@ function CadastrarFornecedor() {
 
         <form className={baseStyles.form} onSubmit={cadastrarFornecedor}>
           <section
-            className={`${baseStyles.card} ${styles.card} ${
-              etapa === 2 ? `${baseStyles.addressCard} ${styles.addressCard}` : ""
-            }`}
+            className={`${baseStyles.card} ${styles.card} ${etapa === 2 ? `${baseStyles.addressCard} ${styles.addressCard}` : ""
+              }`}
             aria-labelledby={
               etapa === 1
                 ? "titulo-informacoes-fornecedor"
@@ -505,7 +516,7 @@ function CadastrarFornecedor() {
                       opcoesDisponiveis={categoriasDisponiveis}
                       onAdicionar={(valor) => adicionarTag("categorias", valor)}
                       onRemover={(index) => removerTag("categorias", index)}
-                      mensagemNaoEncontrada="Categoria não encontrada no sistema."
+                      mensagemNaoEncontrada="Nenhuma categoria com esse nome."
                     />
                     <CampoTags
                       id="marcas-fornecedor"
@@ -515,7 +526,7 @@ function CadastrarFornecedor() {
                       opcoesDisponiveis={marcasDisponiveis}
                       onAdicionar={(valor) => adicionarTag("marcas", valor)}
                       onRemover={(index) => removerTag("marcas", index)}
-                      mensagemNaoEncontrada="Marca não encontrada no sistema."
+                      mensagemNaoEncontrada="Nenhuma marca com esse nome."
                     />
                   </div>
                 </div>

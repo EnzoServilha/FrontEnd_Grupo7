@@ -87,21 +87,11 @@ function CadastrarPeca() {
   const [erroCadastro, setErroCadastro] = useState("");
 
   useEffect(() => {
-    const itemSelecionado = location.state?.item ?? null;
-    const idBruto =
-      itemSelecionado?.id ?? location.state?.id ?? new URLSearchParams(location.search).get("id");
-    const itemId = idBruto === null || idBruto === undefined || idBruto === "" ? NaN : Number(idBruto);
-    const idValido = Number.isFinite(itemId) && itemId > 0;
-
-    const modoAtivo = Boolean(location.state?.modoEdicao || itemSelecionado || idValido);
-
-    setModoEdicao(modoAtivo && idValido);
-    setItemIdEdicao(idValido ? itemId : null);
-
     if (!modoEdicao) {
       setFormulario(formularioInicial);
       setCodigosAssociados([]);
       setPecasAssimiladas([]);
+      setDataCadastroOriginal(null);
       return undefined;
     }
 
@@ -109,14 +99,11 @@ function CadastrarPeca() {
 
     const carregarItemEdicao = async () => {
       try {
-        const idParaBuscar = Number(itemSelecionado?.id ?? itemId);
-        if (!Number.isFinite(idParaBuscar) || idParaBuscar <= 0) return;
-
-        const resposta = await api.get(`/itens/${idParaBuscar}`);
+        const resposta = await api.get(`/itens/${itemIdEdicao}`);
         const item = resposta?.data ?? null;
         const dadosEdicao = normalizarItemEdicao(item);
 
-        if (!dadosEdicao) return;
+        if (!dadosEdicao || cancelado) return;
 
         setFormulario(dadosEdicao.formulario);
         setCodigosAssociados(dadosEdicao.codigosAssociados);

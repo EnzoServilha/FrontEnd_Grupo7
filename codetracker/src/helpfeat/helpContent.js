@@ -17,12 +17,14 @@ const pages = {
   "/contatos": ["Contatos", "contatos"],
   "/cadastrarCliente": ["Cadastrar cliente", "cadastrarCliente"],
   "/cadastrarFornecedor": ["Cadastrar fornecedor", "cadastrarFornecedor"],
+  "/cadastrarUsuario": ["Cadastrar usuário", "cadastrarUsuario"],
   "/verMaisCliente": ["Detalhes do cliente", "verMaisCliente"],
   "/verMaisFornecedor": ["Detalhes do fornecedor", "verMaisFornecedor"],
   "/pedidos": ["Pedidos", "pedidos"],
   "/cadastrarPedido": ["Cadastrar pedido", "cadastrarPedido"],
   "/verMaisPedido": ["Detalhes do pedido", "verMaisPedido"],
   "/periodo": ["Períodos", "periodo"],
+  "/usuarios": ["Usuários", "usuarios"],
 };
 
 export function getHelpContent(pathname) {

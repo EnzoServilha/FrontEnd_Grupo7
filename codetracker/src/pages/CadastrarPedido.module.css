@@ -108,24 +108,54 @@
   accent-color: #0056cb;
 }
 
+/* ---------- Campos: mesmo visual do componente Input ---------- */
+
 .textareaField {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: #0f172a;
-  font-size: 10px;
+  font-family: sans-serif;
+}
+
+.textareaField span {
+  font-size: 14px;
   font-weight: 600;
+  color: #424141;
+}
+
+/* Busca de cliente/fornecedor e Observações usam o mesmo estilo do .inputField */
+.contatoInput,
+.textareaField textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 20px;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-family: sans-serif;
+  font-size: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.contatoInput::placeholder,
+.textareaField textarea::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.contatoInput:focus,
+.textareaField textarea:focus {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(226, 232, 240, 0.5);
 }
 
 .textareaField textarea {
-  width: 100%;
-  min-height: 64px;
-  padding: 8px 12px;
-  border: 1px solid #d7dde3;
-  border-radius: 4px;
-  background: #ffffff;
+  min-height: 96px;
   resize: vertical;
-  font: inherit;
 }
 
 .cardActionsRight {
@@ -330,16 +360,11 @@
   color: #64748b;
 }
 
+/* Caixa de busca de cliente/fornecedor: mesma largura máxima do .inputField */
 .contatoBusca {
   position: relative;
   width: 100%;
-}
-
-/* Dê ao campo o mesmo visual do select do .selectField,
-   por exemplo: .selectField select, .contatoInput { ... } */
-.contatoInput {
-  width: 100%;
-  box-sizing: border-box;
+  max-width: 400px;
 }
 
 .contatoLista {
@@ -352,9 +377,10 @@
   max-height: 240px;
   overflow-y: auto;
   background: #fff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  font-family: sans-serif;
 }
 
 .contatoOpcao {
@@ -362,10 +388,11 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 20px;
   background: none;
   border: 0;
   text-align: left;
+  font-family: sans-serif;
   cursor: pointer;
 }
 
@@ -379,7 +406,7 @@
 
 .contatoVazio {
   margin: 0;
-  padding: 10px 12px;
+  padding: 10px 20px;
   color: #64748b;
   font-size: 0.9rem;
 }

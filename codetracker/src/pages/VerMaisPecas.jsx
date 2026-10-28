@@ -261,11 +261,7 @@ function VerMaisPecas() {
   const [estatisticas, setEstatisticas] = useState([]);
   const [precosMedios, setPrecosMedios] = useState({ compra: null, venda: null });
   const [carregando, setCarregando] = useState(true);
-  const [carregandoHistorico, setCarregandoHistorico] = useState(true);
   const [erroPeca, setErroPeca] = useState("");
-  const [erroHistorico, setErroHistorico] = useState("");
-  const [campoBusca, setCampoBusca] = useState("todos");
-  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [solicitandoEtiqueta, setSolicitandoEtiqueta] = useState(false);
   const [feedbackEtiqueta, setFeedbackEtiqueta] = useState(null);
   const [erroCarga, setErroCarga] = useState(false);
@@ -315,7 +311,6 @@ function VerMaisPecas() {
       setHistorico([]);
       setErroPeca("Selecione uma peça válida para visualizar os detalhes.");
       setCarregando(false);
-      setCarregandoHistorico(false);
       return;
     }
 
@@ -323,9 +318,6 @@ function VerMaisPecas() {
     setPeca(null);
     setHistorico([]);
     setErroPeca("");
-    setErroHistorico("");
-    setCarregando(true);
-    setCarregandoHistorico(true);
 
     const carregarDetalhes = async () => {
       try {
@@ -349,6 +341,9 @@ function VerMaisPecas() {
             opcional(api.get(`/itens/${itemId}/similares`), [], "similares"),
             opcional(api.get(urlEstatisticasFornecedores(itemId)), [], "estatísticas de fornecedores"),
           ]);
+
+        // Se o usuário trocou de peça enquanto carregava, descarta a resposta antiga
+        if (cancelado) return;
 
         const item = respostaItem.data ?? {};
 
@@ -384,6 +379,8 @@ function VerMaisPecas() {
         setSelCodigos([]);
         setSelSimilares([]);
       } catch (error) {
+        if (cancelado) return;
+
         console.error("Erro ao buscar detalhes da peça:", error);
         setErroCarga(true);
         setPeca({
@@ -400,13 +397,14 @@ function VerMaisPecas() {
         setHistorico([]);
         setEstatisticas([]);
       } finally {
-        if (!cancelado) setCarregandoHistorico(false);
+        if (!cancelado) setCarregando(false);
       }
     };
 
     carregarDetalhes();
-    carregarHistorico();
-    return () => { cancelado = true; };
+    return () => {
+      cancelado = true;
+    };
   }, [location.search, location.state]);
 
   const estoque = useMemo(() => calcularEstoque(historico), [historico]);
@@ -616,7 +614,12 @@ function VerMaisPecas() {
             >
               {solicitandoEtiqueta ? "Enviando..." : "Gerar Etiqueta"}
             </Button>
-            <Button icone="editar" estilo="editar">
+            <Button
+              icone="editar"
+              estilo="editar"
+              disabled={!peca?.id}
+              onClick={editarPeca}
+            >
               Editar
             </Button>
             <Button
@@ -634,8 +637,8 @@ function VerMaisPecas() {
           <p
             role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
             className={`${styles.feedback} ${feedbackEtiqueta.tipo === "erro"
-                ? styles.feedbackErro
-                : styles.feedbackSucesso
+              ? styles.feedbackErro
+              : styles.feedbackSucesso
               }`}
           >
             {feedbackEtiqueta.mensagem}

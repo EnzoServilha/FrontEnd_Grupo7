@@ -110,13 +110,16 @@ const formatarMoeda = (valor) =>
  */
 async function executarAtomico(passos) {
   const desfazer = [];
+  let passoAtual = null;
 
   try {
     for (const passo of passos) {
+      passoAtual = passo;
       const resultado = await passo.executar();
       if (passo.desfazer) desfazer.push(() => passo.desfazer(resultado));
     }
   } catch (erro) {
+    erro.etapa = passoAtual?.nome;
     let desfeitoCompletamente = true;
 
     for (const compensar of desfazer.reverse()) {
@@ -134,7 +137,16 @@ async function executarAtomico(passos) {
 }
 
 const mensagemDeErro = (error) => {
-  const motivo = error.response?.data?.message ?? "Não foi possível salvar o pedido.";
+  const dados = error.response?.data;
+  const motivoBack =
+    dados?.message ??
+    dados?.detail ??
+    dados?.error ??
+    (typeof dados === "string" && dados ? dados : null);
+  const detalhe = [error.etapa, error.response?.status ? `HTTP ${error.response.status}` : null]
+    .filter(Boolean)
+    .join(", ");
+  const motivo = `${motivoBack ?? "Não foi possível salvar o pedido."}${detalhe ? ` (${detalhe})` : ""}`;
 
   if (error.desfeitoCompletamente === false) {
     return `${motivo} A reversão automática ficou incompleta: recarregue a página e confira o pedido antes de tentar de novo.`;
@@ -311,7 +323,7 @@ function CadastrarPedido() {
   const [precoUnitario, setPrecoUnitario] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [itensPedido, setItensPedido] = useState([]);
-  const [itensOriginais, setItensOriginais] = useState([]); // só na edição
+  const [itensOriginais, setItensOriginais] = useState([]); // edição e venda: linhas que vieram da origem
   const [itensDisponiveis, setItensDisponiveis] = useState([]);
   const [periodoAtual, setPeriodoAtual] = useState(null);
   const [movimentacaoOrigem, setMovimentacaoOrigem] = useState(null); // cotação (venda) ou pedido (edição)
@@ -372,19 +384,19 @@ function CadastrarPedido() {
         setMovimentacaoOrigem(movimentacao);
 
         if (modoVenda) {
-          const idsCotados = new Set(itensDaOrigem.map((item) => item.itemId));
-
           setFormulario(formularioDaCotacao(movimentacao));
           setItensPedido(itensDaOrigem);
-          // Na venda só podem ser usadas peças que estão na cotação
-          setItensDisponiveis(itens.filter((item) => idsCotados.has(item.id)));
+          // Permite reaproveitar a linha da cotação se a peça for removida e adicionada de novo
+          setItensOriginais(itensDaOrigem);
+          // Na venda também é possível adicionar peças que não estão na cotação
+          setItensDisponiveis(itens);
           return;
         }
 
-        // Edição: só pedidos pendentes, que não sejam cotação
-        if (movimentacao.tipo?.nome === "COTACAO" || movimentacao.status?.nome !== "PENDENTE") {
+        // Edição: só pedidos pendentes (compra, venda ou cotação)
+        if (movimentacao.status?.nome !== "PENDENTE") {
           setBloqueado(true);
-          setErro("Somente pedidos pendentes, que não sejam cotações, podem ser editados.");
+          setErro("Somente pedidos pendentes podem ser editados.");
         }
 
         setFormulario(formularioDoPedido(movimentacao));
@@ -459,11 +471,7 @@ function CadastrarPedido() {
     }
 
     if (!itemSelecionado) {
-      setErro(
-        modoVenda
-          ? "Peça não pertence à cotação. Verifique o código interno informado."
-          : "Peça não encontrada. Verifique o código interno ou ID informado.",
-      );
+      setErro("Peça não encontrada. Verifique o código interno ou ID informado.");
       return;
     }
 
@@ -483,7 +491,7 @@ function CadastrarPedido() {
         );
       }
 
-      // Peça que já estava no pedido, foi removida e voltou: reaproveita a linha original
+      // Peça que já estava no pedido (ou na cotação), foi removida e voltou: reaproveita a linha original
       // (evita tentar criar de novo uma linha que o back ainda tem)
       const original = itensOriginais.find((o) => o.itemId === itemSelecionado.id);
       if (original) {
@@ -613,6 +621,7 @@ function CadastrarPedido() {
 
     novos.forEach((item) =>
       passos.push({
+        nome: `adicionar peça ${item.codigo}`,
         executar: () => api.post("/itensNaMovimentacao", corpoItem(pedidoId, item)),
         desfazer: (resposta) => api.delete(`/itensNaMovimentacao/${resposta.data.id}`),
       }),
@@ -620,6 +629,7 @@ function CadastrarPedido() {
 
     alterados.forEach(({ item, original }) =>
       passos.push({
+        nome: `alterar peça ${item.codigo}`,
         executar: () => api.put(`/itensNaMovimentacao/${item.id}`, corpoItem(pedidoId, item)),
         desfazer: () =>
           api.put(`/itensNaMovimentacao/${item.id}`, corpoItem(pedidoId, original)),
@@ -628,12 +638,14 @@ function CadastrarPedido() {
 
     removidos.forEach((item) =>
       passos.push({
+        nome: `remover peça ${item.codigo}`,
         executar: () => api.delete(`/itensNaMovimentacao/${item.id}`),
         desfazer: () => api.post("/itensNaMovimentacao", corpoItem(pedidoId, item)),
       }),
     );
 
     passos.push({
+      nome: "atualizar dados do pedido",
       executar: () =>
         api.put(
           `/movimentacoes/${pedidoId}`,
@@ -687,6 +699,7 @@ function CadastrarPedido() {
       } else if (modoVenda) {
         // Uma única chamada transacional no back: cria a saída PENDENTE, salva os itens
         // e define o status final da cotação (parcial ou completa).
+        // Os itens podem incluir peças que não estavam na cotação.
         await api.post(`/movimentacoes/cotacoes/${cotacaoId}/fechamento`, {
           periodoId,
           totalGastoImpostos: lerNumero(formulario.precoImposto),
@@ -966,7 +979,10 @@ function CadastrarPedido() {
                     <tbody>
                       {itensPedido.map((item) => (
                         <tr key={item.id}>
-                          <td>{item.codigo}</td>
+                          <td>
+                            {item.codigo}
+                            {modoVenda && item.novo && <small> (fora da cotação)</small>}
+                          </td>
                           <td>{item.quantidade}</td>
                           <td>{formatarMoeda(item.precoUnitario)}</td>
                           <td>

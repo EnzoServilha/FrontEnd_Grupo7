@@ -61,7 +61,7 @@
   font-weight: 700;
 }
 
-.cardTitle > button {
+.cardTitle>button {
   height: 44px;
   padding: 0 16px;
   border-radius: 6px;
@@ -112,7 +112,7 @@
   max-width: 100%;
 }
 
-.searchWrapper > div {
+.searchWrapper>div {
   padding: 0;
 }
 
@@ -180,6 +180,95 @@
   left: auto;
 }
 
+/* Botão de filtro: mesmo visual de Peças */
+.searchActions>.menuContainer:last-child>button {
+  width: 44px;
+  height: 44px;
+  border-width: 2px;
+  border-radius: 10px;
+}
+
+.searchActions>.menuContainer:last-child svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---------- Painel de filtros ---------- */
+.filterPanel {
+  min-width: 320px;
+  max-width: calc(100vw - 32px);
+  gap: 14px;
+  padding: 14px;
+}
+
+.filterGroup {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filterGroup legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filterGroup select,
+.filterGroup input[type="date"] {
+  height: 36px;
+  padding: 0 10px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeRow input {
+  flex: 1;
+  min-width: 0;
+}
+
+.rangeRow span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.filterPanel .filterActions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.filterPanel .clearButton,
+.filterPanel .clearButton:hover {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.filterPanel .clearButton:hover {
+  background: #e2e8f0;
+}
+
 .actionControls {
   margin-left: auto;
   flex-shrink: 0;
@@ -244,7 +333,7 @@
   background: #fee7e7;
 }
 
-.actionButtons > button {
+.actionButtons>button {
   height: 44px;
   padding: 0 16px;
   border-radius: 6px;
@@ -256,7 +345,7 @@
   height: 18px;
 }
 
-.actionButtons > button:disabled {
+.actionButtons>button:disabled {
   color: #8b96a7;
   background: #edf1f6;
   border-color: #d7dee8;
@@ -265,7 +354,7 @@
   opacity: 0.75;
 }
 
-.actionButtons > button:disabled svg {
+.actionButtons>button:disabled svg {
   fill: currentColor;
 }
 
@@ -313,7 +402,7 @@
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 20px;
     height: 20px;
     border-width: 1px;
@@ -321,7 +410,7 @@
   }
 
   .optionsButton svg,
-  .searchActions > .menuContainer:last-child svg {
+  .searchActions>.menuContainer:last-child svg {
     width: 13px;
     height: 13px;
   }
@@ -336,7 +425,7 @@
     font-size: 7px;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     height: 20px;
     gap: 3px;
     padding: 0 5px;
@@ -417,7 +506,7 @@
   }
 
   .optionsButton,
-  .searchActions > .menuContainer:last-child > button {
+  .searchActions>.menuContainer:last-child>button {
     width: 40px;
     height: 40px;
   }
@@ -440,7 +529,7 @@
     flex: 2;
   }
 
-  .actionButtons > button {
+  .actionButtons>button {
     min-width: 0;
     height: 40px;
     flex: 1;

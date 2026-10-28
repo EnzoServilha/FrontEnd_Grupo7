@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -28,7 +28,8 @@ const formularioInicial = {
     permissaoId: 2,
 };
 
-const validar = ({ nome, email, senha, confirmacao }) => {
+// Na edição a senha é opcional: só é validada se o usuário preencher algo
+const validar = ({ nome, email, senha, confirmacao }, modoEdicao) => {
     const erros = {};
 
     const nomeLimpo = nome.trim();
@@ -41,32 +42,53 @@ const validar = ({ nome, email, senha, confirmacao }) => {
         erros.email = "Informe um e-mail válido (até 150 caracteres).";
     }
 
-    if (senha.length < 8 || senha.length > 72) {
-        erros.senha = "A senha deve ter entre 8 e 72 caracteres.";
-    } else if (!REGEX_SENHA.test(senha)) {
-        erros.senha =
-            "A senha precisa de letra maiúscula, minúscula, número e caractere especial, sem espaços.";
-    }
+    const validarSenha = !modoEdicao || senha !== "" || confirmacao !== "";
 
-    if (confirmacao !== senha) {
-        erros.confirmacao = "As senhas não coincidem.";
+    if (validarSenha) {
+        if (senha.length < 8 || senha.length > 72) {
+            erros.senha = "A senha deve ter entre 8 e 72 caracteres.";
+        } else if (!REGEX_SENHA.test(senha)) {
+            erros.senha =
+                "A senha precisa de letra maiúscula, minúscula, número e caractere especial, sem espaços.";
+        }
+
+        if (confirmacao !== senha) {
+            erros.confirmacao = "As senhas não coincidem.";
+        }
     }
 
     return erros;
 };
 
-const mensagemDeErro = (error) => {
+const mensagemDeErro = (error, modoEdicao) => {
     const mensagem = error?.response?.data?.message;
     if (mensagem) return mensagem;
     if (error?.response?.status === 403) {
-        return "Você não tem permissão para cadastrar usuários.";
+        return modoEdicao
+            ? "Você não tem permissão para editar usuários."
+            : "Você não tem permissão para cadastrar usuários.";
     }
-    return "Não foi possível cadastrar o usuário.";
+    return modoEdicao
+        ? "Não foi possível salvar as alterações do usuário."
+        : "Não foi possível cadastrar o usuário.";
 };
 
 function CadastrarUsuario() {
     const navigate = useNavigate();
-    const [formulario, setFormulario] = useState(formularioInicial);
+    const location = useLocation();
+
+    const usuarioEdicao = location.state?.usuario ?? null;
+    const modoEdicao = Boolean(location.state?.modoEdicao && usuarioEdicao?.id);
+
+    const [formulario, setFormulario] = useState(() =>
+        modoEdicao
+            ? {
+                ...formularioInicial,
+                nome: usuarioEdicao.nome ?? "",
+                email: usuarioEdicao.email ?? "",
+            }
+            : formularioInicial,
+    );
     const [erros, setErros] = useState({});
     const [erroGeral, setErroGeral] = useState("");
     const [salvando, setSalvando] = useState(false);
@@ -76,26 +98,42 @@ function CadastrarUsuario() {
         setErros((atuais) => ({ ...atuais, [campo]: undefined }));
     };
 
-    const cadastrar = async (event) => {
+    // Volta para a lista já na aba de administração
+    const voltarParaLista = () =>
+        navigate("/usuarios", { state: { tab: "administrar" } });
+
+    const salvar = async (event) => {
         event.preventDefault();
         setErroGeral("");
 
-        const encontrados = validar(formulario);
+        const encontrados = validar(formulario, modoEdicao);
         setErros(encontrados);
         if (Object.keys(encontrados).length > 0) return;
 
+        const corpo = {
+            nome: formulario.nome.trim(),
+            email: formulario.email.trim(),
+        };
+
         try {
             setSalvando(true);
-            await api.post("/usuarios", {
-                nome: formulario.nome.trim(),
-                email: formulario.email.trim(),
-                senha: formulario.senha,
-                permissaoId: formulario.permissaoId,
-            });
-            navigate("/usuarios");
+
+            if (modoEdicao) {
+                // Senha em branco = manter a atual
+                if (formulario.senha) corpo.senha = formulario.senha;
+                await api.put(`/usuarios/${usuarioEdicao.id}`, corpo);
+            } else {
+                await api.post("/usuarios", {
+                    ...corpo,
+                    senha: formulario.senha,
+                    permissaoId: formulario.permissaoId,
+                });
+            }
+
+            voltarParaLista();
         } catch (error) {
-            console.error("Erro ao cadastrar usuário:", error);
-            setErroGeral(mensagemDeErro(error));
+            console.error("Erro ao salvar usuário:", error);
+            setErroGeral(mensagemDeErro(error, modoEdicao));
         } finally {
             setSalvando(false);
         }
@@ -105,7 +143,7 @@ function CadastrarUsuario() {
         <div className={baseStyles.page}>
             <header className={`${baseStyles.header} ${pecaStyles.header}`}>
                 <Logo />
-                <h1>Cadastrar Usuário</h1>
+                <h1>{modoEdicao ? "Editar Usuário" : "Cadastrar Usuário"}</h1>
 
                 <div className={pecaStyles.helpAction}>
                     <HelpButton />
@@ -113,7 +151,7 @@ function CadastrarUsuario() {
             </header>
 
             <main className={baseStyles.content}>
-                <form className={baseStyles.form} onSubmit={cadastrar} noValidate>
+                <form className={baseStyles.form} onSubmit={salvar} noValidate>
                     <section
                         className={`${baseStyles.card} ${styles.card}`}
                         aria-labelledby="titulo-cadastro-usuario"
@@ -143,7 +181,9 @@ function CadastrarUsuario() {
 
                             <div className={baseStyles.column}>
                                 <div className={styles.campo}>
-                                    <label htmlFor="senha-usuario">Senha:</label>
+                                    <label htmlFor="senha-usuario">
+                                        {modoEdicao ? "Nova senha:" : "Senha:"}
+                                    </label>
                                     <input
                                         id="senha-usuario"
                                         name="senha"
@@ -152,7 +192,11 @@ function CadastrarUsuario() {
                                         maxLength={72}
                                         value={formulario.senha}
                                         onChange={(event) => atualizar("senha", event.target.value)}
-                                        placeholder="Mínimo de 8 caracteres"
+                                        placeholder={
+                                            modoEdicao
+                                                ? "Deixe em branco para manter a atual"
+                                                : "Mínimo de 8 caracteres"
+                                        }
                                     />
                                 </div>
                                 {erros.senha ? (
@@ -164,7 +208,9 @@ function CadastrarUsuario() {
                                 )}
 
                                 <div className={styles.campo}>
-                                    <label htmlFor="confirmacao-usuario">Confirmar senha:</label>
+                                    <label htmlFor="confirmacao-usuario">
+                                        {modoEdicao ? "Confirmar nova senha:" : "Confirmar senha:"}
+                                    </label>
                                     <input
                                         id="confirmacao-usuario"
                                         name="confirmacaoSenha"
@@ -182,32 +228,37 @@ function CadastrarUsuario() {
                             </div>
                         </div>
 
-                        <div className={styles.permissaoLinha}>
-                            <span>Permissão:</span>
-                            <fieldset className={baseStyles.customerType}>
-                                <legend>Permissão</legend>
-                                {PERMISSOES.map((permissao) => (
-                                    <label key={permissao.id}>
-                                        <input
-                                            type="radio"
-                                            name="permissao"
-                                            value={permissao.id}
-                                            checked={formulario.permissaoId === permissao.id}
-                                            onChange={() => atualizar("permissaoId", permissao.id)}
-                                        />
-                                        {permissao.rotulo}
-                                    </label>
-                                ))}
-                            </fieldset>
-                        </div>
+                        {/* Na edição o cargo é alterado pela tela de usuários ("Alterar Cargo") */}
+                        {!modoEdicao && (
+                            <div className={styles.permissaoLinha}>
+                                <span>Permissão:</span>
+                                <fieldset className={baseStyles.customerType}>
+                                    <legend>Permissão</legend>
+                                    {PERMISSOES.map((permissao) => (
+                                        <label key={permissao.id}>
+                                            <input
+                                                type="radio"
+                                                name="permissao"
+                                                value={permissao.id}
+                                                checked={formulario.permissaoId === permissao.id}
+                                                onChange={() => atualizar("permissaoId", permissao.id)}
+                                            />
+                                            {permissao.rotulo}
+                                        </label>
+                                    ))}
+                                </fieldset>
+                            </div>
+                        )}
                     </section>
 
                     <footer className={`${baseStyles.footerActions} ${pecaStyles.footerActions}`}>
-                        <Button type="button" estilo="editar" onClick={() => navigate("/usuarios")}>
+                        <Button type="button" estilo="editar" onClick={voltarParaLista}>
                             Cancelar
                         </Button>
                         <Button type="submit" disabled={salvando}>
-                            {salvando ? "Cadastrando..." : "Cadastrar"}
+                            {salvando
+                                ? modoEdicao ? "Salvando..." : "Cadastrando..."
+                                : modoEdicao ? "Salvar" : "Cadastrar"}
                         </Button>
                     </footer>
                 </form>
@@ -220,7 +271,11 @@ function CadastrarUsuario() {
                         >
                             <ServerResponse
                                 type="error"
-                                title="Falha ao cadastrar o usuário"
+                                title={
+                                    modoEdicao
+                                        ? "Falha ao editar o usuário"
+                                        : "Falha ao cadastrar o usuário"
+                                }
                                 message={erroGeral}
                             />
                         </div>

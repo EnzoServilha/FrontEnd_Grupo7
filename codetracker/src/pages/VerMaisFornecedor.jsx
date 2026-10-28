@@ -41,6 +41,26 @@ const mensagemErro = (erro, padrao) => {
   return typeof mensagem === "string" && mensagem.trim() ? mensagem : padrao;
 };
 
+const camposBusca = [
+  ["todos", "Todos os campos"],
+  ["status", "Status"],
+  ["notaFiscal", "Nº Nota Fiscal"],
+  ["valor", "Valor Total"],
+];
+
+const camposDaBusca = (mov, campo) => {
+  if (campo === "status") return [mov.status?.nome];
+  if (campo === "notaFiscal") return [mov.numeroNotaFiscal];
+  if (campo === "valor") return [mov.valorTotal, moeda(mov.valorTotal)];
+  return [
+    mov.id, mov.status?.nome, mov.numeroNotaFiscal,
+    mov.valorTotal, moeda(mov.valorTotal), moeda(mov.precoFrete),
+    moeda(mov.totalGastoImpostos), moeda(mov.precoProdutos), mov.qtdItens,
+    dataFormatada(mov.dataMovimentacao), dataFormatada(mov.dataEntrega),
+    dataFormatada(mov.dataEntregaPrevista), mov.qtdDiasPrevistos, mov.qtdDiasReal,
+  ];
+};
+
 const colunas = [
   { name: "Status", ordena: true, tipo: "string" },
   { name: "Valor Total", ordena: true, tipo: "number" },
@@ -67,6 +87,8 @@ function VerMaisFornecedor() {
   const [dados, setDados] = useState(null);
   const [tentativa, setTentativa] = useState(0);
   const [busca, setBusca] = useState("");
+  const [campoBusca, setCampoBusca] = useState("todos");
+  const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [status, setStatus] = useState("");
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
   const [dataInicio, setDataInicio] = useState("");
@@ -165,6 +187,19 @@ function VerMaisFornecedor() {
     };
   }, [compras]);
 
+  const campoBuscaAtivo = camposBusca.find(([valor]) => valor === campoBusca)?.[1];
+
+  const alternarFiltro = () => {
+    setFiltrosAbertos((aberto) => !aberto);
+    setMenuBuscaAberto(false);
+  };
+
+  const limparFiltros = () => {
+    setDataInicio("");
+    setDataFim("");
+    setStatus("");
+  };
+
   const statusDisponiveis = [...new Set(compras.map((mov) => mov.status?.nome).filter(Boolean))].sort();
   const intervaloInvalido = Boolean(dataInicio && dataFim && dataInicio > dataFim);
   const comprasFiltradas = compras.filter((mov) => {
@@ -172,14 +207,8 @@ function VerMaisFornecedor() {
     const dataPedido = mov.dataMovimentacao?.slice(0, 10);
     if (dataInicio && (!dataPedido || dataPedido < dataInicio)) return false;
     if (dataFim && (!dataPedido || dataPedido > dataFim)) return false;
-    const campos = [
-      mov.id, mov.status?.nome, mov.numeroNotaFiscal,
-      mov.valorTotal, moeda(mov.valorTotal), moeda(mov.precoFrete),
-      moeda(mov.totalGastoImpostos), moeda(mov.precoProdutos), mov.qtdItens,
-      dataFormatada(mov.dataMovimentacao), dataFormatada(mov.dataEntrega),
-      dataFormatada(mov.dataEntregaPrevista), mov.qtdDiasPrevistos, mov.qtdDiasReal,
-    ];
-    return campos.some((campo) => normalizar(campo).includes(normalizar(busca.trim())));
+    return camposDaBusca(mov, campoBusca).some((campo) =>
+      normalizar(campo).includes(normalizar(busca.trim())));
   });
   const linhas = comprasFiltradas.map((mov) => ({
     id: mov.id,
@@ -272,28 +301,106 @@ function VerMaisFornecedor() {
                 <div className={styles.historyHeader}>
                   <h2>Histórico de Compras</h2>
                   <div className={`${styles.filterGroup} ${detailStyles.controls}`}>
-                    <select className={detailStyles.select} aria-label="Filtrar por status"
-                      value={status} onChange={(event) => setStatus(event.target.value)}>
-                      <option value="">Todos os status</option>
-                      {statusDisponiveis.map((nome) => <option key={nome} value={nome}>{nome}</option>)}
-                    </select>
-                    <SearchBar value={busca} onChange={(event) => setBusca(event.target.value)}
-                      placeholder="Pesquisar compras..." ariaLabel="Pesquisar no histórico de compras" />
-                    <FilterButton ariaLabel="Filtrar por data do pedido"
-                      onClick={() => setFiltrosAbertos((valor) => !valor)} />
+                    <div className={detailStyles.menuContainer}>
+                      <button
+                        type="button"
+                        className={detailStyles.optionsButton}
+                        aria-label={`Pesquisar por: ${campoBuscaAtivo}`}
+                        aria-expanded={menuBuscaAberto}
+                        title={`Pesquisar por: ${campoBuscaAtivo}`}
+                        onClick={() => {
+                          setMenuBuscaAberto((aberto) => !aberto);
+                          setFiltrosAbertos(false);
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="m7 10 5 5 5-5" />
+                        </svg>
+                      </button>
+
+                      {menuBuscaAberto && (
+                        <div className={detailStyles.popover} role="menu">
+                          {camposBusca.map(([valor, label]) => (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              key={valor}
+                              className={`${detailStyles.menuItem} ${campoBusca === valor ? detailStyles.selectedOption : ""}`}
+                              onClick={() => {
+                                setCampoBusca(valor);
+                                setMenuBuscaAberto(false);
+                              }}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={detailStyles.searchWrapper}>
+                      <SearchBar
+                        campo={campoBuscaAtivo}
+                        value={busca}
+                        onChange={(event) => setBusca(event.target.value)}
+                        placeholder="Digite para buscar..."
+                        ariaLabel="Pesquisar no histórico de compras"
+                      />
+                    </div>
+
+                    <div className={`${detailStyles.menuContainer} ${detailStyles.filterContainer}`}>
+                      <FilterButton ariaLabel="Filtrar histórico de compras" onClick={alternarFiltro} />
+
+                      {filtrosAbertos && (
+                        <div
+                          className={`${detailStyles.popover} ${detailStyles.filterPopover}`}
+                          role="dialog"
+                          aria-label="Filtros do histórico"
+                        >
+                          <fieldset className={detailStyles.filterField}>
+                            <legend>Status</legend>
+                            <select
+                              aria-label="Filtrar por status"
+                              value={status}
+                              onChange={(event) => setStatus(event.target.value)}
+                            >
+                              <option value="">Todos os status</option>
+                              {statusDisponiveis.map((nome) => (
+                                <option key={nome} value={nome}>{nome}</option>
+                              ))}
+                            </select>
+                          </fieldset>
+
+                          <fieldset className={detailStyles.filterField}>
+                            <legend>Data do pedido</legend>
+                            <div className={detailStyles.rangeRow}>
+                              <input
+                                type="date"
+                                aria-label="Pedido de"
+                                value={dataInicio}
+                                onChange={(event) => setDataInicio(event.target.value)}
+                              />
+                              <span>até</span>
+                              <input
+                                type="date"
+                                aria-label="Pedido até"
+                                value={dataFim}
+                                min={dataInicio || undefined}
+                                onChange={(event) => setDataFim(event.target.value)}
+                              />
+                            </div>
+                          </fieldset>
+
+                          <div className={detailStyles.filterActions}>
+                            <button type="button" className={detailStyles.clearButton} onClick={limparFiltros}>
+                              Limpar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                {filtrosAbertos && (
-                  <div className={detailStyles.filters}>
-                    <label>Pedido de<input type="date" value={dataInicio}
-                      onChange={(event) => setDataInicio(event.target.value)} /></label>
-                    <label>Pedido até<input type="date" value={dataFim}
-                      onChange={(event) => setDataFim(event.target.value)} /></label>
-                    <Button estilo="editar" onClick={() => {
-                      setDataInicio(""); setDataFim(""); setStatus(""); setBusca("");
-                    }}>Limpar filtros</Button>
-                  </div>
-                )}
                 {intervaloInvalido && <p role="alert">A data inicial deve ser anterior ou igual à data final.</p>}
                 {dados.erroHistorico ? (
                   <div role="alert"><ServerResponse type="error" title="Falha ao carregar histórico"

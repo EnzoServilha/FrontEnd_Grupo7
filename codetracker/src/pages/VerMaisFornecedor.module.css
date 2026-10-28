@@ -1,8 +1,3 @@
-.controls {
-  flex-wrap: wrap;
-  max-width: 100%;
-}
-
 .history {
   height: auto;
 }
@@ -12,31 +7,216 @@
   overflow: hidden;
 }
 
-.table > div {
+.table>div {
   height: auto;
   max-height: 420px;
 }
 
-.select,
-.filters input {
+/* ---------- Barra de controles (alinhada ao título do histórico) ---------- */
+.controls {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.searchWrapper {
+  flex: 1 1 360px;
+  width: 360px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.searchWrapper>div {
+  padding: 0;
+}
+
+.menuContainer {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Botão "pesquisar por" e botão de filtro: mesmo visual de Peças */
+.optionsButton,
+.filterContainer>button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.optionsButton:hover,
+.filterContainer>button:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.optionsButton svg {
+  width: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.filterContainer>button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---------- Popovers ---------- */
+.popover {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 180px;
+  padding: 6px;
+  background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  background: #fff;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+}
+
+.menuItem {
+  padding: 8px 10px;
+  color: #334155;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover,
+.selectedOption {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.filterPopover {
+  right: 0;
+  left: auto;
+  min-width: 300px;
+  max-width: calc(100vw - 32px);
+  gap: 14px;
+  padding: 14px;
+}
+
+.filterField {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filterField legend {
+  margin-bottom: 8px;
+  padding: 0;
   color: #0f172a;
-  padding: 8px;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.filters {
-  display: flex;
-  align-items: end;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
+.filterField select,
+.filterField input[type="date"] {
+  height: 36px;
+  padding: 0 10px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
 }
 
-.filters label {
+.rangeRow {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 14px;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeRow input {
+  flex: 1;
+  min-width: 0;
+}
+
+.rangeRow span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.clearButton {
+  padding: 8px 14px;
+  color: #334155;
+  background: #f1f5f9;
+  border: 0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  background: #e2e8f0;
+}
+
+/* ---------- Responsivo (mesmos breakpoints de Peças) ---------- */
+@media (max-width: 1100px) {
+  .controls {
+    gap: 6px;
+  }
+
+  .optionsButton,
+  .filterContainer>button {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .optionsButton svg {
+    width: 18px;
+  }
+
+  .filterContainer>button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .searchWrapper input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .controls {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .searchWrapper {
+    flex: 1;
+    width: auto;
+  }
 }
