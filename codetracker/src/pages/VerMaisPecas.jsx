@@ -261,6 +261,9 @@ function VerMaisPecas() {
   const [estatisticas, setEstatisticas] = useState([]);
   const [precosMedios, setPrecosMedios] = useState({ compra: null, venda: null });
   const [carregando, setCarregando] = useState(true);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(true);
+  const [erroPeca, setErroPeca] = useState("");
+  const [erroHistorico, setErroHistorico] = useState("");
   const [campoBusca, setCampoBusca] = useState("todos");
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [solicitandoEtiqueta, setSolicitandoEtiqueta] = useState(false);
@@ -308,9 +311,21 @@ function VerMaisPecas() {
     const itemId = Number(itemIdFromState ?? new URLSearchParams(location.search).get("id"));
 
     if (!Number.isFinite(itemId) || itemId <= 0) {
+      setPeca(null);
+      setHistorico([]);
+      setErroPeca("Selecione uma peça válida para visualizar os detalhes.");
       setCarregando(false);
+      setCarregandoHistorico(false);
       return;
     }
+
+    let cancelado = false;
+    setPeca(null);
+    setHistorico([]);
+    setErroPeca("");
+    setErroHistorico("");
+    setCarregando(true);
+    setCarregandoHistorico(true);
 
     const carregarDetalhes = async () => {
       try {
@@ -385,11 +400,13 @@ function VerMaisPecas() {
         setHistorico([]);
         setEstatisticas([]);
       } finally {
-        setCarregando(false);
+        if (!cancelado) setCarregandoHistorico(false);
       }
     };
 
     carregarDetalhes();
+    carregarHistorico();
+    return () => { cancelado = true; };
   }, [location.search, location.state]);
 
   const estoque = useMemo(() => calcularEstoque(historico), [historico]);
@@ -630,6 +647,8 @@ function VerMaisPecas() {
             <section className={styles.cardInfo}>
               {carregando ? (
                 <p>Carregando peça...</p>
+              ) : erroPeca ? (
+                <p role="alert">{erroPeca}</p>
               ) : (
                 <>
                   <div className={styles.infoGrid}>

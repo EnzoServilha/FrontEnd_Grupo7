@@ -40,13 +40,14 @@ function Table(props) {
       cells: Array.isArray(row) ? row : row?.cells || [],
     }));
 
-  // A "chave" precisa refletir o conteúdo real de rows, não só rowIds —
-  // caso contrário, quando rowIds nunca é passado (fica undefined sempre),
-  // a chave nunca muda e o effect abaixo nunca roda.
   const computarChave = () =>
     (props.rows ?? []).map((row, idx) => resolverId(row, idx)).join("|");
 
-  const [linhas, setLinhas] = useState(buildLinhas);
+  const [ordenacaoAtiva, setOrdenacaoAtiva] = useState(null);
+  const linhas = buildLinhas();
+  if (ordenacaoAtiva) {
+    ordenarLinhas(linhas, ordenacaoAtiva.tipo, ordenacaoAtiva.index, ordenacaoAtiva.crescente);
+  }
   const [novaDirecao, setNovaDirecao] = useState(true);
   const [selecionadas, setSelecionadas] = useState([]);
   const chaveLinhasRef = useRef(computarChave());
@@ -55,7 +56,6 @@ function Table(props) {
     const proximaChave = computarChave();
 
     if (proximaChave !== chaveLinhasRef.current) {
-      setLinhas(buildLinhas());
       setSelecionadas([]);
 
       if (props.onSelectionChange) {
@@ -94,33 +94,34 @@ function Table(props) {
     notificarSelecao(proximasSelecionadas);
   }
 
-  function ordenacao(tipo, index) {
-    const listaOrdenada = [...linhas];
-
+  function ordenarLinhas(listaOrdenada, tipo, index, crescente) {
     if (tipo === "number") {
       listaOrdenada.sort((a, b) => {
         const numA = paraNumero(a.cells[index], props.removerNaOrdenacao);
         const numB = paraNumero(b.cells[index], props.removerNaOrdenacao);
-        return novaDirecao ? numA - numB : numB - numA;
+        return crescente ? numA - numB : numB - numA;
       });
     } else if (tipo === "date") {
       listaOrdenada.sort((a, b) => {
         const dataA = new Date(formatarData(a.cells[index]));
         const dataB = new Date(formatarData(b.cells[index]));
-        return novaDirecao ? dataA - dataB : dataB - dataA;
+        return crescente ? dataA - dataB : dataB - dataA;
       });
     } else {
       listaOrdenada.sort((a, b) => {
         const strA = String(a.cells[index]).toLowerCase();
         const strB = String(b.cells[index]).toLowerCase();
-        return novaDirecao
+        return crescente
           ? strA.localeCompare(strB)
           : strB.localeCompare(strA);
       });
     }
 
+  }
+
+  function ordenacao(tipo, index) {
+    setOrdenacaoAtiva({ tipo, index, crescente: novaDirecao });
     setNovaDirecao(!novaDirecao);
-    setLinhas(listaOrdenada);
     setSelecionadas([]);
     notificarSelecao([]);
   }

@@ -72,12 +72,17 @@ const normalizarItemEdicao = (item) => {
 function CadastrarPeca() {
   const navigate = useNavigate();
   const location = useLocation();
+  const itemId = Number(
+    location.state?.item?.id ??
+    location.state?.id ??
+    new URLSearchParams(location.search).get("id"),
+  );
+  const itemIdEdicao = Number.isInteger(itemId) && itemId > 0 ? itemId : null;
+  const modoEdicao = itemIdEdicao !== null;
   const [etapa, setEtapa] = useState(1);
   const [formulario, setFormulario] = useState(formularioInicial);
   const [codigosAssociados, setCodigosAssociados] = useState([]);
   const [pecasAssimiladas, setPecasAssimiladas] = useState([]);
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [itemIdEdicao, setItemIdEdicao] = useState(null);
   const [dataCadastroOriginal, setDataCadastroOriginal] = useState(null);
   const [erroCadastro, setErroCadastro] = useState("");
 
@@ -93,12 +98,14 @@ function CadastrarPeca() {
     setModoEdicao(modoAtivo && idValido);
     setItemIdEdicao(idValido ? itemId : null);
 
-    if (!modoAtivo) {
+    if (!modoEdicao) {
       setFormulario(formularioInicial);
       setCodigosAssociados([]);
       setPecasAssimiladas([]);
       return undefined;
     }
+
+    let cancelado = false;
 
     const carregarItemEdicao = async () => {
       try {
@@ -117,13 +124,17 @@ function CadastrarPeca() {
         setDataCadastroOriginal(item?.dataCadastro ?? null);
       } catch (error) {
         console.error("Erro ao carregar peça para edição:", error);
-        setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+        if (!cancelado) {
+          setErroCadastro("Não foi possível carregar os dados da peça para edição.");
+        }
       }
     };
 
     carregarItemEdicao();
-    return undefined;
-  }, [location.key, location.search, location.state]);
+    return () => {
+      cancelado = true;
+    };
+  }, [location.key, itemIdEdicao, modoEdicao]);
 
   const atualizarCampo = (campo) => (event) => {
     setFormulario((dadosAtuais) => ({

@@ -1,0 +1,42 @@
+.controls {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.history {
+  height: auto;
+}
+
+.table {
+  flex: none;
+  overflow: hidden;
+}
+
+.table > div {
+  height: auto;
+  max-height: 420px;
+}
+
+.select,
+.filters input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  padding: 8px;
+}
+
+.filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
