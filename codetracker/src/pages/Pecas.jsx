@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
+import { solicitarEtiquetas } from "../provider/etiquetas";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
@@ -188,6 +189,8 @@ function Pecas() {
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+  const [solicitandoEtiqueta, setSolicitandoEtiqueta] = useState(false);
+  const [feedbackEtiqueta, setFeedbackEtiqueta] = useState(null);
   const [ordenacao, setOrdenacao] = useState(null); // { campo, direcao }
   // Guarda a quantidade por id para não refazer as N requisições a cada consulta
   const quantidadesRef = useRef(new Map());
@@ -343,6 +346,19 @@ function Pecas() {
       navigate("/cadastrarPeca", {
         state: { item: peca, modoEdicao: true },
       });
+    }
+  };
+
+  const gerarEtiquetaSelecionados = async () => {
+    if (selecionadas.length === 0 || solicitandoEtiqueta) return;
+
+    setSolicitandoEtiqueta(true);
+    setFeedbackEtiqueta(null);
+
+    try {
+      setFeedbackEtiqueta(await solicitarEtiquetas(selecionadas));
+    } finally {
+      setSolicitandoEtiqueta(false);
     }
   };
 
@@ -623,10 +639,10 @@ function Pecas() {
           <div className={styles.actionButtons}>
             <Button
               estilo="editar"
-              disabled={selecionadas.length === 0}
+              disabled={selecionadas.length === 0 || solicitandoEtiqueta}
               onClick={gerarEtiquetaSelecionados}
             >
-              Gerar Etiqueta
+              {solicitandoEtiqueta ? "Enviando..." : "Gerar Etiqueta"}
             </Button>
             <Button
               icone="adicionar"
@@ -655,6 +671,17 @@ function Pecas() {
           </div>
         </section>
 
+        {feedbackEtiqueta && (
+          <p
+            role={feedbackEtiqueta.tipo === "erro" ? "alert" : "status"}
+            className={`${styles.feedback} ${
+              feedbackEtiqueta.tipo === "erro"
+                ? styles.feedbackErro
+                : styles.feedbackSucesso
+            }`}
+          >
+            {feedbackEtiqueta.mensagem}
+          </p>
         {filtrosAtivos(filtros) && (
           <div className={styles.activeFilters}>
             <span>{resumoFiltros(filtros)}</span>
