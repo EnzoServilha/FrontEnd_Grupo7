@@ -187,6 +187,27 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
+.feedback {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.feedbackSucesso {
+  color: #17733b;
+  background: #dcf7e7;
+  border-color: #b7ebcb;
+}
+
+.feedbackErro {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
 .tableLink {
   padding: 0;
   color: #0f172a;

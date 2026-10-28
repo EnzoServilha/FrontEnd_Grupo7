@@ -196,6 +196,8 @@ export default function VerMaisPedidos() {
   const [carregando, setCarregando] = useState(true);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [copiado, setCopiado] = useState(false);
+  const [versao, setVersao] = useState(0); // força recarregar os detalhes
+  const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
     if (!copiado) return;
@@ -259,7 +261,7 @@ export default function VerMaisPedidos() {
     return () => {
       ativo = false;
     };
-  }, [pedidoBase?.id]);
+  }, [pedidoBase?.id, versao]);
 
   const titulo = useMemo(() => {
     if (!movimentacao) return "Detalhes do Pedido";
@@ -271,18 +273,62 @@ export default function VerMaisPedidos() {
   const contato = normalizarTexto(
     movimentacao?.cliente?.nomeContato ?? movimentacao?.fornecedor?.nomeContato,
   );
-  const pagadorFrete = normalizarTexto(
-    movimentacao?.cliente?.nomeEmpresa ??
-    movimentacao?.fornecedor?.razaoSocial ??
-    movimentacao?.fornecedor?.nomeEmpresa,
-  );
 
   const relacionadaEhCotacao = relacionada ? ehCotacao(relacionada) : false;
 
   const handleVoltar = () => navigate("/pedidos");
+
+  // Mesma regra da tela de Pedidos: só pedidos pendentes que não sejam cotação
+  // podem ser editados. A edição acontece no cadastro, em modo edição.
   const handleEditar = () => {
-    // TODO: navegar para a tela de edição do pedido, quando existir
+    if (!movimentacao?.id) return;
+
+    const statusNome = String(movimentacao.status?.nome ?? "").toUpperCase();
+
+    if (ehCotacao(movimentacao) || statusNome !== "PENDENTE") {
+      setMensagem("Somente pedidos pendentes, que não sejam cotações, podem ser editados.");
+      return;
+    }
+
+    setMensagem("");
+    navigate("/cadastrarPedido", { state: { pedidoId: movimentacao.id } });
   };
+
+  // Mesma lógica da tela de Pedidos: concluir uma cotação abre o cadastro da venda;
+  // as demais ações vão direto para o back.
+  const handleAlterarStatus = async (event) => {
+    const acao = event.target.value; // "CONCLUIR" | "CANCELAR"
+    if (!acao || !movimentacao?.id) return;
+    setMensagem("");
+
+    if (acao === "CONCLUIR" && ehCotacao(movimentacao)) {
+      navigate("/cadastrarPedido", { state: { cotacaoId: movimentacao.id } });
+      return;
+    }
+
+    try {
+      await api.patch("/movimentacoes/status", { ids: [movimentacao.id], acao });
+      setVersao((v) => v + 1);
+    } catch (error) {
+      setMensagem(error.response?.data?.message ?? "Não foi possível alterar o status.");
+    }
+  };
+
+  // "Deletar" cancela o pedido, como na tela de Pedidos (a API não permite apagar)
+  const cancelarPedido = async () => {
+    if (!movimentacao?.id) return setModalExcluirAberto(false);
+
+    try {
+      setMensagem("");
+      await api.patch("/movimentacoes/status", { ids: [movimentacao.id], acao: "CANCELAR" });
+      setVersao((v) => v + 1);
+    } catch (error) {
+      setMensagem(error.response?.data?.message ?? "Não foi possível cancelar o pedido.");
+    } finally {
+      setModalExcluirAberto(false);
+    }
+  };
+
   const handleAdicionar = () => {
     // TODO: fluxo de adicionar item ao pedido
   };
@@ -327,15 +373,29 @@ export default function VerMaisPedidos() {
             </div>
 
             <div className={styles.actionButtons}>
-              <Button estilo="azul" onClick={() => { }}>
-                Alterar Status
-              </Button>
-              <Button estilo="editar" icone="editar" onClick={handleEditar}>
+              <select
+                className={styles.statusSelect}
+                aria-label="Alterar status do pedido"
+                value=""
+                disabled={!movimentacao}
+                onChange={handleAlterarStatus}
+              >
+                <option value="" disabled>Alterar Status</option>
+                <option value="CONCLUIR">Concluído</option>
+                <option value="CANCELAR">Cancelado</option>
+              </select>
+              <Button
+                estilo="editar"
+                icone="editar"
+                disabled={!movimentacao}
+                onClick={handleEditar}
+              >
                 Editar
               </Button>
               <Button
                 estilo="deletar"
                 icone="deletar"
+                disabled={!movimentacao}
                 onClick={() => setModalExcluirAberto(true)}
               >
                 Deletar
@@ -365,15 +425,13 @@ export default function VerMaisPedidos() {
             </div>
           </div>
 
+          {mensagem && <p role="alert" className={styles.mensagem}>{mensagem}</p>}
+
           <div className={styles.detailsGrid}>
             <div className={styles.infoGroup}>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Contato:</span>
                 <span className={styles.value}>{contato}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Pagador do Frete:</span>
-                <span className={styles.value}>{pagadorFrete}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Qtd. Itens:</span>
@@ -467,7 +525,7 @@ export default function VerMaisPedidos() {
       <DeleteModal
         isOpen={modalExcluirAberto}
         onClose={() => setModalExcluirAberto(false)}
-        onConfirm={() => setModalExcluirAberto(false)}
+        onConfirm={cancelarPedido}
       />
     </div>
   );

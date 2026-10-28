@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../provider/api";
 import Header from "../components/Header";
@@ -8,6 +8,40 @@ import Filtro from "../components/Filtro";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import styles from "./Contatos.module.css";
+
+const TAMANHO_CARGA = 1000;
+const ATRASO_BUSCA_MS = 400;
+
+// As chaves são os nomes dos parâmetros de /fornecedores/buscar e /clientes/buscar
+const camposBuscaFornecedores = [
+  ["nomeEmpresa", "Nome empresa"],
+  ["nomeContato", "Nome contato"],
+  ["telefone", "Telefone"],
+  ["email", "E-mail"],
+  ["localizacao", "Localização"],
+];
+
+const camposBuscaClientes = [
+  ["nomeEmpresa", "Empresa"],
+  ["nomeContato", "Contato"],
+  ["telefone", "Telefone"],
+  ["email", "E-mail"],
+  ["localizacao", "Localização"],
+];
+
+const FILTROS_VAZIOS = { fabricantes: [], categorias: [] };
+
+const filtrosAtivos = (f) => f.fabricantes.length > 0 || f.categorias.length > 0;
+
+const resumoFiltros = (f) => {
+  const partes = [];
+  if (f.fabricantes.length) partes.push(`Fabricantes: ${f.fabricantes.join(", ")}`);
+  if (f.categorias.length) partes.push(`Categorias: ${f.categorias.join(", ")}`);
+  return partes.join(" · ");
+};
+
+const nomesUnicos = (lista) =>
+  [...new Set(lista)].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
 const formatarLocalizacao = (endereco) => {
   if (!endereco) return "Não informada";
@@ -48,27 +82,47 @@ const normalizarCliente = (cliente) => ({
   fabricantes: [],
 });
 
-const camposBuscaFornecedores = [
-  ["todos", "Todos os campos"],
-  ["empresa", "Empresa"],
-  ["contato", "Contato"],
-  ["telefone", "Telefone"],
-  ["email", "E-mail"],
-  ["localizacao", "Localização"],
-  ["categorias", "Categorias"],
-  ["fabricantes", "Fabricantes"],
-];
+const extrairClientes = (dados) => {
+  const lista = Array.isArray(dados) ? dados : (dados?.conteudo ?? []);
 
-const camposBuscaClientes = [
-  ["todos", "Todos os campos"],
-  ["empresa", "Empresa"],
-  ["contato", "Contato"],
-  ["telefone", "Telefone"],
-  ["email", "E-mail"],
-  ["localizacao", "Localização"],
-  ["categorias", "Categorias"],
-  ["fabricantes", "Fabricantes"],
-];
+  return lista.flatMap((item) => {
+    if (Array.isArray(item?.conteudo) && item.conteudo.length > 0) {
+      return item.conteudo;
+    }
+    return item?.id != null ? [item] : [];
+  });
+};
+
+async function buscarFornecedores({ termo, campo, filtros }) {
+  // Sem pesquisa e sem filtro: lista completa
+  if (!termo && !filtrosAtivos(filtros)) {
+    const resposta = await api.get("/fornecedores");
+    return (Array.isArray(resposta.data) ? resposta.data : []).map(normalizarFornecedor);
+  }
+
+  // URLSearchParams repete a chave (fabricantes=a&fabricantes=b), que é o que o
+  // Spring espera para List<String>. O axios sozinho enviaria fabricantes[]=a.
+  const params = new URLSearchParams();
+  if (termo) params.append(campo, termo);
+  filtros.fabricantes.forEach((nome) => params.append("fabricantes", nome));
+  filtros.categorias.forEach((nome) => params.append("categorias", nome));
+
+  const resposta = await api.get("/fornecedores/buscar", { params });
+  return (Array.isArray(resposta.data) ? resposta.data : []).map(normalizarFornecedor);
+}
+
+async function buscarClientes({ termo, campo }) {
+  // /clientes é paginado no back (10 por padrão): pedimos tudo de uma vez
+  if (!termo) {
+    const resposta = await api.get("/clientes", {
+      params: { pagina: 0, tamanho: TAMANHO_CARGA },
+    });
+    return extrairClientes(resposta.data).map(normalizarCliente);
+  }
+
+  const resposta = await api.get("/clientes/buscar", { params: { [campo]: termo } });
+  return extrairClientes(resposta.data).map(normalizarCliente);
+}
 
 function Contatos() {
   const navigate = useNavigate();
@@ -90,70 +144,117 @@ function Contatos() {
   );
 
   const [busca, setBusca] = useState("");
-  const [campoBusca, setCampoBusca] = useState("todos");
+  const [buscaAplicada, setBuscaAplicada] = useState("");
+  const [campoBusca, setCampoBusca] = useState("nomeEmpresa");
+  const [filtros, setFiltros] = useState(FILTROS_VAZIOS);
+  const [rascunhoFiltros, setRascunhoFiltros] = useState(FILTROS_VAZIOS);
+  const [opcoesFiltro, setOpcoesFiltro] = useState({ categorias: [], fabricantes: [] });
   const [selecionados, setSelecionados] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
+  const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
-  const [fornecedoresCarregados, setFornecedoresCarregados] = useState([]);
-  const [clientesCarregados, setClientesCarregados] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  const termoBusca = buscaAplicada.trim();
+  // Sem termo, o campo de busca não muda a consulta
+  const campoConsulta = termoBusca ? campoBusca : "nomeEmpresa";
+  // Clientes não têm filtro
+  const filtrosConsulta = isCliente ? FILTROS_VAZIOS : filtros;
+
+  // Espera o usuário parar de digitar antes de consultar o back
+  useEffect(() => {
+    const temporizador = setTimeout(() => setBuscaAplicada(busca), ATRASO_BUSCA_MS);
+    return () => clearTimeout(temporizador);
+  }, [busca]);
 
   useEffect(() => {
-    const contatosFornecedoresCarregados = async () => {
+    let cancelado = false;
+
+    const carregarContatos = async () => {
       try {
-        const responseFornecedores = await api.get("/fornecedores");
-        const fornecedoresNormalizados = (responseFornecedores.data || []).map(
-          normalizarFornecedor,
-        );
-        setFornecedoresCarregados(fornecedoresNormalizados);
-        setContatosPorTipo((dadosAtuais) => ({
-          ...dadosAtuais,
-          fornecedores: fornecedoresNormalizados,
-        }));
+        setCarregando(true);
+
+        const lista = isCliente
+          ? await buscarClientes({ termo: termoBusca, campo: campoConsulta })
+          : await buscarFornecedores({
+            termo: termoBusca,
+            campo: campoConsulta,
+            filtros: filtrosConsulta,
+          });
+
+        // Ignora respostas antigas se a consulta mudou no meio do caminho
+        if (cancelado) return;
+
+        setContatosPorTipo((atuais) => ({ ...atuais, [tipoAtivo]: lista }));
+
+        // As opções do filtro vêm da carga completa (sem pesquisa e sem filtro),
+        // senão elas encolheriam junto com o resultado.
+        if (!isCliente && !termoBusca && !filtrosAtivos(filtrosConsulta)) {
+          setOpcoesFiltro({
+            categorias: nomesUnicos(lista.flatMap((contato) => contato.categorias)),
+            fabricantes: nomesUnicos(lista.flatMap((contato) => contato.fabricantes)),
+          });
+        }
       } catch (error) {
-        console.error("Erro ao carregar fornecedores:", error);
+        console.error("Erro ao carregar contatos:", error);
+        if (!cancelado) {
+          setContatosPorTipo((atuais) => ({ ...atuais, [tipoAtivo]: [] }));
+        }
+      } finally {
+        if (!cancelado) setCarregando(false);
       }
     };
 
-    const contatosClientesCarregados = async () => {
-      try {
-        const responseClientes = await api.get("/clientes");
-        const clientesNormalizados = (responseClientes.data?.conteudo || []).map(
-          normalizarCliente,
-        );
-        setClientesCarregados(clientesNormalizados);
-        setContatosPorTipo((dadosAtuais) => ({
-          ...dadosAtuais,
-          clientes: clientesNormalizados,
-        }));
-      } catch (error) {
-        console.error("Erro ao carregar clientes:", error);
-      }
-    };
+    carregarContatos();
 
-    contatosFornecedoresCarregados();
-    contatosClientesCarregados();
-  }, []);
+    return () => {
+      cancelado = true;
+    };
+  }, [tipoAtivo, isCliente, termoBusca, campoConsulta, filtrosConsulta]);
+
+  const trocarTipo = (tipo) => {
+    setTipoAtivo(tipo);
+    setSelecionados([]);
+    setBusca("");
+    setBuscaAplicada("");
+    setFiltros(FILTROS_VAZIOS);
+    setRascunhoFiltros(FILTROS_VAZIOS);
+    setFiltroAberto(false);
+    setMenuBuscaAberto(false);
+  };
+
+  const alternarFiltro = () => {
+    setFiltroAberto((aberto) => {
+      if (!aberto) setRascunhoFiltros(filtros);
+      return !aberto;
+    });
+    setMenuBuscaAberto(false);
+  };
+
+  const alternarOpcao = (grupo, nome) =>
+    setRascunhoFiltros((atual) => ({
+      ...atual,
+      [grupo]: atual[grupo].includes(nome)
+        ? atual[grupo].filter((item) => item !== nome)
+        : [...atual[grupo], nome],
+    }));
+
+  const aplicarFiltros = () => {
+    setFiltros(rascunhoFiltros);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
+
+  const limparFiltros = () => {
+    setFiltros(FILTROS_VAZIOS);
+    setRascunhoFiltros(FILTROS_VAZIOS);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
 
   const camposBuscaAtual = isCliente
     ? camposBuscaClientes
     : camposBuscaFornecedores;
-
-  const contatosFiltrados = useMemo(() => {
-    const termo = busca.trim().toLocaleLowerCase("pt-BR");
-
-    return contatosAtivos.filter((contato) => {
-      if (!termo) return true;
-
-      const valores =
-        campoBusca === "todos"
-          ? Object.values(contato)
-          : [contato[campoBusca]];
-
-      return valores.some((valor) =>
-        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
-      );
-    });
-  }, [busca, campoBusca, contatosAtivos]);
 
   const abrirDetalhes = (contato) => {
     navigate(rotaDetalhes, { state: { contato } });
@@ -186,7 +287,7 @@ function Contatos() {
       console.error("Erro ao desativar contatos:", error);
       alert(
         error?.response?.data?.message ||
-          "Não foi possível desativar o(s) contato(s) selecionado(s).",
+        "Não foi possível desativar o(s) contato(s) selecionado(s).",
       );
     } finally {
       setModalExcluirAberto(false);
@@ -228,7 +329,7 @@ function Contatos() {
       : []),
   ];
 
-  const rows = contatosFiltrados.map((contato) => ({
+  const rows = contatosAtivos.map((contato) => ({
     id: contato.id,
     cells: [
       <button
@@ -263,10 +364,7 @@ function Contatos() {
             role="tab"
             aria-selected={tipoAtivo === "fornecedores"}
             className={tipoAtivo === "fornecedores" ? styles.activeTab : ""}
-            onClick={() => {
-              setTipoAtivo("fornecedores");
-              setSelecionados([]);
-            }}
+            onClick={() => trocarTipo("fornecedores")}
           >
             Fornecedores
           </button>
@@ -275,10 +373,7 @@ function Contatos() {
             role="tab"
             aria-selected={tipoAtivo === "clientes"}
             className={tipoAtivo === "clientes" ? styles.activeTab : ""}
-            onClick={() => {
-              setTipoAtivo("clientes");
-              setSelecionados([]);
-            }}
+            onClick={() => trocarTipo("clientes")}
           >
             Clientes
           </button>
@@ -296,6 +391,7 @@ function Contatos() {
                 title={`Pesquisar por: ${campoBuscaAtivo}`}
                 onClick={() => {
                   setMenuBuscaAberto((aberto) => !aberto);
+                  setFiltroAberto(false);
                 }}
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -331,6 +427,7 @@ function Contatos() {
 
             <div className={styles.searchWrapper}>
               <SearchBar
+                campo={campoBuscaAtivo}
                 placeholder="Buscar contatos..."
                 value={busca}
                 onChange={(event) => setBusca(event.target.value)}
@@ -338,14 +435,79 @@ function Contatos() {
               />
             </div>
 
-            <div className={styles.menuContainer}>
-              <Filtro
-                ariaLabel="Filtrar contatos"
-                onClick={() => {
-                  setMenuBuscaAberto(false);
-                }}
-              />
-            </div>
+            {/* Só fornecedores têm filtro */}
+            {!isCliente && (
+              <div className={styles.menuContainer}>
+                <Filtro ariaLabel="Filtrar fornecedores" onClick={alternarFiltro} />
+
+                {filtroAberto && (
+                  <div
+                    className={`${styles.popover} ${styles.filterPopover} ${styles.filterPanel}`}
+                    role="dialog"
+                    aria-label="Filtros de fornecedores"
+                  >
+                    <fieldset className={styles.filterGroup}>
+                      <legend>Fabricantes</legend>
+                      <div className={styles.optionList}>
+                        {opcoesFiltro.fabricantes.length === 0 && (
+                          <span className={styles.filterHint}>
+                            Nenhum fabricante disponível
+                          </span>
+                        )}
+                        {opcoesFiltro.fabricantes.map((nome) => (
+                          <label key={nome} className={styles.checkOption}>
+                            <input
+                              type="checkbox"
+                              checked={rascunhoFiltros.fabricantes.includes(nome)}
+                              onChange={() => alternarOpcao("fabricantes", nome)}
+                            />
+                            {nome}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <fieldset className={styles.filterGroup}>
+                      <legend>Categorias</legend>
+                      <div className={styles.optionList}>
+                        {opcoesFiltro.categorias.length === 0 && (
+                          <span className={styles.filterHint}>
+                            Nenhuma categoria disponível
+                          </span>
+                        )}
+                        {opcoesFiltro.categorias.map((nome) => (
+                          <label key={nome} className={styles.checkOption}>
+                            <input
+                              type="checkbox"
+                              checked={rascunhoFiltros.categorias.includes(nome)}
+                              onChange={() => alternarOpcao("categorias", nome)}
+                            />
+                            {nome}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <div className={styles.filterActions}>
+                      <button
+                        type="button"
+                        className={styles.clearButton}
+                        onClick={limparFiltros}
+                      >
+                        Limpar
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.applyButton}
+                        onClick={aplicarFiltros}
+                      >
+                        Aplicar
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className={styles.actionButtons}>
@@ -378,18 +540,32 @@ function Contatos() {
           </div>
         </section>
 
+        {!isCliente && filtrosAtivos(filtros) && (
+          <div className={styles.activeFilters}>
+            <span>{resumoFiltros(filtros)}</span>
+            <button type="button" onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          </div>
+        )}
+
         <section
           className={styles.tableSection}
           aria-label={isCliente ? "Clientes" : "Fornecedores"}
         >
           <Table
-            key={`${tipoAtivo}-${busca}-${campoBusca}`}
+            key={tipoAtivo}
             columns={columns}
             rows={rows}
-            getRowId={(row) => row.id}
-            selectedRows={selecionados}
             onSelectionChange={setSelecionados}
           />
+
+          {carregando && (
+            <p className={styles.tableMessage}>Carregando contatos...</p>
+          )}
+          {!carregando && rows.length === 0 && (
+            <p className={styles.tableMessage}>Nenhum contato encontrado.</p>
+          )}
         </section>
       </main>
 

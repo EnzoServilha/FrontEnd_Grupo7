@@ -25,7 +25,6 @@ const FILTROS_VAZIOS = {
   dataEntrega: "", // yyyy-mm-dd
   dataPrevista: "", // yyyy-mm-dd
   dataPedido: "", // yyyy-mm-dd (enviada como dataMovimentacao)
-  pagadorFrete: "", // "" | "true" | "false"
 };
 
 const filtrosAtivos = (f) => Object.values(f).some((valor) => valor !== "");
@@ -45,9 +44,6 @@ const resumoFiltros = (f) => {
   if (f.dataEntrega) partes.push(`Entrega em ${isoParaBr(f.dataEntrega)}`);
   if (f.dataPrevista) partes.push(`Prevista para ${isoParaBr(f.dataPrevista)}`);
   if (f.dataPedido) partes.push(`Pedido em ${isoParaBr(f.dataPedido)}`);
-  if (f.pagadorFrete) {
-    partes.push(`Pagador do frete: ${f.pagadorFrete === "true" ? "Sim" : "Não"}`);
-  }
   return partes.join(" · ");
 };
 
@@ -66,7 +62,6 @@ const montarParametrosBusca = (f) => {
   if (f.dataEntrega) params.dataEntrega = f.dataEntrega;
   if (f.dataPrevista) params.dataPrevista = f.dataPrevista;
   if (f.dataPedido) params.dataMovimentacao = f.dataPedido;
-  if (f.pagadorFrete) params.pagadorFrete = f.pagadorFrete;
   return params;
 };
 
@@ -122,10 +117,11 @@ const obterCategoria = (tipo = "") => {
 const obterStatusClass = (status = "") => {
   const texto = String(status).trim().toLowerCase();
 
-  if (texto.includes("atras")) return "atrasado";
-  if (texto.includes("andamento") || texto.includes("em") || texto.includes("pend")) return "andamento";
   if (texto.includes("cancel")) return "cancelado";
-  if (texto.includes("conclu")) return "concluido";
+  if (texto.includes("conclu")) {
+    return texto.includes("atras") ? "concluidoAtraso" : "concluido";
+  }
+  if (texto.includes("pend")) return "andamento";
   if (texto.includes("cot")) return "completo";
 
   return "";
@@ -133,6 +129,8 @@ const obterStatusClass = (status = "") => {
 
 const normalizarPedido = (movimentacao) => {
   const tipo = normalizarTexto(movimentacao?.tipo?.nome ?? movimentacao?.tipo ?? "");
+
+  // Sem status no back = pedido ainda em aberto
   const status = normalizarTexto(movimentacao?.status?.nome ?? movimentacao?.status ?? "");
 
   return {
@@ -142,10 +140,6 @@ const normalizarPedido = (movimentacao) => {
     status,
     statusClass: obterStatusClass(status),
     valorTotal: formatarMoeda(movimentacao?.valorTotal),
-    pagadorFrete:
-      normalizarTexto(
-        movimentacao?.cliente?.nome ?? movimentacao?.fornecedor?.razaoSocial ?? movimentacao?.pagadorFrete,
-      ),
     precoFrete: formatarMoeda(movimentacao?.precoFrete),
     precoImposto: formatarMoeda(movimentacao?.totalGastoImpostos),
     precoProdutos: formatarMoeda(movimentacao?.precoProdutos),
@@ -171,25 +165,25 @@ function Pedidos() {
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [carregando, setCarregando] = useState(true);
+  const [versao, setVersao] = useState(0); // força recarregar a lista
+  const [mensagem, setMensagem] = useState("");
 
-
-  const alterarStatusSelecionados = (event) => {
-    const novoStatus = event.target.value;
-    if (!novoStatus || selecionados.length === 0) return;
-
-    setPedidos((itensAtuais) =>
-      itensAtuais.map((pedido) =>
-        selecionados.includes(pedido.id)
-          ? { ...pedido, status: novoStatus }
-          : pedido,
-      ),
-    );
-    event.target.value = "";
-  };
-
+  // Abre o cadastro em modo edição. Mesma regra do cadastro:
+  // só pedidos pendentes que não sejam cotação podem ser editados.
   const editarSelecionado = () => {
-    const pedidoOriginal = pedidosOriginais.find((item) => item.id === selecionados[0]);
-    if (pedidoOriginal) navigate("/verMaisPedido", { state: { pedido: pedidoOriginal } });
+    const original = pedidosOriginais.find((item) => item.id === selecionados[0]);
+    if (!original) return;
+
+    const tipoNome = original.tipo?.nome ?? original.tipo;
+    const statusNome = String(original.status?.nome ?? original.status ?? "").toUpperCase();
+
+    if (tipoNome === "COTACAO" || statusNome !== "PENDENTE") {
+      setMensagem("Somente pedidos pendentes, que não sejam cotações, podem ser editados.");
+      return;
+    }
+
+    setMensagem("");
+    navigate("/cadastrarPedido", { state: { pedidoId: original.id } });
   };
 
   useEffect(() => {
@@ -229,7 +223,7 @@ function Pedidos() {
     return () => {
       cancelado = true;
     };
-  }, [filtros]);
+  }, [filtros, versao]);
 
   const alternarFiltro = () => {
     setFiltroAberto((aberto) => {
@@ -268,11 +262,39 @@ function Pedidos() {
     [pedidosOriginais],
   );
 
+  const alterarStatusSelecionados = async (event) => {
+    const acao = event.target.value; // "CONCLUIR" | "CANCELAR"
+    if (!acao || selecionados.length === 0) return;
+    setMensagem("");
+
+    const haCotacao = pedidos.some(
+      (p) => selecionados.includes(p.id) && p.categoria === "cotacoes",
+    );
+
+    // Cotação concluída = gerar venda: abre o cadastro pré-preenchido
+    if (acao === "CONCLUIR" && haCotacao) {
+      if (selecionados.length !== 1) {
+        setMensagem("Cotações devem ser concluídas uma por vez, sem outros pedidos selecionados.");
+        return;
+      }
+      navigate("/cadastrarPedido", { state: { cotacaoId: selecionados[0] } });
+      return;
+    }
+
+    try {
+      await api.patch("/movimentacoes/status", { ids: selecionados, acao });
+      setSelecionados([]);
+      setVersao((v) => v + 1);
+    } catch (error) {
+      setMensagem(error.response?.data?.message ?? "Não foi possível alterar o status.");
+    }
+  };
+
+
   const columns = [
     { name: "Tipo", ordena: false, tipo: "string" },
     { name: "Status", ordena: false, tipo: "string" },
     { name: "Valor Total", ordena: true, tipo: "number" },
-    { name: "Pagador do Frete", ordena: false, tipo: "string" },
     { name: "Preço do Frete", ordena: true, tipo: "number" },
     { name: "Preço do Imposto", ordena: true, tipo: "number" },
     { name: "Preço dos Produtos", ordena: true, tipo: "number" },
@@ -299,7 +321,6 @@ function Pedidos() {
         {pedido.status}
       </span>,
       pedido.valorTotal,
-      pedido.pagadorFrete,
       pedido.precoFrete,
       pedido.precoImposto,
       pedido.precoProdutos,
@@ -312,23 +333,14 @@ function Pedidos() {
   });
 
   const cancelarSelecionados = async () => {
-    if (selecionados.length === 0) {
-      setModalExcluirAberto(false);
-      return;
-    }
-
+    if (selecionados.length === 0) return setModalExcluirAberto(false);
     try {
-      await Promise.all(
-        selecionados.map((id) => api.patch(`/movimentacoes/${id}/cancelamento`)),
-      );
-
-      const idsSelecionados = new Set(selecionados);
-      setPedidos((listaAtual) =>
-        listaAtual.filter((pedido) => !idsSelecionados.has(pedido.id)),
-      );
+      setMensagem("");
+      await api.patch("/movimentacoes/status", { ids: selecionados, acao: "CANCELAR" });
       setSelecionados([]);
+      setVersao((v) => v + 1);
     } catch (error) {
-      console.error("Erro ao cancelar pedidos:", error);
+      setMensagem(error.response?.data?.message ?? "Não foi possível cancelar os pedidos.");
     } finally {
       setModalExcluirAberto(false);
     }
@@ -435,20 +447,6 @@ function Pedidos() {
                         }
                       />
                     </label>
-
-                    <label className={styles.filterField}>
-                      <span>Pagador do frete</span>
-                      <select
-                        value={rascunhoFiltros.pagadorFrete}
-                        onChange={(event) =>
-                          atualizarRascunho({ pagadorFrete: event.target.value })
-                        }
-                      >
-                        <option value="">Qualquer</option>
-                        <option value="true">Sim</option>
-                        <option value="false">Não</option>
-                      </select>
-                    </label>
                   </div>
 
                   <div className={styles.filterActions}>
@@ -476,14 +474,12 @@ function Pedidos() {
             <select
               className={styles.statusSelect}
               aria-label="Alterar status dos pedidos selecionados"
-              defaultValue=""
+              value=""
+              onChange={alterarStatusSelecionados}
             >
-              <option value="" disabled>
-                Alterar Status
-              </option>
-              <option value="2">Concluído</option>
-              <option value="3">Concluído Parcialmente</option>
-              <option value="4">Cancelado</option>
+              <option value="" disabled>Alterar Status</option>
+              <option value="CONCLUIR">Concluído</option>
+              <option value="CANCELAR">Cancelado</option>
             </select>
 
             <div className={styles.actionButtons}>
@@ -525,9 +521,11 @@ function Pedidos() {
           </div>
         )}
 
+        {mensagem && <p role="alert" className={styles.tableMessage}>{mensagem}</p>}
+
         <section className={styles.tableSection} aria-label="Lista de pedidos">
           <TablePaginada
-            key={tabAtiva}
+            key={`${tabAtiva}-${versao}`}
             columns={columns}
             rows={rows}
             rowIds={rowIds}

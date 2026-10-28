@@ -14,8 +14,9 @@ function textoDaCelula(celula) {
 
 function formatarData(data) {
     if (!data || !data.includes("/")) return data;
-    const partes = data.split("/");
-    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+    const [dia, hora] = data.trim().split(" ");
+    const partes = dia.split("/");
+    return `${partes[2]}-${partes[1]}-${partes[0]}${hora ? `T${hora}` : ""}`;
 }
 
 function paraNumero(valor, remover) {
@@ -228,86 +229,6 @@ function TablePaginada(props) {
 
     return (
         <div className={styles["table-wrapper"]}>
-            <div className={styles["table-container"]}>
-                <table className={styles["custom-table"]}>
-                    <thead>
-                        <tr>
-                            {selecionavel && (
-                                <th>
-                                    <input
-                                        className={styles["custom-checkbox"]}
-                                        type="checkbox"
-                                        checked={
-                                            idsVisiveis.length > 0 &&
-                                            idsVisiveis.every((id) => selecionadas.includes(id))
-                                        }
-                                        onChange={handleSelectAll}
-                                    />
-                                </th>
-                            )}
-                            {props.columns.map((column, index) => (
-                                <th
-                                    key={index}
-                                    style={{ cursor: column.ordena ? "pointer" : "default" }}
-                                    onClick={() => column.ordena && ordenacao(column, index)}
-                                >
-                                    <div className={styles["th-elements"]}>
-                                        {column.name}{" "}
-                                        {column.ordena &&
-                                            (novaDirecao ? (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    height="20px"
-                                                    viewBox="0 -960 960 960"
-                                                    width="20px"
-                                                    fill="#000000"
-                                                >
-                                                    <path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z" />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    height="20px"
-                                                    viewBox="0 -960 960 960"
-                                                    width="20px"
-                                                    fill="#000000"
-                                                >
-                                                    <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
-                                                </svg>
-                                            ))}
-                                    </div>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {linhasVisiveis.map((linha) => {
-                            const isSelected = selecionadas.includes(linha.id);
-                            return (
-                                <tr
-                                    key={linha.id}
-                                    className={isSelected ? styles["selected-row"] : ""}
-                                >
-                                    {selecionavel && (
-                                        <td>
-                                            <input
-                                                className={styles["custom-checkbox"]}
-                                                type="checkbox"
-                                                checked={isSelected}
-                                                onChange={() => handleSelectRow(linha.id)}
-                                            />
-                                        </td>
-                                    )}
-                                    {linha.cells.map((cell, cellIndex) => (
-                                        <td key={cellIndex}>{cell}</td>
-                                    ))}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-
             {paginado && (
                 <div className={styles["pagination"]}>
                     <div className={styles["pagination-info"]}>
@@ -391,6 +312,87 @@ function TablePaginada(props) {
                     </nav>
                 </div>
             )}
+            <div className={styles["table-container"]}>
+                <table className={styles["custom-table"]}>
+                    <thead>
+                        <tr>
+                            {selecionavel && (
+                                <th>
+                                    <input
+                                        className={styles["custom-checkbox"]}
+                                        type="checkbox"
+                                        checked={
+                                            idsVisiveis.length > 0 &&
+                                            idsVisiveis.every((id) => selecionadas.includes(id))
+                                        }
+                                        onChange={handleSelectAll}
+                                    />
+                                </th>
+                            )}
+                            {props.columns.map((column, index) => (
+                                <th
+                                    key={index}
+                                    style={{ cursor: column.ordena ? "pointer" : "default" }}
+                                    onClick={() => column.ordena && ordenacao(column, index)}
+                                >
+                                    <div className={styles["th-elements"]}>
+                                        {column.name}{" "}
+                                        {column.ordena &&
+                                            (novaDirecao ? (
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    height="20px"
+                                                    viewBox="0 -960 960 960"
+                                                    width="20px"
+                                                    fill="#000000"
+                                                >
+                                                    <path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z" />
+                                                </svg>
+                                            ) : (
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    height="20px"
+                                                    viewBox="0 -960 960 960"
+                                                    width="20px"
+                                                    fill="#000000"
+                                                >
+                                                    <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
+                                                </svg>
+                                            ))}
+                                    </div>
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {linhasVisiveis.map((linha) => {
+                            const isSelected = selecionadas.includes(linha.id);
+                            return (
+                                <tr
+                                    key={linha.id}
+                                    className={isSelected ? styles["selected-row"] : ""}
+                                >
+                                    {selecionavel && (
+                                        <td>
+                                            <input
+                                                className={styles["custom-checkbox"]}
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => handleSelectRow(linha.id)}
+                                            />
+                                        </td>
+                                    )}
+                                    {linha.cells.map((cell, cellIndex) => (
+                                        <td key={cellIndex}>{cell}</td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+
         </div>
     );
 }
