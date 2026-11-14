@@ -465,6 +465,11 @@
   flex-shrink: 0;
 }
 
+/* Espaçamento das telas sem indicador de etapas */
+.standaloneContent.standaloneContent {
+  padding-top: 24px;
+}
+
 @media (min-width: 900px) {
   .header>h1 {
     font-size: 22px;

@@ -1,4 +1,4 @@
-const texts = import.meta.glob("./texts/*.txt", {
+const texts = import.meta.glob("./texts/*.md", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -43,7 +43,7 @@ export function getHelpContent(pathname) {
   return {
     title,
     text:
-      texts[`./texts/${filename}.txt`] ??
+      texts[`./texts/${filename}.md`] ??
       "O texto de ajuda desta tela não foi encontrado.",
   };
 }

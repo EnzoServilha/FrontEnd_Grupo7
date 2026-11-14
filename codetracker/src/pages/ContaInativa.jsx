@@ -1,6 +1,7 @@
 import styles from "./ContaInativa.module.css";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import HelpButton from "../helpfeat/HelpButton";
 
 function ContaInativa() {
   const navigate = useNavigate();
@@ -11,6 +12,9 @@ function ContaInativa() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.helpAction}>
+        <HelpButton />
+      </div>
       <h1 className={styles.title}>Conta Inativa</h1>
       <p className={styles.message}>
         Sua conta está inativa. Por favor, entre em contato com algum

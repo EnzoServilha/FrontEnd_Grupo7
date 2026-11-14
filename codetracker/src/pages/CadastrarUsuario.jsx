@@ -141,16 +141,16 @@ function CadastrarUsuario() {
 
     return (
         <div className={baseStyles.page}>
-            <header className={`${baseStyles.header} ${pecaStyles.header}`}>
+            <header className={baseStyles.header}>
                 <Logo />
                 <h1>{modoEdicao ? "Editar Usuário" : "Cadastrar Usuário"}</h1>
 
-                <div className={pecaStyles.helpAction}>
+                <div className={baseStyles.helpAction}>
                     <HelpButton />
                 </div>
             </header>
 
-            <main className={baseStyles.content}>
+            <main className={`${baseStyles.content} ${styles.content}`}>
                 <form className={baseStyles.form} onSubmit={salvar} noValidate>
                     <section
                         className={`${baseStyles.card} ${styles.card}`}

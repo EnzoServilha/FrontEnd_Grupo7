@@ -179,7 +179,6 @@ function CadastrarCliente() {
       <header className={styles.header}>
         <Logo />
         <h1>{modoEdicao ? "Editar Cliente" : "Cadastrar Cliente"}</h1>
-        <h1>Cadastrar Cliente</h1>
 
         <div className={styles.helpAction}>
           <HelpButton />

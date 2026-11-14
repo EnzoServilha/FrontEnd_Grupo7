@@ -100,16 +100,16 @@ function AssimilarPecas() {
 
   return (
     <div className={baseStyles.page}>
-      <header className={`${baseStyles.header} ${styles.header}`}>
+      <header className={baseStyles.header}>
         <Logo />
         <h1>Assimilar Peças</h1>
 
-        <div className={styles.helpAction}>
+        <div className={baseStyles.helpAction}>
           <HelpButton />
         </div>
       </header>
 
-      <main className={baseStyles.content}>
+      <main className={`${baseStyles.content} ${styles.standaloneContent}`}>
         <form className={baseStyles.form} onSubmit={confirmar}>
           <section
             className={`${baseStyles.card} ${styles.card} ${styles.listCard}`}

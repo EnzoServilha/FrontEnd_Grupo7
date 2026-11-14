@@ -36,6 +36,11 @@
     font-weight: 700;
 }
 
+/* Espaço entre o cabeçalho e o formulário sem indicador de etapas */
+.content.content {
+  padding-top: 24px;
+}
+
 @media (min-width: 900px) {
     .card.card {
         min-height: 0;

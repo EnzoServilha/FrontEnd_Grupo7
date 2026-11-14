@@ -403,11 +403,11 @@ function CadastrarFornecedor() {
 
   return (
     <div className={baseStyles.page}>
-      <header className={`${baseStyles.header} ${styles.header}`}>
+      <header className={baseStyles.header}>
         <Logo />
         <h1>{modoEdicao ? "Editar Fornecedor" : "Cadastrar Fornecedor"}</h1>
 
-        <div className={styles.helpAction}>
+        <div className={baseStyles.helpAction}>
           <HelpButton />
         </div>
       </header>
