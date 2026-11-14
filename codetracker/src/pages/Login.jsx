@@ -36,7 +36,27 @@ function Login() {
       const usuario = resposta?.data ?? {};
 
       if (usuario?.email) {
-        localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+
+        try {
+          const respostaCompleta = await api.get(`/usuarios/${usuario.userId}`)
+
+          const role = respostaCompleta?.data.permissao.nome ?? {}
+
+          let jsonUsuario = {
+            "nome": usuario.nome,
+            "email": usuario.email,
+            "role": role
+          }
+
+          localStorage.setItem("usuarioLogado", JSON.stringify(jsonUsuario));
+
+        } catch (error) {
+          const mensagem2 =
+            error?.response?.data?.message ||
+            error?.response?.data?.error ||
+            "Não foi possível realizar o login. Verifique suas credenciais.";
+          setErro(mensagem2);
+        }
       }
 
       navigate("/dashboard");

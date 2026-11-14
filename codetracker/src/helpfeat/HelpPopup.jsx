@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Rnd } from "react-rnd";
+import ReactMarkdown from "react-markdown";
 import { useHelp } from "./useHelp";
 import { getHelpContent } from "./helpContent";
 import styles from "./HelpPopup.module.css";
@@ -111,12 +112,7 @@ export default function HelpPopup() {
             role="region"
             aria-label={`Explicação: ${title}`}
           >
-            {text
-              .trim()
-              .split(/\r?\n\s*\r?\n/)
-              .map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+            <ReactMarkdown>{text}</ReactMarkdown>
           </div>
 
           <div className={styles.footer}>

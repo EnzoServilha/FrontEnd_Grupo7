@@ -26,6 +26,9 @@
 
 .search-input {
   flex: 1;
+  min-width: 0;
+  height: 40px;
+  flex: 1;
   height: 40px;
   padding: 0 16px;
   background-color: #ffffff;
@@ -46,4 +49,45 @@
 .dropdown-btn:focus-visible {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Selo com o campo de pesquisa ativo */
+.search-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 14px;
+  background-color: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 8px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.search-field-label {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.search-field-value {
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+
+  /* Em telas pequenas, mostra só o nome do campo */
+  .search-field {
+    padding: 0 10px;
+  }
+
+  .search-field-label {
+    display: none;
+  }
 }

@@ -130,3 +130,46 @@
   color: #475569;
   font-size: 12px;
 }
+
+
+ /* Formatação dos textos Markdown */
+.content h3 {
+  margin: 20px 0 10px;
+  color: #0256cc;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.content ul,
+.content ol {
+  margin: 0 0 14px;
+  padding-left: 24px;
+}
+
+.content ul {
+  list-style-type: disc;
+}
+
+.content ol {
+  list-style-type: decimal;
+}
+
+.content li {
+  margin-bottom: 8px;
+}
+
+.content li > p {
+  margin-bottom: 8px;
+}
+
+.content strong {
+  font-weight: 700;
+}
+
+.content > :first-child {
+  margin-top: 0;
+}
+
+.content > :last-child {
+  margin-bottom: 0;
+}

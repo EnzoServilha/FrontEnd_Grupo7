@@ -7,7 +7,29 @@ function formatarData(data) {
   return `${partes[2]}-${partes[1]}-${partes[0]}`;
 }
 
+// Converte o texto da célula em número para a ordenação.
+// "remover" pode ser uma string ou um array de strings a serem
+// retiradas do texto antes da conversão (ex.: "R$").
+function paraNumero(valor, remover) {
+  let texto = String(valor ?? "");
+
+  [].concat(remover ?? []).forEach((trecho) => {
+    if (trecho) texto = texto.split(trecho).join("");
+  });
+
+  texto = texto.trim();
+
+  // Formato brasileiro: "21.780,00" -> "21780.00"
+  if (texto.includes(",")) {
+    texto = texto.replace(/\./g, "").replace(",", ".");
+  }
+
+  return parseFloat(texto) || 0;
+}
+
 function Table(props) {
+
+  const selecionavel = props.selecionavel ?? true;
   // Id de cada linha: prioriza rowIds (se vier), depois row.id, depois o índice.
   const resolverId = (row, idx) => props.rowIds?.[idx] ?? row?.id ?? idx;
 
@@ -18,13 +40,14 @@ function Table(props) {
       cells: Array.isArray(row) ? row : row?.cells || [],
     }));
 
-  // A "chave" precisa refletir o conteúdo real de rows, não só rowIds —
-  // caso contrário, quando rowIds nunca é passado (fica undefined sempre),
-  // a chave nunca muda e o effect abaixo nunca roda.
   const computarChave = () =>
     (props.rows ?? []).map((row, idx) => resolverId(row, idx)).join("|");
 
-  const [linhas, setLinhas] = useState(buildLinhas);
+  const [ordenacaoAtiva, setOrdenacaoAtiva] = useState(null);
+  const linhas = buildLinhas();
+  if (ordenacaoAtiva) {
+    ordenarLinhas(linhas, ordenacaoAtiva.tipo, ordenacaoAtiva.index, ordenacaoAtiva.crescente);
+  }
   const [novaDirecao, setNovaDirecao] = useState(true);
   const [selecionadas, setSelecionadas] = useState([]);
   const chaveLinhasRef = useRef(computarChave());
@@ -33,7 +56,6 @@ function Table(props) {
     const proximaChave = computarChave();
 
     if (proximaChave !== chaveLinhasRef.current) {
-      setLinhas(buildLinhas());
       setSelecionadas([]);
 
       if (props.onSelectionChange) {
@@ -72,33 +94,34 @@ function Table(props) {
     notificarSelecao(proximasSelecionadas);
   }
 
-  function ordenacao(tipo, index) {
-    const listaOrdenada = [...linhas];
-
+  function ordenarLinhas(listaOrdenada, tipo, index, crescente) {
     if (tipo === "number") {
       listaOrdenada.sort((a, b) => {
-        const numA = parseFloat(a.cells[index]) || 0;
-        const numB = parseFloat(b.cells[index]) || 0;
-        return novaDirecao ? numA - numB : numB - numA;
+        const numA = paraNumero(a.cells[index], props.removerNaOrdenacao);
+        const numB = paraNumero(b.cells[index], props.removerNaOrdenacao);
+        return crescente ? numA - numB : numB - numA;
       });
     } else if (tipo === "date") {
       listaOrdenada.sort((a, b) => {
         const dataA = new Date(formatarData(a.cells[index]));
         const dataB = new Date(formatarData(b.cells[index]));
-        return novaDirecao ? dataA - dataB : dataB - dataA;
+        return crescente ? dataA - dataB : dataB - dataA;
       });
     } else {
       listaOrdenada.sort((a, b) => {
         const strA = String(a.cells[index]).toLowerCase();
         const strB = String(b.cells[index]).toLowerCase();
-        return novaDirecao
+        return crescente
           ? strA.localeCompare(strB)
           : strB.localeCompare(strA);
       });
     }
 
+  }
+
+  function ordenacao(tipo, index) {
+    setOrdenacaoAtiva({ tipo, index, crescente: novaDirecao });
     setNovaDirecao(!novaDirecao);
-    setLinhas(listaOrdenada);
     setSelecionadas([]);
     notificarSelecao([]);
   }
@@ -108,17 +131,19 @@ function Table(props) {
       <table className={styles["custom-table"]}>
         <thead>
           <tr>
-            <th>
-              <input
-                className={styles["custom-checkbox"]}
-                type="checkbox"
-                checked={
-                  idsVisiveis.length > 0 &&
-                  idsVisiveis.every((id) => selecionadas.includes(id))
-                }
-                onChange={handleSelectAll}
-              />
-            </th>
+            {selecionavel && (
+              <th>
+                <input
+                  className={styles["custom-checkbox"]}
+                  type="checkbox"
+                  checked={
+                    idsVisiveis.length > 0 &&
+                    idsVisiveis.every((id) => selecionadas.includes(id))
+                  }
+                  onChange={handleSelectAll}
+                />
+              </th>
+            )}
             {props.columns.map((column, index) => (
               <th
                 key={index}
@@ -162,14 +187,16 @@ function Table(props) {
                 key={linha.id}
                 className={isSelected ? styles["selected-row"] : ""}
               >
-                <td>
-                  <input
-                    className={styles["custom-checkbox"]}
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleSelectRow(linha.id)}
-                  />
-                </td>
+                {selecionavel && (
+                  <td>
+                    <input
+                      className={styles["custom-checkbox"]}
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleSelectRow(linha.id)}
+                    />
+                  </td>
+                )}
                 {linha.cells.map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}

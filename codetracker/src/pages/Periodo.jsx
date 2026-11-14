@@ -1,159 +1,202 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import DeleteModal from "../components/DeleteModal";
 import Filtro from "../components/Filtro";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
+import ServerResponse from "../components/ServerResponse";
 import Table from "../components/Table";
+import { api } from "../provider/api";
 import styles from "./Periodo.module.css";
 
-const periodosIniciais = [
-  {
-    id: 3,
-    numero: "03",
-    dataCadastro: "01/04/2026",
-    totalPecas: 10,
-    anotacoes: "Inventário mensal de abril",
-  },
-  {
-    id: 2,
-    numero: "02",
-    dataCadastro: "01/03/2026",
-    totalPecas: 42,
-    anotacoes: "Inventário mensal de março",
-  },
-  {
-    id: 1,
-    numero: "01",
-    dataCadastro: "01/04/2025",
-    totalPecas: 150,
-    anotacoes: "Inventário anual",
-  },
-];
-
 const camposBusca = [
-  ["todos", "Todos os campos"],
   ["numero", "Número"],
-  ["dataCadastro", "Data de cadastro"],
-  ["totalPecas", "Total de peças"],
   ["anotacoes", "Anotações"],
 ];
 
-function dataAtualParaInput() {
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const dia = String(hoje.getDate()).padStart(2, "0");
-  return `${ano}-${mes}-${dia}`;
-}
+const ATRASO_BUSCA_MS = 400;
 
-function formatarData(data) {
-  const [ano, mes, dia] = data.split("-");
+const FILTROS_VAZIOS = {
+  dataModo: "qualquer", // "qualquer" | "especifica" | "periodo"
+  dataInicial: "",
+  dataFinal: "",
+};
+
+const filtrosAtivos = (f) => f.dataModo !== "qualquer";
+
+const filtrosValidos = (f) => {
+  const dataOk =
+    f.dataModo === "qualquer" ||
+    (f.dataModo === "especifica" && Boolean(f.dataInicial)) ||
+    (f.dataModo === "periodo" &&
+      Boolean(f.dataInicial) &&
+      Boolean(f.dataFinal) &&
+      f.dataInicial <= f.dataFinal);
+
+  return dataOk;
+};
+
+const isoParaBr = (iso) => (iso ? iso.split("-").reverse().join("/") : "");
+
+const resumoFiltros = (f) => {
+  const partes = [];
+  if (f.dataModo === "especifica") partes.push(`Cadastro em ${isoParaBr(f.dataInicial)}`);
+  if (f.dataModo === "periodo")
+    partes.push(`Cadastro de ${isoParaBr(f.dataInicial)} a ${isoParaBr(f.dataFinal)}`);
+  return partes.join(" · ");
+};
+
+const montarParametrosBusca = (filtros, extras = {}) => {
+  const params = new URLSearchParams();
+
+  if (filtros.dataModo !== "qualquer") {
+    params.append("dataCadastroInicial", filtros.dataInicial);
+    params.append(
+      "dataCadastroFinal",
+      filtros.dataModo === "especifica" ? filtros.dataInicial : filtros.dataFinal,
+    );
+  }
+
+  Object.entries(extras).forEach(([chave, valor]) => {
+    if (valor !== undefined && valor !== null && valor !== "") {
+      params.append(chave, valor);
+    }
+  });
+  return params;
+};
+
+// "2026-10-07T15:12:42" -> "07/10/2026"
+function formatarDataApi(valor) {
+  if (!valor) return "---";
+  const [ano, mes, dia] = String(valor).slice(0, 10).split("-");
   return `${dia}/${mes}/${ano}`;
 }
 
+function mapearPeriodo(periodo) {
+  return {
+    id: periodo.id,
+    numero: String(periodo.id).padStart(2, "0"),
+    dataCadastro: formatarDataApi(periodo.dataCriacao),
+    totalPecas: periodo.qtdPecas ?? 0,
+    anotacoes: periodo.anotacao || "Sem anotações",
+    fechado: periodo.fechado,
+    dataFechamento: periodo.dataFechamento,
+  };
+}
+
 function Periodo() {
-  const [periodos, setPeriodos] = useState(periodosIniciais);
+  const navigate = useNavigate();
+  const [periodos, setPeriodos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
-  const [campoBusca, setCampoBusca] = useState("todos");
-  const [anoFiltrado, setAnoFiltrado] = useState("todos");
+  const [buscaAplicada, setBuscaAplicada] = useState("");
+  const [campoBusca, setCampoBusca] = useState("numero");
+  const [filtros, setFiltros] = useState(FILTROS_VAZIOS);
+  const [rascunhoFiltros, setRascunhoFiltros] = useState(FILTROS_VAZIOS);
   const [selecionados, setSelecionados] = useState([]);
   const [menuBuscaAberto, setMenuBuscaAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
-  const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
-  const [periodoConsultado, setPeriodoConsultado] = useState(null);
-  const [novoPeriodo, setNovoPeriodo] = useState({
-    dataCadastro: dataAtualParaInput(),
-    totalPecas: "",
-    anotacoes: "",
-  });
 
-  const anosDisponiveis = useMemo(
-    () => [
-      "todos",
-      ...new Set(periodos.map((periodo) => periodo.dataCadastro.slice(-4))),
-    ],
-    [periodos],
-  );
+  // Espera o usuário parar de digitar antes de consultar a API
+  useEffect(() => {
+    const temporizador = setTimeout(() => setBuscaAplicada(busca), ATRASO_BUSCA_MS);
+    return () => clearTimeout(temporizador);
+  }, [busca]);
 
-  const periodosFiltrados = useMemo(() => {
-    const termo = busca.trim().toLocaleLowerCase("pt-BR");
+  const carregarPeriodos = useCallback(async () => {
+    setErro("");
+    setCarregando(true);
+    try {
+      const termo = buscaAplicada.trim();
+      let resposta;
 
-    return periodos.filter((periodo) => {
-      if (
-        anoFiltrado !== "todos" &&
-        !periodo.dataCadastro.endsWith(anoFiltrado)
-      ) {
-        return false;
+      if (!termo && !filtrosAtivos(filtros)) {
+        resposta = await api.get("/periodos");
+      } else {
+        const extras = {};
+        if (termo) {
+          if (campoBusca === "numero") {
+            extras.numero = termo;
+          } else if (campoBusca === "anotacoes") {
+            extras.anotacao = termo;
+          }
+        }
+        resposta = await api.get("/periodos/buscar", {
+          params: montarParametrosBusca(filtros, extras),
+        });
       }
 
-      if (!termo) return true;
+      const lista = Array.isArray(resposta.data) ? resposta.data : [];
+      setPeriodos(lista.map(mapearPeriodo));
+    } catch (error) {
+      console.error("Erro ao buscar períodos:", error);
+      setErro("Não foi possível carregar os períodos.");
+      setPeriodos([]);
+    } finally {
+      setCarregando(false);
+    }
+  }, [buscaAplicada, campoBusca, filtros]);
 
-      const valores =
-        campoBusca === "todos"
-          ? [
-              periodo.numero,
-              periodo.dataCadastro,
-              periodo.totalPecas,
-              periodo.anotacoes,
-            ]
-          : [periodo[campoBusca]];
+  useEffect(() => {
+    carregarPeriodos();
+  }, [carregarPeriodos]);
 
-      return valores.some((valor) =>
-        String(valor).toLocaleLowerCase("pt-BR").includes(termo),
-      );
+  const alternarFiltro = () => {
+    setFiltroAberto((aberto) => {
+      if (!aberto) setRascunhoFiltros(filtros);
+      return !aberto;
     });
-  }, [anoFiltrado, busca, campoBusca, periodos]);
+    setMenuBuscaAberto(false);
+  };
+
+  const atualizarRascunho = (alteracao) =>
+    setRascunhoFiltros((atual) => ({ ...atual, ...alteracao }));
+
+  const aplicarFiltros = () => {
+    if (!filtrosValidos(rascunhoFiltros)) return;
+    setFiltros(rascunhoFiltros);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
+
+  const limparFiltros = () => {
+    setFiltros(FILTROS_VAZIOS);
+    setRascunhoFiltros(FILTROS_VAZIOS);
+    setSelecionados([]);
+    setFiltroAberto(false);
+  };
 
   const excluirSelecionados = () => {
     setPeriodos((itensAtuais) =>
       itensAtuais.filter((periodo) => !selecionados.includes(periodo.id)),
     );
     setSelecionados([]);
-  };
-
-  const adicionarPeriodo = (event) => {
-    event.preventDefault();
-
-    const maiorNumero = periodos.reduce(
-      (maior, periodo) => Math.max(maior, Number(periodo.numero)),
-      0,
-    );
-
-    setPeriodos((itensAtuais) => [
-      {
-        id: Date.now(),
-        numero: String(maiorNumero + 1).padStart(2, "0"),
-        dataCadastro: formatarData(novoPeriodo.dataCadastro),
-        totalPecas: Number(novoPeriodo.totalPecas) || 0,
-        anotacoes: novoPeriodo.anotacoes || "Sem anotações",
-      },
-      ...itensAtuais,
-    ]);
-
-    setNovoPeriodo({
-      dataCadastro: dataAtualParaInput(),
-      totalPecas: "",
-      anotacoes: "",
-    });
-    setModalAdicionarAberto(false);
+    setModalExcluirAberto(false);
   };
 
   const columns = [
     { name: "Número", ordena: false, tipo: "string" },
-    { name: "Data cadastro", ordena: true, tipo: "date" },
+    { name: "Data de cadastro", ordena: true, tipo: "date" },
     { name: "Total de peças", ordena: true, tipo: "number" },
     { name: "Anotações", ordena: false, tipo: "string" },
   ];
 
-  const rows = periodosFiltrados.map((periodo) => ({
+  const rows = periodos.map((periodo) => ({
     id: periodo.id,
     cells: [
-      <span className={styles.periodNumber}>{periodo.numero}</span>,
+      <button
+        type="button"
+        className={styles.periodLink}
+        onClick={() => navigate("/verMaisPeriodo", { state: { periodo } })}
+      >
+        {periodo.numero}
+      </button>,
       periodo.dataCadastro,
       periodo.totalPecas,
-      <span className={styles.annotationBar} title={periodo.anotacoes} />,
+      periodo.anotacoes,
     ],
   }));
 
@@ -167,6 +210,13 @@ function Periodo() {
 
       <main className={styles.content}>
         <div className={styles.tabsSpacer} aria-hidden="true" />
+        {erro && (
+          <ServerResponse
+            type="error"
+            title="Falha ao carregar"
+            message={erro}
+          />
+        )}
 
         <section className={styles.toolbar} aria-label="Ações dos períodos">
           <div className={styles.searchActions}>
@@ -216,7 +266,8 @@ function Periodo() {
 
             <div className={styles.searchWrapper}>
               <SearchBar
-                placeholder="Buscar período..."
+                campo={campoBuscaAtivo}
+                placeholder="Digite para buscar..."
                 value={busca}
                 onChange={(event) => setBusca(event.target.value)}
                 ariaLabel="Buscar períodos"
@@ -224,36 +275,76 @@ function Periodo() {
             </div>
 
             <div className={styles.menuContainer}>
-              <Filtro
-                ariaLabel="Filtrar períodos por ano"
-                onClick={() => {
-                  setFiltroAberto((aberto) => !aberto);
-                  setMenuBuscaAberto(false);
-                }}
-              />
+              <Filtro ariaLabel="Filtrar períodos" onClick={alternarFiltro} />
 
               {filtroAberto && (
                 <div
-                  className={`${styles.popover} ${styles.filterPopover}`}
-                  role="menu"
+                  className={`${styles.popover} ${styles.filterPopover} ${styles.filterPanel}`}
+                  role="dialog"
+                  aria-label="Filtros de períodos"
                 >
-                  {anosDisponiveis.map((ano) => (
+                  <fieldset className={styles.filterGroup}>
+                    <legend>Data de cadastro</legend>
+                    <select
+                      value={rascunhoFiltros.dataModo}
+                      onChange={(event) =>
+                        atualizarRascunho({ dataModo: event.target.value })
+                      }
+                    >
+                      <option value="qualquer">Qualquer data</option>
+                      <option value="especifica">Data específica</option>
+                      <option value="periodo">Entre duas datas</option>
+                    </select>
+
+                    {rascunhoFiltros.dataModo !== "qualquer" && (
+                      <div className={styles.rangeRow}>
+                        <input
+                          type="date"
+                          aria-label={
+                            rascunhoFiltros.dataModo === "periodo"
+                              ? "Data inicial"
+                              : "Data de cadastro"
+                          }
+                          value={rascunhoFiltros.dataInicial}
+                          onChange={(event) =>
+                            atualizarRascunho({ dataInicial: event.target.value })
+                          }
+                        />
+                        {rascunhoFiltros.dataModo === "periodo" && (
+                          <>
+                            <span>até</span>
+                            <input
+                              type="date"
+                              aria-label="Data final"
+                              value={rascunhoFiltros.dataFinal}
+                              min={rascunhoFiltros.dataInicial || undefined}
+                              onChange={(event) =>
+                                atualizarRascunho({ dataFinal: event.target.value })
+                              }
+                            />
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </fieldset>
+
+                  <div className={styles.filterActions}>
                     <button
                       type="button"
-                      role="menuitem"
-                      key={ano}
-                      className={
-                        anoFiltrado === ano ? styles.selectedOption : ""
-                      }
-                      onClick={() => {
-                        setAnoFiltrado(ano);
-                        setFiltroAberto(false);
-                        setSelecionados([]);
-                      }}
+                      className={styles.clearButton}
+                      onClick={limparFiltros}
                     >
-                      {ano === "todos" ? "Todos os anos" : ano}
+                      Limpar
                     </button>
-                  ))}
+                    <button
+                      type="button"
+                      className={styles.applyButton}
+                      disabled={!filtrosValidos(rascunhoFiltros)}
+                      onClick={aplicarFiltros}
+                    >
+                      Aplicar
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -262,32 +353,33 @@ function Periodo() {
           <div className={styles.actionButtons}>
             <Button
               icone="adicionar"
-              onClick={() => setModalAdicionarAberto(true)}
+              onClick={() => navigate("/cadastrarPeriodo")}
             >
               Adicionar
-            </Button>
-            <Button
-              icone="deletar"
-              estilo="deletar"
-              disabled={selecionados.length === 0}
-              onClick={() => {
-                if (selecionados.length > 0) setModalExcluirAberto(true);
-              }}
-            >
-              Deletar
             </Button>
           </div>
         </section>
 
+        {filtrosAtivos(filtros) && (
+          <div className={styles.activeFilters}>
+            <span>{resumoFiltros(filtros)}</span>
+            <button type="button" onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          </div>
+        )}
+
         <section className={styles.tableSection} aria-label="Lista de períodos">
-          <Table
-            key={`${busca}-${campoBusca}-${anoFiltrado}`}
-            columns={columns}
-            rows={rows}
-            getRowId={(row) => row.id}
-            selectedRows={selecionados}
-            onSelectionChange={setSelecionados}
-          />
+          {carregando ? (
+            <p>Carregando períodos...</p>
+          ) : (
+            <Table
+              key={`${busca}-${campoBusca}-${JSON.stringify(filtros)}`}
+              columns={columns}
+              rows={rows}
+              selecionavel={false}
+            />
+          )}
         </section>
       </main>
 
@@ -296,117 +388,6 @@ function Periodo() {
         onClose={() => setModalExcluirAberto(false)}
         onConfirm={excluirSelecionados}
       />
-
-      {modalAdicionarAberto && (
-        <div
-          className={styles.modalOverlay}
-          onMouseDown={() => setModalAdicionarAberto(false)}
-        >
-          <form
-            className={styles.modalCard}
-            onSubmit={adicionarPeriodo}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h2>Adicionar Período</h2>
-
-            <label htmlFor="data-periodo">
-              Data de cadastro
-              <input
-                id="data-periodo"
-                type="date"
-                required
-                value={novoPeriodo.dataCadastro}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    dataCadastro: event.target.value,
-                  }))
-                }
-              />
-            </label>
-
-            <label htmlFor="total-pecas-periodo">
-              Total de peças
-              <input
-                id="total-pecas-periodo"
-                type="number"
-                min="0"
-                required
-                value={novoPeriodo.totalPecas}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    totalPecas: event.target.value,
-                  }))
-                }
-                placeholder="Digite o total de peças"
-              />
-            </label>
-
-            <label htmlFor="anotacoes-periodo">
-              Anotações
-              <textarea
-                id="anotacoes-periodo"
-                value={novoPeriodo.anotacoes}
-                onChange={(event) =>
-                  setNovoPeriodo((dadosAtuais) => ({
-                    ...dadosAtuais,
-                    anotacoes: event.target.value,
-                  }))
-                }
-                placeholder="Digite as anotações do período"
-              />
-            </label>
-
-            <div className={styles.modalActions}>
-              <Button
-                type="button"
-                estilo="editar"
-                onClick={() => setModalAdicionarAberto(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit">Adicionar</Button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {periodoConsultado && (
-        <div
-          className={styles.modalOverlay}
-          onMouseDown={() => setPeriodoConsultado(null)}
-        >
-          <section
-            className={`${styles.modalCard} ${styles.detailsCard}`}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="titulo-periodo-consultado"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h2 id="titulo-periodo-consultado">
-              Período {periodoConsultado.numero}
-            </h2>
-            <dl>
-              <div>
-                <dt>Data de cadastro</dt>
-                <dd>{periodoConsultado.dataCadastro}</dd>
-              </div>
-              <div>
-                <dt>Total de peças</dt>
-                <dd>{periodoConsultado.totalPecas}</dd>
-              </div>
-              <div>
-                <dt>Anotações</dt>
-                <dd>{periodoConsultado.anotacoes}</dd>
-              </div>
-            </dl>
-            <div className={styles.modalActions}>
-              <Button onClick={() => setPeriodoConsultado(null)}>Fechar</Button>
-            </div>
-          </section>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,0 +1,422 @@
+.associationContent,
+.similarityContent {
+    width: 334px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.searchField {
+    position: relative;
+    width: 100%;
+}
+
+.searchField svg {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: #64748b;
+    stroke-linecap: round;
+    stroke-width: 1.5;
+    transform: translateY(-50%);
+}
+
+.searchField input,
+.codeRow>input {
+    width: 100%;
+    height: 20px;
+    padding: 0 7px 0 19px;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    font-size: 7px;
+    outline: none;
+}
+
+.searchField input:focus,
+.codeRow>input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.codeRow {
+    display: grid;
+    grid-template-columns: auto 123px auto;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    margin-top: 10px;
+}
+
+.codeRow>label {
+    color: #475569;
+    font-size: 10px;
+}
+
+.codeRow>input {
+    padding: 0 7px;
+}
+
+.addButton>button {
+    height: 25px;
+    padding: 0 11px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.unregisteredContact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 3px 0 10px;
+    color: #64748b;
+    font-size: 6px;
+    text-decoration: underline;
+}
+
+.registerActions {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.unregisteredContact button {
+    padding: 1px 7px;
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    font-size: 6px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.erro {
+    margin: 4px 0 6px;
+    color: #b4232b;
+    font-size: 9px;
+    text-align: center;
+}
+
+.contactDropdown {
+    width: 100%;
+    max-height: 220px;
+    margin: 8px 0 6px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.contactOption {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #0f172a;
+    text-align: left;
+    cursor: pointer;
+}
+
+.contactOption:last-child {
+    border-bottom: 0;
+}
+
+.contactOption:hover {
+    background: #f8fafc;
+}
+
+.contactTypeBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 2px 6px;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 999px;
+    color: #1d4ed8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.contactText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.contactText strong {
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.contactText small {
+    color: #475569;
+    font-size: 8px;
+    line-height: 1.2;
+}
+
+.itemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    height: 78px;
+    padding: 6px 10px;
+    overflow-y: auto;
+    background: #f1f5f9;
+    border-right: 4px solid #e2e8f0;
+    border-radius: 4px;
+}
+
+.codeItem,
+.partItem {
+    display: grid;
+    grid-template-columns: 24px 1fr 1.4fr;
+    align-items: center;
+    min-height: 26px;
+    padding: 3px 6px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    color: #0f172a;
+    font-size: 10px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.partItem {
+    grid-template-columns: 28px 1fr;
+}
+
+.codeItem button,
+.partItem button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #0f172a;
+    font-size: inherit;
+    font-weight: 700;
+}
+
+.codeItem>span,
+.partItem>span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.similarityContent>label {
+    display: block;
+    margin-bottom: 3px;
+    color: #475569;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.searchRow {
+    display: flex;
+    gap: 11px;
+    margin-bottom: 6px;
+}
+
+.searchRow .searchField {
+    flex: 1;
+}
+
+.suggestionDropdown {
+    width: 100%;
+    max-height: 160px;
+    margin: 0 0 8px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.suggestionOption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 10px;
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #0f172a;
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggestionOption:last-child {
+    border-bottom: 0;
+}
+
+.suggestionOption:hover {
+    background: #f8fafc;
+}
+
+.suggestionCode {
+    color: #0f172a;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.suggestionMeta {
+    color: #475569;
+    font-size: 9px;
+}
+
+@media (min-width: 900px) {
+
+    .associationContent,
+    .similarityContent {
+        width: 540px;
+    }
+
+    .codeRow>label,
+    .similarityContent>label {
+        font-size: 14px;
+    }
+
+    .searchField input,
+    .codeRow>input {
+        height: 34px;
+        font-size: 11px;
+    }
+
+    .searchField input {
+        padding-left: 34px;
+    }
+
+    .searchField svg {
+        left: 10px;
+        width: 17px;
+        height: 17px;
+    }
+
+    .codeRow {
+        grid-template-columns: auto 200px auto;
+        margin-top: 13px;
+    }
+
+    .addButton>button {
+        height: 36px;
+        padding: 0 16px;
+        font-size: 14px;
+    }
+
+    .unregisteredContact {
+        margin: 5px 0 14px;
+        font-size: 10px;
+    }
+
+    .unregisteredContact button {
+        font-size: 9px;
+    }
+
+    .erro {
+        font-size: 12px;
+    }
+
+    .contactDropdown {
+        max-height: 240px;
+        margin: 10px 0 8px;
+    }
+
+    .contactTypeBadge {
+        min-width: 68px;
+        font-size: 9px;
+    }
+
+    .contactText strong {
+        font-size: 13px;
+    }
+
+    .contactText small {
+        font-size: 11px;
+    }
+
+    .itemsList {
+        gap: 8px;
+        height: 125px;
+        padding: 8px 14px;
+    }
+
+    .suggestionDropdown {
+        max-height: 180px;
+        margin: 0 0 10px;
+    }
+
+    .suggestionOption {
+        padding: 10px 12px;
+    }
+
+    .suggestionCode {
+        font-size: 12px;
+    }
+
+    .suggestionMeta {
+        font-size: 10px;
+    }
+
+    .codeItem,
+    .partItem {
+        min-height: 34px;
+        padding: 4px 8px;
+        font-size: 13px;
+    }
+
+    .codeItem {
+        grid-template-columns: 30px 1fr 1.4fr;
+    }
+
+    .partItem {
+        grid-template-columns: 30px 1fr;
+    }
+
+    .searchRow {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 620px) {
+
+    .associationContent,
+    .similarityContent {
+        width: 100%;
+    }
+
+    .codeRow {
+        grid-template-columns: 1fr;
+    }
+
+    .codeRow>label,
+    .similarityContent>label {
+        font-size: 13px;
+    }
+
+    .searchField input,
+    .codeRow>input {
+        height: 40px;
+        font-size: 13px;
+    }
+
+    .itemsList {
+        height: 140px;
+    }
+}

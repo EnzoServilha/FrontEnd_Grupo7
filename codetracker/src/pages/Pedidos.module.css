@@ -444,3 +444,118 @@
 .actionButtons>button:disabled svg {
   fill: currentColor;
 }
+
+/* ---------- Painel de filtros ---------- */
+.filterPanel {
+  left: 0;
+  right: auto;
+  min-width: 360px;
+  max-width: calc(100vw - 32px);
+  gap: 14px;
+  padding: 14px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filterField {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.filterField span {
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.filterField select,
+.filterField input[type="date"] {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.filterPanel .filterActions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.filterPanel .clearButton {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.filterPanel .applyButton {
+  color: #ffffff;
+  background: #0056b3;
+}
+
+.filterPanel .applyButton:hover {
+  color: #ffffff;
+  background: #004a99;
+}
+
+/* ---------- Resumo dos filtros ativos ---------- */
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: -6px 0 14px;
+  padding: 8px 12px;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.activeFilters button {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ---------- Mensagem de carregando / vazio ---------- */
+.tableMessage {
+  margin: 0;
+  padding: 16px;
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .filterPanel {
+    width: calc(100vw - 28px);
+    min-width: 0;
+  }
+
+  .filterGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.concluidoAtraso {
+  background: #fef3c7;
+  color: #92400e;
+}

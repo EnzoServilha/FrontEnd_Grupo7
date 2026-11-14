@@ -13,8 +13,10 @@
 
 .headerContainer {
   width: 100%;
-  max-width: 100%; /* Garante que ela se estique até o final das bordas da tela */
-  padding: 16px 32px; /* Aumentei levemente o recuo para alinhar com o padding do seu dashboard */
+  max-width: 100%;
+  /* Garante que ela se estique até o final das bordas da tela */
+  padding: 16px 32px;
+  /* Aumentei levemente o recuo para alinhar com o padding do seu dashboard */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -64,6 +66,15 @@
 
 /* Seção do Usuário (Direita) */
 .headerUser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.headerUser button {
   display: flex;
   align-items: center;
   gap: 8px;

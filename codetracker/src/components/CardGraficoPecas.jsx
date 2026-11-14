@@ -26,14 +26,11 @@ function CardGraficoPecas({
   location = "UF - Cidade",
   kpis = {
     onTimeDelivery: "XX%",
-    paidFreight: "XX%",
     medianDeliveryTime: "XXX dias",
   },
   chartData = {
     labels: ["Jan", "Fev", "Mar", "Abr", "Mai"],
-    unitPrice: [100, 105, 98, 110, 108],
-    taxes: [15, 15, 14, 16, 16],
-    freight: [10, 12, 10, 8, 11],
+    unitPrice: [100, 105, 98, 110, 108]
   },
 }) {
   const data = {
@@ -47,25 +44,7 @@ function CardGraficoPecas({
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 2,
-      },
-      {
-        label: "Impostos",
-        data: chartData.taxes,
-        borderColor: "#eab308",
-        backgroundColor: "#eab308",
-        borderWidth: 2,
-        tension: 0.3,
-        pointRadius: 2,
-      },
-      {
-        label: "Frete",
-        data: chartData.freight,
-        borderColor: "#22c55e",
-        backgroundColor: "#22c55e",
-        borderWidth: 2,
-        tension: 0.3,
-        pointRadius: 2,
-      },
+      }
     ],
   };
 
@@ -114,10 +93,6 @@ function CardGraficoPecas({
         <div className={styles.miniKpiCard}>
           <span className={styles.miniKpiTitle}>Entregas no Prazo</span>
           <strong className={styles.miniKpiValue}>{kpis.onTimeDelivery}</strong>
-        </div>
-        <div className={styles.miniKpiCard}>
-          <span className={styles.miniKpiTitle}>Frete Pago</span>
-          <strong className={styles.miniKpiValue}>{kpis.paidFreight}</strong>
         </div>
         <div className={styles.miniKpiCard}>
           <span className={styles.miniKpiTitle}>Mediana de Tempo</span>

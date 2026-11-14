@@ -1,4 +1,5 @@
 .container {
+  position: relative; /* position relative adicionado para o help popup */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,4 +15,10 @@
   font-weight: 600;
   margin-bottom: 20px;
   margin-top: 0;
+}
+
+.helpAction {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }

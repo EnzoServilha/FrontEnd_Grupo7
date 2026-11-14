@@ -1,0 +1,171 @@
+.pagina {
+    min-height: 100vh;
+    background-color: #f1f4f9;
+    font-family: "Arial", sans-serif;
+}
+
+.topo {
+    padding: 16px 20px;
+}
+
+.conteudo {
+    max-width: 560px;
+    margin: 40px auto 0;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.conteudoCentral {
+    display: flex;
+    justify-content: center;
+    padding: 100px 16px 0;
+}
+
+.titulo {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px;
+}
+
+.aviso {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #64748b;
+    margin: 0 0 24px;
+}
+
+.aviso strong {
+    color: #b45309;
+    font-weight: 700;
+}
+
+.card {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.cardTitulo {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 28px;
+}
+
+.info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f1f4f9;
+    border-radius: 999px;
+    padding: 10px 24px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    color: #111827;
+}
+
+.info span {
+    font-weight: 700;
+}
+
+.info strong {
+    color: #0056cb;
+    font-weight: 700;
+}
+
+.info:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 115px;
+    box-sizing: border-box;
+    resize: vertical;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: #111827;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    outline: none;
+}
+
+.textarea::placeholder {
+    color: #94a3b8;
+}
+
+.textarea:focus {
+    border-color: #0056cb;
+}
+
+.acoes {
+    align-self: flex-end;
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+/* Etapa 3 */
+.confirmacao {
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 2px solid #0056cb;
+    border-top-width: 6px;
+    border-radius: 12px;
+    padding: 28px 38px 38px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.confirmacaoTitulo {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 20px;
+}
+
+.confirmacaoTitulo span {
+    color: #0056cb;
+    font-size: 22px;
+}
+
+.alerta {
+    background-color: #fefae8;
+    border: 1px solid #f5e7a6;
+    border-radius: 8px;
+    padding: 20px 20px;
+    color: #b45309;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.confirmacaoAcoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.confirmacaoAcoes button {
+    width: 100%;
+}

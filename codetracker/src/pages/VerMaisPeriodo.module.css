@@ -1,0 +1,130 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f1f5f9;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 16px 24px 24px;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.infoCard {
+    padding: 24px 32px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+/* Busca + tabela, direto sobre o fundo da página */
+.tableSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 0;
+    /* o espaçamento agora vem do gap do .tableSection */
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+}
+
+.title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    gap: 48px;
+    margin: 16px 0 24px 56px;
+    color: #475569;
+}
+
+.infoLeft {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 4px 24px;
+    margin: 0;
+    align-content: start;
+}
+
+.infoLeft dt {
+    font-size: 16px;
+}
+
+.infoLeft dd {
+    margin: 0;
+    color: #000;
+    font-size: 16px;
+}
+
+.notes {
+    display: flex;
+    gap: 40px;
+    flex: 1;
+    max-width: 720px;
+}
+
+.notesLabel {
+    font-size: 16px;
+}
+
+.notesText {
+    margin: 0;
+    color: #000;
+    word-break: break-all;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.dropdownBtn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.dropdownBtn:hover {
+    background-color: #e2e8f0;
+}
+
+.tableWrapper {
+    width: 100%;
+}
